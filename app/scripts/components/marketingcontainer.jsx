@@ -1,7 +1,7 @@
 var React = require('react');
 
 //calling in marketing and authorization screen //layouts
-var MarketAuthLayout = require('./layouts/marketauth.jsx').MarketAuthLayout
+var MarketAuthLayout = require('./layouts/marketauth.jsx').MarketAuthLayout;
 
 class MarketingContainer extends React.Component {
   render() {
@@ -9,16 +9,18 @@ class MarketingContainer extends React.Component {
       <MarketAuthLayout>
         <div className="container">
           <div className="jumbotron">
-            <h1>Final Project</h1>
+            <h1>Observe your world!</h1>
+            <h3>Put on your biologist hat and explore and keep track of the world around you...</h3>
+            <p>The ______ app allows you to create an account to keep track all of your species encounters in one place. Log your birding trips, record your very own herbarium here, check off lifelist species for your herpetological records, all in one place. Record data about your location, weather, experience. Upload images to each observation. Allow for optional public viewing and have friendly competitions between friends and family to see who can log the most organisms. Also learn a little bit more about your logged encounters after each event is added. Log back in or join today!</p>
           </div>
         </div>
         <div className="container">
           <div className="row">
             <div className="col-sm-6">
-              <a type="button" className="btn btn-primary">Log In</a>
+              <a href="#login/" type="button" className="btn btn-primary">Log In</a>
             </div>
             <div className="col-sm-6">
-              <a type="button" className="btn btn-primary">Sign Up</a>
+              <a href="#signup/" type="button" className="btn btn-primary">Sign Up</a>
             </div>
           </div>
         </div>

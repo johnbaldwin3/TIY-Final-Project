@@ -5,10 +5,15 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var Backbone = require('backbone');
 
+
 //********************************
 //Controllers
 //********************************
 var MarketingContainer = require('./components/marketingcontainer.jsx').MarketingContainer;
+var LoginContainer = require('./components/logincontainer.jsx').LoginContainer;
+var SignupContainer = require('./components/signupcontainer.jsx').SignupContainer;
+var UserInfoContainer = require('./components/userinfocontainer.jsx').UserInfoContainer;
+
 
 //********************************
 //Backbone Router
@@ -22,7 +27,7 @@ var AppRouter = Backbone.Router.extend({
   //sign up page
   'signup/':'signUp',
   //new user info
-  'userinfo': 'userInfoAddViewEdit',
+  'userinfo/': 'userInfoAddViewEdit',
   //view user info for public users
   'userinfo/:id/': 'userInfoAddViewEdit',
   //main dashboard : recent/top obs, map, user ranks
@@ -43,7 +48,27 @@ index: function() {
     React.createElement(MarketingContainer),
     document.getElementById('app')
   )
-}
+},
+login: function() {
+  ReactDOM.render(
+    React.createElement(LoginContainer),
+    document.getElementById('app')
+  )
+},
+signUp: function() {
+  ReactDOM.render(
+    React.createElement(SignupContainer),
+    document.getElementById('app')
+  )
+},
+userInfoAddViewEdit: function() {
+  ReactDOM.render(
+    React.createElement(UserInfoContainer),
+    document.getElementById('app')
+  )
+},
+
+
 
 });
 
