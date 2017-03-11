@@ -1,21 +1,12 @@
 var React = require('react');
 
+//calling in marketing and authorization screen //layouts
+var MarketAuthLayout = require('./layouts/marketauth.jsx').MarketAuthLayout
 
 class MarketingContainer extends React.Component {
   render() {
     return(
-      <div className="wrapper">
-        <nav className="navbar navbar-default">
-          <div className="row">
-            <div className="container-fluid">
-              <div className="navbar">
-                <a className="navbar-brand" href="#">
-                  <img alt="Brand" src="https://unsplash.it/40"/>
-                </a>
-              </div>
-            </div>
-          </div>
-        </nav>
+      <MarketAuthLayout>
         <div className="container">
           <div className="jumbotron">
             <h1>Final Project</h1>
@@ -31,14 +22,9 @@ class MarketingContainer extends React.Component {
             </div>
           </div>
         </div>
-        <div className="container-fluid">
-          <div className="row">
-            <div className="footer navbar-fixed-bottom">
-              <h3>Footer info here</h3>
-            </div>
-          </div>
-        </div>
-      </div>
+      </MarketAuthLayout>
+
+
     )
   }
 };

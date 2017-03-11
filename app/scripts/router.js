@@ -14,7 +14,7 @@ var MarketingContainer = require('./components/marketingcontainer.jsx').Marketin
 //Backbone Router
 //********************************
 var AppRouter = Backbone.Router.extend({
-  routers: {
+  routes: {
   //splash marketing page
   '':'index',
   //login page
@@ -51,4 +51,6 @@ index: function() {
 //instantiate new router
 var appRouter = new AppRouter();
 //export router
-module.exports = appRouter;
+module.exports = {
+  appRouter
+};
