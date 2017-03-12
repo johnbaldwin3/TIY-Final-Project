@@ -5,7 +5,7 @@ var React = require('react');
 var Backbone = require('backbone');
 
 //********************************
-//Models and Utilities
+//Models, Utilities, Layouts
 //********************************
 var User = require('../models/user').User;
 //call in market/authorize layout
@@ -18,7 +18,7 @@ class LoginContainer extends React.Component {
   constructor(props){
     super(props);
 
-    //bind this 
+    //bind this
     this.loginUser = this.loginUser.bind(this);
 
     this.state = {

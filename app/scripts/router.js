@@ -13,6 +13,7 @@ var MarketingContainer = require('./components/marketingcontainer.jsx').Marketin
 var LoginContainer = require('./components/logincontainer.jsx').LoginContainer;
 var SignupContainer = require('./components/signupcontainer.jsx').SignupContainer;
 var UserInfoContainer = require('./components/userinfocontainer.jsx').UserInfoContainer;
+var ObservationDashContainer = require('./components/observationdashcontainer.jsx').ObservationDashContainer;
 
 //********************************
 //Models and Utilities
@@ -94,7 +95,12 @@ userInfoAddViewEdit: function() {
     document.getElementById('app')
   )
 },
-
+observationsDash: function() {
+  ReactDOM.render(
+    React.createElement(ObservationDashContainer),
+    document.getElementById('app')
+  )
+},
 
 
 });

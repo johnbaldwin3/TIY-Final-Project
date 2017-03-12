@@ -8,6 +8,10 @@ class MarketingContainer extends React.Component {
     return(
       <MarketAuthLayout>
         <div className="container">
+          <blockquote>
+            <p>"Science, its imperfections notwithstanding, is the sword in the stone that humanity finally pulled."</p>
+            <footer>Edward O. Wilson in <cite title="Source Title">The Unity of Knowledge (1998)</cite></footer>
+          </blockquote>
           <div className="jumbotron">
             <h1>Observe your world!</h1>
             <h3>Put on your biologist hat and explore and keep track of the world around you...</h3>
