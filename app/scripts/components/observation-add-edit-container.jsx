@@ -18,7 +18,9 @@ class ObservationAddEditContainer extends React.Component {
       <BaseLayout>
         <div className="container">
           <div className="row">
-            <div className="col-sm-3">recent observations ehre</div>
+            <div className="col-sm-3">
+              
+            </div>
             <div className="col-sm-3">map object here </div>
             <div className="col-sm-3">User lists or rankings here</div>
           </div>

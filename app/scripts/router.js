@@ -20,7 +20,7 @@ var ObservationAddEditContainer = require('./components/observation-add-edit-con
 //Models and Utilities
 //********************************
 var User = require('./models/user.js').User;
-var parse = require('./parse');
+var parse = require('./parse').parse;
 
 //********************************
 //Backbone Router
@@ -56,22 +56,22 @@ initialize: function(){
     base_api_url: 'https://jb3-serve.herokuapp.com'
   });
 },
-// execute: function(callback, args, name) {
-//   //check to see if user is logged in
-//   //if user is not logged in, go to index
-//   var user = User.current();
-//   if (!user && name != 'login') {
-//     this.navigate('', {trigger: true});
-//     return false;
-//   }
-//   //if user is logged in, proceed to observation/ url
-//   if(user && name == 'login'){
-//     this.navigate('observation/', {trigger: true});
-//     return false;
-//   }
-//
-//   return Backbone.Router.prototype.execute.apply(this, arguments);
-//   },
+execute: function(callback, args, name) {
+  //check to see if user is logged in
+  //if user is not logged in, go to index
+  var user = User.current();
+  if (!user && name != 'login') {
+    this.navigate('', {trigger: true});
+    return false;
+  }
+  //if user is logged in, proceed to observation/ url
+  if(user && name == 'login'){
+    this.navigate('observation/', {trigger: true});
+    return false;
+  }
+
+  return Backbone.Router.prototype.execute.apply(this, arguments);
+  },
 index: function() {
   ReactDOM.render(
     React.createElement(MarketingContainer),
