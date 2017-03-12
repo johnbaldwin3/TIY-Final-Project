@@ -27,12 +27,12 @@ class BaseLayout extends React.Component {
             </div>
             <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul className="nav navbar-nav">
-                <li className={activeClass('observation/')}><a href="#">Observation Dashboard<span className="sr-only">(current)</span></a></li>
+                <li className={activeClass('observation/')}><a href="#observation/">Observation Dashboard<span className="sr-only">(current)</span></a></li>
                 <li><a href="#">All Listed Observations</a></li>
                 <li><a href="#">Photo Gallery</a></li>
                 <li><a href="#">User Listings (users collect)</a></li>
                 <li><a href="#">Rankings</a></li>
-                <li><a href="#">Something Else</a></li>
+                <li><a href="#">Observation Detail</a></li>
               </ul>
               <ul className="nav navbar-nav navbar-right">
                 <li><a type="button" className="btn btn-danger" href="#">Log Out</a></li>

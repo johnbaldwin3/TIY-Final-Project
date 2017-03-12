@@ -9,11 +9,12 @@ var Backbone = require('backbone');
 //********************************
 //Controllers
 //********************************
-var MarketingContainer = require('./components/marketingcontainer.jsx').MarketingContainer;
-var LoginContainer = require('./components/logincontainer.jsx').LoginContainer;
-var SignupContainer = require('./components/signupcontainer.jsx').SignupContainer;
-var UserInfoContainer = require('./components/userinfocontainer.jsx').UserInfoContainer;
-var ObservationDashContainer = require('./components/observationdashcontainer.jsx').ObservationDashContainer;
+var MarketingContainer = require('./components/marketing-container.jsx').MarketingContainer;
+var LoginContainer = require('./components/login-container.jsx').LoginContainer;
+var SignupContainer = require('./components/signup-container.jsx').SignupContainer;
+var UserInfoContainer = require('./components/user-info-container.jsx').UserInfoContainer;
+var ObservationDashContainer = require('./components/observation-dash-container.jsx').ObservationDashContainer;
+var ObservationAddEditContainer = require('./components/observation-add-edit-container.jsx').ObservationAddEditContainer;
 
 //********************************
 //Models and Utilities
@@ -98,6 +99,12 @@ userInfoAddViewEdit: function() {
 observationsDash: function() {
   ReactDOM.render(
     React.createElement(ObservationDashContainer),
+    document.getElementById('app')
+  )
+},
+observationsAddEdit: function() {
+  ReactDOM.render(
+    React.createElement(ObservationAddEditContainer),
     document.getElementById('app')
   )
 },
