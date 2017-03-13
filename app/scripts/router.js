@@ -15,6 +15,7 @@ var SignupContainer = require('./components/signup-container.jsx').SignupContain
 var UserInfoContainer = require('./components/user-info-container.jsx').UserInfoContainer;
 var ObservationDashContainer = require('./components/observation-dash-container.jsx').ObservationDashContainer;
 var ObservationAddEditContainer = require('./components/observation-add-edit-container.jsx').ObservationAddEditContainer;
+var ObservationGalleryContainer = require('./components/observation-gallery.jsx').ObservationGalleryContainer;
 
 //********************************
 //Models and Utilities
@@ -108,7 +109,12 @@ observationsAddEdit: function() {
     document.getElementById('app')
   )
 },
-
+observationGallery: function() {
+  ReactDOM.render(
+    React.createElement(ObservationGalleryContainer),
+    document.getElementById('app')
+  )
+},
 
 });
 

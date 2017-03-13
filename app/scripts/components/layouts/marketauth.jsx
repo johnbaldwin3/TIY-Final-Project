@@ -7,7 +7,7 @@ class MarketAuthLayout extends React.Component {
 
     return (
 
-      <div className="wrapper">
+      <div className="wrapper-market">
         <nav className="navbar navbar-default">
           <div className="row">
             <div className="container-fluid">

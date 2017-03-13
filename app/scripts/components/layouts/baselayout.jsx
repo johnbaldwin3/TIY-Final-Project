@@ -29,7 +29,7 @@ class BaseLayout extends React.Component {
               <ul className="nav navbar-nav">
                 <li className={activeClass('observation/')}><a href="#observation/">Observation Dashboard<span className="sr-only">(current)</span></a></li>
                 <li><a href="#">All Listed Observations</a></li>
-                <li><a href="#">Photo Gallery</a></li>
+                <li className={activeClass('observation/gallery/')}> <a href="#observation/gallery/">Photo Gallery</a></li>
                 <li><a href="#">User Listings (users collect)</a></li>
                 <li><a href="#">Rankings</a></li>
                 <li><a href="#">Observation Detail</a></li>
