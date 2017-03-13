@@ -7,7 +7,7 @@ var $ = require('jquery');
 //********************************
 // Utilities
 //********************************
-var parse = require('../parse');
+var parse = require('../parse').parse;
 
 //********************************
 //Models

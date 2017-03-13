@@ -16,6 +16,7 @@ var UserInfoContainer = require('./components/user-info-container.jsx').UserInfo
 var ObservationDashContainer = require('./components/observation-dash-container.jsx').ObservationDashContainer;
 var ObservationAddEditContainer = require('./components/observation-add-edit-container.jsx').ObservationAddEditContainer;
 var ObservationGalleryContainer = require('./components/observation-gallery.jsx').ObservationGalleryContainer;
+var ObservationSpeciesSearchContainer = require('./components/observation-search.jsx').ObservationSpeciesSearchContainer;
 
 //********************************
 //Models and Utilities
@@ -46,6 +47,8 @@ var AppRouter = Backbone.Router.extend({
   'observation/:id/list/':'observationList',
   //add new user observation
   'observation/add/':'observationAddEdit',
+  //search for exact species before creating observation
+  'observation/search/':'observationSearch',
   //view all observation photos
   'observation/gallery/':'observationGallery',
   //view all rankings in filterable fashion
@@ -106,6 +109,12 @@ observationsDash: function() {
 observationsAddEdit: function() {
   ReactDOM.render(
     React.createElement(ObservationAddEditContainer),
+    document.getElementById('app')
+  )
+},
+observationSearch: function() {
+  ReactDOM.render(
+    React.createElement(ObservationSpeciesSearchContainer),
     document.getElementById('app')
   )
 },
