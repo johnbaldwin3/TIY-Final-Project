@@ -4,20 +4,10 @@
 var Backbone = require('backbone');
 
 //********************************
-//URL Function
-//********************************
-var baseURL = 'http://api.gbif.org/v1/species/search?q='
-
-
-//********************************
 //Models
 //********************************
 var Organism = Backbone.Model.extend({
-  defaults: function() {
-    return {
-
-    }
-  },
+  
 });
 
 //********************************
@@ -41,4 +31,4 @@ url: function() {
 module.exports = {
   Organism,
   OrganismCollection
-}
+};
