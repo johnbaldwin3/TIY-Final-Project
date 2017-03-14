@@ -30,19 +30,12 @@ class ObservationSpeciesSearchContainer extends React.Component {
     var collection = this.state.organismCollection;
     collection.searchTerm = data;
 
-    console.log('hey', this.state.organismCollection);
+    //console.log('hey', this.state.organismCollection);
     this.state.organismCollection.fetch().done((response) => {
       this.setState({results: response.results});
     });
-
-  //  utility.searchSpecies(data).done((response)=> {
-  //    var results = response.results;
-  //   this.setState({results : results });
-  //  });
-
   }
   render() {
-    //console.log(this.state.results);
     return (
       <BaseLayout>
         <div className="container search-page">
@@ -81,7 +74,7 @@ class SpeciesInputForm extends React.Component {
   }
   render() {
     return (
-        <input onChange={this.handleInputChange} type="text" className="form-control" placeholder="Species you observered..."/>
+        <input onChange={this.handleInputChange} type="text" className="form-control" placeholder="Species you observed..."/>
     )
   }
 }
@@ -100,17 +93,32 @@ class PossibleSpeciesList extends React.Component {
   render() {
     console.log('this', this.props.availableSpecies);
     var speciesList = this.props.availableSpecies.map((species) =>{
+      console.log('vn', species.vernacularNames.vernacularName);
       return (
-        <li key={species.key} className="list-group-item">
-          {species.species}
-        </li>
+
+        <tr key={species.key} >
+          <td>
+            {species.species}
+          </td>
+          <td>
+            {(species.vernacularNames.language == "eng" && species.vernacularNames.vernacularName) ? species.vernacularNames.vernacularName : species.species}
+          </td>
+        </tr>
       )
     });
     return (
       <div className="row">
-        <ul className="list-group">
-          {speciesList}
-        </ul>
+        <table className="table table-hover col-sm-8">
+          <thead className="species-table">
+            <tr href="">
+              <th>Scientific Name</th>
+              <th>Common Name (Vernacular Name)</th>
+            </tr>
+          </thead>
+          <tbody>
+              {speciesList}
+          </tbody>
+        </table>
       </div>
     )
   }
