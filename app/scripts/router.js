@@ -29,30 +29,30 @@ var parse = require('./parse').parse;
 //********************************
 var AppRouter = Backbone.Router.extend({
   routes: {
-  //splash marketing page
-  '':'index',
-  //login page
-  'login/':'login',
-  //sign up page
-  'signup/':'signUp',
-  //new user info
-  'userinfo/': 'userInfoAddViewEdit',
-  //view user info for public users
-  'userinfo/:id/': 'userInfoAddViewEdit',
-  //main dashboard : recent/top obs, map, user ranks
-  'observation/' : 'observationsDash',
-  //edit existing user observation (if user)
-  'observation/:id/edit/' : 'observationsAddEdit',
-  //view all of a single user's observations
-  'observation/:id/list/' : 'observationList',
-  //add new user observation
-  'observation/add/' : 'observationsAddEdit',
-  //search for exact species before creating observation
-  'observation/search/' : 'observationSearch',
-  //view all observation photos
-  'observation/gallery/' : 'observationGallery',
-  //view all rankings in filterable fashion
-  'observation/rankings/' : 'observationRankings'
+    //splash marketing page
+    '':'index',
+    //login page
+    'login/':'login',
+    //sign up page
+    'signup/':'signUp',
+    //new user info
+    'userinfo/': 'userInfoAddViewEdit',
+    //view user info for public users
+    'userinfo/:id/': 'userInfoAddViewEdit',
+    //main dashboard : recent/top obs, map, user ranks
+    'observation/' : 'observationsDash',
+    //edit existing user observation (if user)
+    'observation/:id/edit/' : 'observationsAddEdit',
+    //view all of a single user's observations
+    'observation/:id/list/' : 'observationList',
+    //add new user observation
+    'observation/add/(:speciesKey/)' : 'observationsAddWithSpeciesKey',
+    //search for exact species before creating observation
+    'observation/search/' : 'observationSearch',
+    //view all observation photos
+    'observation/gallery/' : 'observationGallery',
+    //view all rankings in filterable fashion
+    'observation/rankings/' : 'observationRankings'
 },
 initialize: function(){
   //Parse setup to set headers and configure API url
@@ -112,11 +112,14 @@ observationSearch: function() {
     document.getElementById('app')
   )
 },
-observationsAddEdit: function() {
+observationsAddEdit: function(id, speciesKey) {
   ReactDOM.render(
-    React.createElement(ObservationsAddEditContainer),
+    React.createElement(ObservationsAddEditContainer, {id: id, speciesKey: speciesKey}),
     document.getElementById('app')
   )
+},
+observationsAddWithSpeciesKey: function(speciesKey){
+  this.observationsAddEdit(null, speciesKey);
 },
 observationGallery: function() {
   ReactDOM.render(

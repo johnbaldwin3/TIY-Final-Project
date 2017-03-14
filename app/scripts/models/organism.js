@@ -2,11 +2,25 @@
 //Third Party Libraries
 //********************************
 var Backbone = require('backbone');
+var _ = require('underscore');
 
 //********************************
 //Models
 //********************************
 var Organism = Backbone.Model.extend({
+  idAttribute: 'speciesKey',
+  getVernacularNames: function () {
+    var vernacularNames = _.where(this.get('vernacularNames'), {language: "eng"});
+    //console.log('VN', this.get('vernacularNames'));
+    return _.pluck(vernacularNames, 'vernacularName').join(", ");
+  },
+  // getSpeciesDescription: function () {
+  //   var description = _.where(this.get('descriptions'), {language: "eng"});
+  //
+  //   return _.pluck(descriptions)
+  // },
+  urlRoot: 'https://api.gbif.org/v1/species/'
+
 
 });
 
@@ -23,6 +37,9 @@ var OrganismCollection = Backbone.Collection.extend({
 
     return url;
 
+  },
+  parse: function(data) {
+    return data.results;
   }
 });
 
