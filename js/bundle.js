@@ -287,58 +287,98 @@ var React = require('react');
 //Models, Utilities, Layouts
 //********************************
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
-
+var models = require('../models/organism.js');
 //********************************
 //Individual Observation / Add / Edit / View
 //********************************
 
 class ObservationsAddEditContainer extends React.Component {
-  render() {
-    return (
-      React.createElement(BaseLayout, null, 
-        React.createElement("div", {className: "container"}, 
-          React.createElement("form", {className: "col-sm-12"}, 
-            React.createElement("div", {className: "form-group"}, 
-              React.createElement("label", {htmlFor: "speciesName"}, "Species Name"), 
-              React.createElement("input", {type: "text", className: "form-control", id: "speciesName", placeholder: "Species Name"})
-            ), 
-            React.createElement("div", {className: "form-group"}, 
-              React.createElement("label", {htmlFor: "dateTime"}, "Date of Observation"), 
-              React.createElement("input", {type: "date", className: "form-control", id: "dateTime", placeholder: "When did you observe it?"})
-            ), 
-            React.createElement("div", {className: "form-group"}, 
-              React.createElement("label", {htmlFor: "locationFound"}, "Location Found"), 
-              React.createElement("input", {type: "text", className: "form-control", id: "locationFound", placeholder: "Where did you find it?"})
-            ), 
-            React.createElement("div", {className: "form-group"}, 
-              React.createElement("label", {htmlFor: "locationFound"}, "Observation Notes"), 
-              React.createElement("textarea", {className: "form-control", id: "observationNotes", placeholder: "Some details of your find...", rows: "3"})
-            ), 
+  constructor(props){
+    super(props);
+    var observedSpecies = new models.Organism();
+     observedSpecies.set('speciesKey', props.speciesKey);
+     console.log('props.speciesKey', props.speciesKey);
 
-            React.createElement("div", {className: "form-group"}, 
-              React.createElement("label", {htmlFor: "exampleInputFile"}, "Picture Upload"), 
-              React.createElement("input", {type: "file", id: "exampleInputFile"}), 
-              React.createElement("p", {className: "help-block"}, "Upload your species image here.")
-            ), 
-            React.createElement("div", {className: "checkbox"}, 
-              React.createElement("label", null, 
-                React.createElement("input", {type: "checkbox"}), " Public?"
-              )
-            ), 
-            React.createElement("button", {type: "submit", className: "btn btn-default"}, "Submit")
+
+    observedSpecies.fetch().then(() => {
+      this.setState({observedSpecies: observedSpecies});
+      console.log('observedSpecies', observedSpecies);
+    });
+
+    this.state = {
+      observedSpecies: observedSpecies
+    }
+
+  }
+  render() {
+    console.log('os', this.state.observedSpecies);
+    return (
+        React.createElement(BaseLayout, null, 
+          React.createElement("div", {className: "container"}, 
+            React.createElement(ObservationForm, {observedSpecies: this.state.observedSpecies})
           )
         )
+      )
+    }
+  }
+
+  class ObservationForm extends React.Component{
+    constructor(props){
+      super(props);
+
+      this.state = {
+        observedSpecies: this.props.observedSpecies
+      }
+    }
+    componentWillReceiveProps(nextProps) {
+      this.setState({})
+    }
+    render() {
+      return (
+      React.createElement("form", {className: "col-sm-12"}, 
+        React.createElement("div", {className: "form-group"}, 
+          React.createElement("label", {htmlFor: "exampleInputFile"}, "Picture Upload"), 
+          React.createElement("input", {type: "file", id: "exampleInputFile"}), 
+          React.createElement("p", {className: "help-block"}, "Upload your species image here.")
+        ), 
+        React.createElement("div", {className: "form-group"}, 
+          React.createElement("label", {htmlFor: "speciesCommonName"}, "Common Name"), 
+          React.createElement("input", {type: "text", className: "form-control", id: "speciesCommonName", placeholder: "Species Common Name"})
+        ), 
+        React.createElement("div", {className: "form-group"}, 
+          React.createElement("label", {htmlFor: "speciesSciName"}, "Scientific Name"), 
+          React.createElement("input", {type: "text", className: "form-control", id: "speciesSciName", placeholder: "Species Scientific Name"})
+        ), 
+        React.createElement("div", {className: "form-group"}, 
+          React.createElement("label", {htmlFor: "dateTime"}, "Date of Observation"), 
+          React.createElement("input", {type: "date", className: "form-control", id: "dateTime", placeholder: "When did you observe it?"})
+        ), 
+        React.createElement("div", {className: "form-group"}, 
+          React.createElement("label", {htmlFor: "locationFound"}, "Location Found"), 
+          React.createElement("input", {type: "text", className: "form-control", id: "locationFound", placeholder: "Where did you find it?"})
+        ), 
+        React.createElement("div", {className: "form-group"}, 
+          React.createElement("label", {htmlFor: "locationFound"}, "Observation Notes"), 
+          React.createElement("textarea", {className: "form-control", id: "observationNotes", placeholder: "Some details of your find...", rows: "3"})
+        ), 
+
+
+        React.createElement("div", {className: "checkbox"}, 
+          React.createElement("label", null, 
+            React.createElement("input", {type: "checkbox"}), " Public?"
+          )
+        ), 
+        React.createElement("button", {type: "submit", className: "btn btn-default"}, "Submit")
       )
     )
   }
 }
 
-
 module.exports = {
   ObservationsAddEditContainer
 };
 
-},{"./layouts/baselayout.jsx":1,"react":176}],6:[function(require,module,exports){
+},{"../models/organism.js":12,"./layouts/baselayout.jsx":1,"react":176}],6:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -505,6 +545,7 @@ module.exports = {
 //Third Party Libraries
 //********************************
 var React = require('react');
+var _ = require('underscore');
 
 //********************************
 //Models, Utilities, Layouts
@@ -512,6 +553,7 @@ var React = require('react');
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var utility = require('../utilities.js');
 var models = require('../models/organism.js');
+
 //********************************
 //Find The Species You Observed
 //********************************
@@ -521,7 +563,9 @@ class ObservationSpeciesSearchContainer extends React.Component {
     var search = '';
     var organismCollection = new models.OrganismCollection();
 
-    this.handleInputSearch = this.handleInputSearch.bind(this);
+    this.handleInputSearch = _.debounce(this.handleInputSearch, 300).bind(this);
+
+
 
     this.state = {
       search: '',
@@ -533,21 +577,21 @@ class ObservationSpeciesSearchContainer extends React.Component {
     var collection = this.state.organismCollection;
     collection.searchTerm = data;
 
-    //console.log('hey', this.state.organismCollection);
-    this.state.organismCollection.fetch().done((response) => {
-      this.setState({results: response.results});
+      collection.fetch().done((response) => {
+      this.setState({organismCollection: collection});
     });
+
   }
   render() {
     return (
       React.createElement(BaseLayout, null, 
         React.createElement("div", {className: "container search-page"}, 
           React.createElement("div", {className: "row"}, 
-            React.createElement("div", {className: "getstarted col-sm-6 col-sm-offset-3 well"}, 
-              React.createElement("h3", null, "Hey, lets get started... search below for the name of what you observed. When you see the right one, click on the link and you can start to fill out the details of your observation."), 
-              React.createElement("h4", null, "If you can't find what you're looking for, just click the ", React.createElement("u", null, "Couldn't Find It"), " button to manually fill out your species form."), 
+            React.createElement("div", {className: "getstarted col-sm-10 col-sm-offset-1 well"}, 
+              React.createElement("h3", null, "Hey, lets get started... search below for the name of what you observed. When you see the right one, click on the ", React.createElement("u", null, "This is the one!"), " button and you can start to fill out the details of your observation."), 
+              React.createElement("h4", null, "If you can't find what you're looking for, it's okay! Just click the ", React.createElement("u", null, "Unable to Find Match"), " button to manually fill out your species form."), 
 
-              React.createElement("a", {href: "#observation/add/", type: "button", className: "btn btn-primary"}, "Couldn't Find It")
+              React.createElement("a", {href: "#observation/add/", type: "button", className: "btn btn-primary pull-right"}, "Unable to Find Match")
             ), 
             React.createElement("div", {className: "input-group col-sm-12 input-group-lg"}, 
 
@@ -556,7 +600,7 @@ class ObservationSpeciesSearchContainer extends React.Component {
             )
 
           ), 
-          React.createElement(PossibleSpeciesList, {availableSpecies: this.state.results})
+          React.createElement(PossibleSpeciesList, {availableSpecies: this.state.organismCollection})
         )
       )
     )
@@ -566,15 +610,17 @@ class ObservationSpeciesSearchContainer extends React.Component {
 class SpeciesInputForm extends React.Component {
   constructor(props) {
     super(props);
+    this.handleInputChange = this.handleInputChange.bind(this);
 
     this.state = {
       search: ''
     }
-    this.handleInputChange = this.handleInputChange.bind(this);
+
   }
   handleInputChange(e) {
     this.props.handleInputSearch(e.target.value);
   }
+
   render() {
     return (
         React.createElement("input", {onChange: this.handleInputChange, type: "text", className: "form-control", placeholder: "Species you observed..."})
@@ -585,26 +631,30 @@ class SpeciesInputForm extends React.Component {
 class PossibleSpeciesList extends React.Component {
   constructor(props) {
     super(props);
+    this.handleSpeciesClick = this.handleSpeciesClick.bind(this);
 
     this.state = {
      results: []
    }
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState({ results: nextProps.availableSpecies})
+  handleSpeciesClick(e) {
+    console.log(e.target.value);
   }
   render() {
     console.log('this', this.props.availableSpecies);
     var speciesList = this.props.availableSpecies.map((species) =>{
-      console.log('vn', species.vernacularNames.vernacularName);
+      //console.log('species', species);
       return (
-
-        React.createElement("tr", {key: species.key}, 
+        React.createElement("tr", {key: species.cid}, 
           React.createElement("td", null, 
-            species.species
+            species.get('species')
           ), 
           React.createElement("td", null, 
-            (species.vernacularNames.language == "eng" && species.vernacularNames.vernacularName) ? species.vernacularNames.vernacularName : species.species
+            species.getVernacularNames()
+          ), 
+          React.createElement("td", null, 
+            React.createElement("a", {onClick: this.handleSpeciesClick, href: "#observation/add/"+ species.get('speciesKey')+"/", 
+           type: "button", className: "btn"}, "This is the one!")
           )
         )
       )
@@ -615,7 +665,8 @@ class PossibleSpeciesList extends React.Component {
           React.createElement("thead", {className: "species-table"}, 
             React.createElement("tr", {href: ""}, 
               React.createElement("th", null, "Scientific Name"), 
-              React.createElement("th", null, "Common Name (Vernacular Name)")
+              React.createElement("th", null, "Common Name (Vernacular Name)"), 
+              React.createElement("th", null, "Found a Match?")
             )
           ), 
           React.createElement("tbody", null, 
@@ -627,6 +678,8 @@ class PossibleSpeciesList extends React.Component {
   }
 }
 
+//href={"#observation/" + species.get('speciesKey')+"/edit/"}
+
 //********************************
 //Exports
 //********************************
@@ -634,7 +687,7 @@ module.exports = {
   ObservationSpeciesSearchContainer
 };
 
-},{"../models/organism.js":12,"../utilities.js":16,"./layouts/baselayout.jsx":1,"react":176}],9:[function(require,module,exports){
+},{"../models/organism.js":12,"../utilities.js":16,"./layouts/baselayout.jsx":1,"react":176,"underscore":177}],9:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -827,11 +880,25 @@ $(function(){
 //Third Party Libraries
 //********************************
 var Backbone = require('backbone');
+var _ = require('underscore');
 
 //********************************
 //Models
 //********************************
 var Organism = Backbone.Model.extend({
+  idAttribute: 'speciesKey',
+  getVernacularNames: function () {
+    var vernacularNames = _.where(this.get('vernacularNames'), {language: "eng"});
+    //console.log('VN', this.get('vernacularNames'));
+    return _.pluck(vernacularNames, 'vernacularName').join(", ");
+  },
+  // getSpeciesDescription: function () {
+  //   var description = _.where(this.get('descriptions'), {language: "eng"});
+  //
+  //   return _.pluck(descriptions)
+  // },
+  urlRoot: 'https://api.gbif.org/v1/species/'
+
 
 });
 
@@ -848,6 +915,9 @@ var OrganismCollection = Backbone.Collection.extend({
 
     return url;
 
+  },
+  parse: function(data) {
+    return data.results;
   }
 });
 
@@ -859,7 +929,7 @@ module.exports = {
   OrganismCollection
 };
 
-},{"backbone":17}],13:[function(require,module,exports){
+},{"backbone":17,"underscore":177}],13:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1095,30 +1165,30 @@ var parse = require('./parse').parse;
 //********************************
 var AppRouter = Backbone.Router.extend({
   routes: {
-  //splash marketing page
-  '':'index',
-  //login page
-  ' login/':'login',
-  //sign up page
-  ' signup/':'signUp',
-  //new user info
-  ' userinfo/': 'userInfoAddViewEdit',
-  //view user info for public users
-  ' userinfo/:id/': 'userInfoAddViewEdit',
-  //main dashboard : recent/top obs, map, user ranks
-  ' observation/' : 'observationsDash',
-  //edit existing user observation (if user)
-  ' observation/:id/edit/' : 'observationsAddEdit',
-  //view all of a single user's observations
-  ' observation/:id/list/' : 'observationList',
-  //add new user observation
-  ' observation/add/' : 'observationsAddEdit',
-  //search for exact species before creating observation
-  ' observation/search/' : 'observationSearch',
-  //view all observation photos
-  ' observation/gallery/' : 'observationGallery',
-  //view all rankings in filterable fashion
-  ' observation/rankings/' : 'observationRankings'
+    //splash marketing page
+    '':'index',
+    //login page
+    'login/':'login',
+    //sign up page
+    'signup/':'signUp',
+    //new user info
+    'userinfo/': 'userInfoAddViewEdit',
+    //view user info for public users
+    'userinfo/:id/': 'userInfoAddViewEdit',
+    //main dashboard : recent/top obs, map, user ranks
+    'observation/' : 'observationsDash',
+    //edit existing user observation (if user)
+    'observation/:id/edit/' : 'observationsAddEdit',
+    //view all of a single user's observations
+    'observation/:id/list/' : 'observationList',
+    //add new user observation
+    'observation/add/(:speciesKey/)' : 'observationsAddWithSpeciesKey',
+    //search for exact species before creating observation
+    'observation/search/' : 'observationSearch',
+    //view all observation photos
+    'observation/gallery/' : 'observationGallery',
+    //view all rankings in filterable fashion
+    'observation/rankings/' : 'observationRankings'
 },
 initialize: function(){
   //Parse setup to set headers and configure API url
@@ -1178,11 +1248,14 @@ observationSearch: function() {
     document.getElementById('app')
   )
 },
-observationsAddEdit: function() {
+observationsAddEdit: function(id, speciesKey) {
   ReactDOM.render(
-    React.createElement(ObservationsAddEditContainer),
+    React.createElement(ObservationsAddEditContainer, {id: id, speciesKey: speciesKey}),
     document.getElementById('app')
   )
+},
+observationsAddWithSpeciesKey: function(speciesKey){
+  this.observationsAddEdit(null, speciesKey);
 },
 observationGallery: function() {
   ReactDOM.render(
