@@ -7,7 +7,8 @@ Adobe Experience Design CC Wireframing: https://xd.adobe.com/view/f8df1d07-c10c-
 Nature APP (to be Named)
 
 1.	WHAT THIS APP WILL DO:
-A web application that will allow users to create, track, and compare their natural world observations by adding notes regarding (species, their observations, images, etc. all tied to their account).
+
+* A web application that will allow users to create, track, and compare their natural world observations by adding notes regarding species, their observations, images, etc. all tied to their account. They will also get accessory information from the GBIF (Global Biodiversity Information Facility) API that can update hierarchal taxonomical structure, descriptions, scientific names, and discovery information that correlates to their findings when available.
 
 
 2.	USER STORIES:
