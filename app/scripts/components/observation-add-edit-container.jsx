@@ -51,7 +51,7 @@ class ObservationsAddEditContainer extends React.Component {
       </BaseLayout>
     )
   }
-}
+
 
 
 module.exports = {
