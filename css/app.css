@@ -5771,7 +5771,9 @@ img {
   background-repeat: no-repeat;
   background-size: cover; }
 
+.footer {
+  margin-top: 100px; }
+
 .quote {
   color: white; }
-
 /*# sourceMappingURL=app.css.map */
