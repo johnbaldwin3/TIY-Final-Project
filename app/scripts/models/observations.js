@@ -12,6 +12,6 @@ var parse = require('../parse');
 //Models & Collections
 //********************************
 
-var Observation = parse.ParseModel.extend({
-  defaults: 
-});
+// var Observation = parse.ParseModel.extend({
+//   defaults:
+// });
