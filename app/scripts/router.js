@@ -32,27 +32,27 @@ var AppRouter = Backbone.Router.extend({
   //splash marketing page
   '':'index',
   //login page
-  ' login/':'login',
+  'login/':'login',
   //sign up page
-  ' signup/':'signUp',
+  'signup/':'signUp',
   //new user info
-  ' userinfo/': 'userInfoAddViewEdit',
+  'userinfo/': 'userInfoAddViewEdit',
   //view user info for public users
-  ' userinfo/:id/': 'userInfoAddViewEdit',
+  'userinfo/:id/': 'userInfoAddViewEdit',
   //main dashboard : recent/top obs, map, user ranks
-  ' observation/' : 'observationsDash',
+  'observation/' : 'observationsDash',
   //edit existing user observation (if user)
-  ' observation/:id/edit/' : 'observationsAddEdit',
+  'observation/:id/edit/' : 'observationsAddEdit',
   //view all of a single user's observations
-  ' observation/:id/list/' : 'observationList',
+  'observation/:id/list/' : 'observationList',
   //add new user observation
-  ' observation/add/' : 'observationsAddEdit',
+  'observation/add/' : 'observationsAddEdit',
   //search for exact species before creating observation
-  ' observation/search/' : 'observationSearch',
+  'observation/search/' : 'observationSearch',
   //view all observation photos
-  ' observation/gallery/' : 'observationGallery',
+  'observation/gallery/' : 'observationGallery',
   //view all rankings in filterable fashion
-  ' observation/rankings/' : 'observationRankings'
+  'observation/rankings/' : 'observationRankings'
 },
 initialize: function(){
   //Parse setup to set headers and configure API url
