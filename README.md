@@ -21,7 +21,7 @@ From this screen, Charles will be able to select an individual observation from 
 
 *  Charles can also click on a user name (from rankings, or observation tiles) and view complete collection of that user’s uploaded observations.
 
-*  Charles can user the navigation bar to check out the photo gallery comprised of all photos from every user. Clicking on a photo will take Charles back to the details of that observation.
+*  Charles can use the navigation bar to check out the photo gallery comprised of all photos from every user. Clicking on a photo will take Charles back to the details of that observation.
 
 *  Charles will be able to create new observations tied to his account and upload a picture to each observation while sharing details about each observation he creates.
 The website will then reach out to the GBIF API and then backfill species information including scientific name, taxonomical hierarchy, and the date of first discovery and the name of the discovering person.
@@ -31,4 +31,4 @@ The website will then reach out to the GBIF API and then backfill species inform
 *  Charles may also view the rankings page where all badges, points, etc. maybe accessed. On this page, there will be a filterable field to rank users based on different criteria.
 Charles may edit his own personal profile at any given time as well, or view other user profiles.
 
-*  When Charles is done and feels like taking trip on the HMS Beagle, he can log out of his account if he wishes.
+*  When Charles is done and feels like a taking trip on the HMS Beagle to foreign lands, he can log out of his account if he wishes, and sign back in as an existing user when he returns.
