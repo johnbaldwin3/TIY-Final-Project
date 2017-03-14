@@ -48,7 +48,10 @@ class ObservationSpeciesSearchContainer extends React.Component {
         <div className="container search-page">
           <div className="row">
             <div className="getstarted col-sm-6 col-sm-offset-3 well">
-              <h4>Hey, lets get started... search below for the name of what you observed. When you see the right one, click on the link and you can start to fill out the details of your observation</h4>
+              <h3>Hey, lets get started... search below for the name of what you observed. When you see the right one, click on the link and you can start to fill out the details of your observation.</h3>
+              <h4>If you can't find what you're looking for, just click the <u>Couldn't Find It</u> button to manually fill out your species form.</h4>
+
+              <a href="#observation/add/" type="button" className="btn btn-primary">Couldn't Find It</a>
             </div>
             <div className="input-group col-sm-12 input-group-lg">
 
@@ -87,14 +90,19 @@ class PossibleSpeciesList extends React.Component {
   constructor(props) {
     super(props);
 
-
+    this.state = {
+     results: []
+   }
+  }
+  componentWillReceiveProps(nextProps) {
+    this.setState({ results: nextProps.availableSpecies})
   }
   render() {
     console.log('this', this.props.availableSpecies);
     var speciesList = this.props.availableSpecies.map((species) =>{
       return (
         <li key={species.key} className="list-group-item">
-          {species}
+          {species.species}
         </li>
       )
     });
@@ -108,7 +116,9 @@ class PossibleSpeciesList extends React.Component {
   }
 }
 
-
+//********************************
+//Exports
+//********************************
 module.exports = {
   ObservationSpeciesSearchContainer
 };

@@ -14,7 +14,7 @@ var LoginContainer = require('./components/login-container.jsx').LoginContainer;
 var SignupContainer = require('./components/signup-container.jsx').SignupContainer;
 var UserInfoContainer = require('./components/user-info-container.jsx').UserInfoContainer;
 var ObservationDashContainer = require('./components/observation-dash-container.jsx').ObservationDashContainer;
-var ObservationAddEditContainer = require('./components/observation-add-edit-container.jsx').ObservationAddEditContainer;
+var ObservationsAddEditContainer = require('./components/observation-add-edit-container.jsx').ObservationsAddEditContainer;
 var ObservationGalleryContainer = require('./components/observation-gallery.jsx').ObservationGalleryContainer;
 var ObservationSpeciesSearchContainer = require('./components/observation-search.jsx').ObservationSpeciesSearchContainer;
 
@@ -46,7 +46,7 @@ var AppRouter = Backbone.Router.extend({
   //view all of a single user's observations
   'observation/:id/list/':'observationList',
   //add new user observation
-  'observation/add/':'observationAddEdit',
+  'observation/add/':'observationsAddEdit',
   //search for exact species before creating observation
   'observation/search/':'observationSearch',
   //view all observation photos
@@ -106,15 +106,15 @@ observationsDash: function() {
     document.getElementById('app')
   )
 },
-observationsAddEdit: function() {
-  ReactDOM.render(
-    React.createElement(ObservationAddEditContainer),
-    document.getElementById('app')
-  )
-},
 observationSearch: function() {
   ReactDOM.render(
     React.createElement(ObservationSpeciesSearchContainer),
+    document.getElementById('app')
+  )
+},
+observationsAddEdit: function() {
+  ReactDOM.render(
+    React.createElement(ObservationsAddEditContainer),
     document.getElementById('app')
   )
 },
@@ -130,7 +130,10 @@ observationGallery: function() {
 
 //instantiate new router
 var appRouter = new AppRouter();
-//export router
+
+//********************************
+//Exports
+//********************************
 module.exports = {
   appRouter
 };

@@ -61,14 +61,10 @@ class BaseLayout extends React.Component {
   }
 }
 
-// function isActive (url) {
-//   return Backbone.history.fragment == url;
-// }
-//
-// function activeClass(url) {
-//   return isActive(url) ? 'active' : '';
-// }
 
+//********************************
+//Exports
+//********************************
 module.exports = {
   BaseLayout
 };

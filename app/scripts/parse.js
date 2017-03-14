@@ -119,7 +119,9 @@ var ParseCollection = Backbone.Collection.extend({
   },
 });
 
-
+//********************************
+//Exports
+//********************************
 module.exports = {
   parse,
   ParseModel,
