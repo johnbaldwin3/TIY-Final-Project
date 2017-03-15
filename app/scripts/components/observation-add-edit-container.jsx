@@ -81,37 +81,59 @@ class ObservationForm extends React.Component{
       locationOfObservation: '',
       taxonTree: '',
       observationNotes: '',
-      publicList: true
+      publicList: true,
+      lat: null,
+      lon: null,
+      latRef: null,
+      lonRef: null
 
     }
   }
   handlePicChange(e) {
     var file = e.target.files[0];
     this.setState({pic: file});
-    console.log(file);
+    console.log('file', file);
     // User file reader object to display preview
     var reader = new FileReader();
     reader.onloadend = ()=>{
-      ////////
+//********************************
+//http://danielhindrikes.se/web/get-coordinates-from-photo-with-javascript/
+//structure for EXIF so mewhat from above reference
+//********************************
+      var exif = EXIF.getData(file, () => {
+        var lat = EXIF.getTag(file, "GPSLatitude");
+        console.log('lat', lat);
+        var lon = EXIF.getTag(file, "GPSLongitude");
+        console.log('lon', lon);
 
-      var exif = EXIF.getData(file, function() {
-      //  return EXIF.getTag(this, "Orientation");
-      return this;
-      });
+        // this.forceUpdate();
 
-      console.log('exif', exif);
 
-     var lat = exif.GPSLatitude;
-     var lon = exif.GPSLongitude;
+      //console.log('exif', exif);
+
+     //var lat = EXIF.getTag(file, "GPSLatitude");
+     //console.log(this.state.lat, 'lat');
+     //var lon = exif.getTag(this, "GPSLongitude");
 
      //Convert coordinates to WGS84 decimal
-     var latRef = exif.GPSLatitudeRef || "N";
-     var lonRef = exif.GPSLongitudeRef || "W";
+     var latRef = EXIF.getTag(file, "GPSLatitudeRef") || "N";
+     var lonRef = EXIF.getTag(file, "GPSLongitudeRef") || "W";
+     //var latRef = exif.GPSLatitudeRef || "N";
+    //  var lonRef = exif.GPSLongitudeRef || "W";
+
      lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
      lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
 
-     console.log('lat,long', lat, lon, latRef);
+     this.setState(
+       {
+         lat: lat,
+         lon: lon
+       }
+     );
 
+     console.log('lat,long', lat, lon, latRef);
+    return this;
+    });
       //////////
       this.setState({preview: reader.result});
     }
@@ -128,8 +150,8 @@ class ObservationForm extends React.Component{
   }
   handleObservationDate(e) {
     var newDate = new Date(e.target.value);
-    console.log('datetype',typeof newDate);
-    console.log('date',newDate);
+    //console.log('datetype',typeof newDate);
+    //console.log('date',newDate);
     this.setState({observationDate: newDate.iso});
   }
   handleLocationChange(e) {
