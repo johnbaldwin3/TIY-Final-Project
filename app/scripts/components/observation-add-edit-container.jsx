@@ -17,7 +17,7 @@ class ObservationsAddEditContainer extends React.Component {
     super(props);
     var observedSpecies = new models.Organism();
      observedSpecies.set('speciesKey', props.speciesKey);
-     console.log('props.speciesKey', props.speciesKey);
+     //console.log('props.speciesKey', props.speciesKey);
 
 
     observedSpecies.fetch().then(() => {
@@ -42,19 +42,29 @@ class ObservationsAddEditContainer extends React.Component {
     }
   }
 
-  class ObservationForm extends React.Component{
-    constructor(props){
-      super(props);
+class ObservationForm extends React.Component{
+  constructor(props){
+    super(props);
+    console.log('props', this.props.observedSpecies);
 
-      this.state = {
-        observedSpecies: this.props.observedSpecies
-      }
+    this.state = {
+      observedSpecies: this.props.observedSpecies
     }
-    componentWillReceiveProps(nextProps) {
-      this.setState({})
-    }
-    render() {
-      return (
+  }
+    // componentWillReceiveProps(nextProps) {
+    //   console.log('nextProps', nextProps);
+    //   this.setState({observedSpecies: nextProps.observedSpecies});
+    // }
+  render() {
+    var kingdom = this.props.observedSpecies.get('kingdom');
+    var phylum = this.props.observedSpecies.get('phylum');
+    var classOf = this.props.observedSpecies.get('class');
+    var order = this.props.observedSpecies.get('order');
+    var family = this.props.observedSpecies.get('family');
+    var genus = this.props.observedSpecies.get('genus');
+    var speciesNameToSplit = this.props.observedSpecies.get('species');
+    //var species = speciesNameToSplit.split(" ");
+    return (
       <form className="col-sm-12">
         <div className="form-group">
           <label htmlFor="exampleInputFile">Picture Upload</label>
@@ -63,11 +73,17 @@ class ObservationsAddEditContainer extends React.Component {
         </div>
         <div className="form-group">
           <label htmlFor="speciesCommonName">Common Name</label>
-          <input type="text" className="form-control" id="speciesCommonName" placeholder="Species Common Name"/>
+          <input type="text" className="form-control" id="speciesCommonName" placeholder="Species Common Name" value={this.props.observedSpecies.get('vernacularName')}/>
         </div>
         <div className="form-group">
           <label htmlFor="speciesSciName">Scientific Name</label>
-          <input type="text" className="form-control" id="speciesSciName" placeholder="Species Scientific Name"/>
+          <input type="text" className="form-control" id="speciesSciName" placeholder="Species Scientific Name"
+          value={this.props.observedSpecies.get('canonicalName')}/>
+        </div>
+        <div className="form-group">
+          <label htmlFor="discovery">Originally Described By and First Description Date (example: Darwin, 1859)</label>
+          <input type="text" className="form-control" id="discovery" placeholder="Discovering Naturalist and Date of First Description"
+          value={this.props.observedSpecies.get('authorship')}/>
         </div>
         <div className="form-group">
           <label htmlFor="dateTime">Date of Observation</label>
@@ -75,7 +91,12 @@ class ObservationsAddEditContainer extends React.Component {
         </div>
         <div className="form-group">
           <label htmlFor="locationFound">Location Found</label>
-          <input type="text" className="form-control" id="locationFound" placeholder="Where did you find it?"/>
+          <input type="text" className="form-control" id="locationFound" placeholder="Where did you find it?" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="familyTree">Taxonimical Heirarchy (example: Kingdom - Phylum - Class - Order - Genus - Species) </label>
+          <input type="text" className="form-control" id="familyTree" placeholder="Species family tree... "
+            value={kingdom+' --> '+ phylum + ' --> '+ classOf + ' --> '+ order + ' --> '+ genus + ' --> '+ speciesNameToSplit }/>
         </div>
         <div className="form-group">
           <label htmlFor="locationFound">Observation Notes</label>
@@ -91,6 +112,7 @@ class ObservationsAddEditContainer extends React.Component {
         <button type="submit" className="btn btn-default">Submit</button>
       </form>
     )
+
   }
 }
 

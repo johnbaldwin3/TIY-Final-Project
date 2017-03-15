@@ -48,8 +48,8 @@ class BaseLayout extends React.Component {
         {this.props.children}
         <div className="container-fluid">
           <div className="row ">
-            <div className="footer navbar-fixed-bottom navbar-inverse">
-              <span>&copy; 2017 App Name Here</span>
+            <div className="footer navbar-bottom navbar-inverse">
+              <h4>&copy; 2017 App Name Here</h4>
               <ul className="nav navbar-nav navbar-right">
                 <li><a href="#">Back to Top</a></li>
               </ul>
