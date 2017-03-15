@@ -7,25 +7,30 @@ var $ = require('jquery');
 //********************************
 // Utilities
 //********************************
-var parse = require('../parse').parse;
+var parse = require('../parse');
 
 //********************************
 //Models
 //********************************
-var User = Backbone.Model.extend({
+var User = parse.ParseModel.extend({
   idAttribute: 'objectId',
-  urlRoot: function(){
-    return parse.base_api_url + '/users';
-  }
+  urlRoot: 'https://jb3-serve.herokuapp.com/users'
+
 }, {
   //login in method for existing users
   login: function(credentials, callback){
-    var url = parse.base_api_url + '/login?' + $.param(credentials);
+    var url = 'https://jb3-serve.herokuapp.com/login?' + $.param(credentials);
+
+    parse.parse.initialize();
+
     $.get(url).then(data => {
       var newUser = new User(data);
       User.store(newUser);
       callback(newUser);
     });
+
+  //  parse.parse.deinitialize();
+
   },
   //signup method for existing users
   signup: function(credentials){

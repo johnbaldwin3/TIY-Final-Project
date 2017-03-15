@@ -5,10 +5,12 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 
 var parse = {
-  base_api_url: '',
-  setup: function(config){
-    if(config.base_api_url){
-      this.base_api_url = config.base_api_url;
+  serverURL: '',
+  initialize: function(config){
+    config = config || {};
+
+    if(config.serverURL){
+      this.serverURL = config.serverURL;
     }
 
     $.ajaxSetup({
@@ -17,12 +19,22 @@ var parse = {
         xhr.setRequestHeader("X-Parse-REST-API-Key", "sleeper");
 
         if(config.sessionId){
-          xhr.setRequestHeader("X-Parse-Session-Token", sessionId);
+          xhr.setRequestHeader("X-Parse-Session-Token", config.sessionId);
         }
+      }
+    });
+  },
+  deinitialize: function(){
+    $.ajaxSetup({
+      beforeSend: function(xhr){
+        xhr.setRequestHeader("X-Parse-Application-Id", null);
+        xhr.setRequestHeader("X-Parse-REST-API-Key", null);
+        xhr.setRequestHeader("X-Parse-Session-Token", null);
       }
     });
   }
 }
+
 var ParseModel = Backbone.Model.extend({
   idAttribute: 'objectId',
   sync: function(){
@@ -73,17 +85,6 @@ var ParseCollection = Backbone.Collection.extend({
       };
     }
 
-    // // Check if the field has a search option set
-    // if(field.indexOf('$') !== -1){
-    //   var search = field.split('$');
-    //   field = search[0];
-    //   var comparison = '$' + search[1];
-    //
-    //   var clause = {};
-    //   clause[comparison] = value;
-    //   value = clause;
-    // }
-
     this.whereClause[field] = value;
 
     return this;
@@ -119,11 +120,18 @@ var ParseCollection = Backbone.Collection.extend({
   },
 });
 
+var ParseFile = ParseModel.extend({
+  urlRoot: function(){
+    return 'https://jb3-serve.herokuapp.com/files/' + this.get('name');
+  }
+});
+
 //********************************
 //Exports
 //********************************
 module.exports = {
   parse,
   ParseModel,
-  ParseCollection
+  ParseCollection,
+  ParseFile
 };

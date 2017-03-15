@@ -21,7 +21,7 @@ var ObservationSpeciesSearchContainer = require('./components/observation-search
 //********************************
 //Models and Utilities
 //********************************
-var User = require('./models/user.js').User;
+//var User = require('./models/user.js').User;
 var parse = require('./parse').parse;
 
 //********************************
@@ -54,27 +54,27 @@ var AppRouter = Backbone.Router.extend({
     //view all rankings in filterable fashion
     'observation/rankings/' : 'observationRankings'
 },
-initialize: function(){
-  //Parse setup to set headers and configure API url
-  parse.setup({
-    base_api_url: 'https://jb3-serve.herokuapp.com'
-  });
-},
-execute: function(callback, args, name) {
-  //check to see if user is logged in
-  //if user is not logged in, go to index
-  var user = User.current();
-  if (!user && name != 'login') {
-    this.navigate('', {trigger: true});
-    return false;
-  }
-  //if user is logged in, proceed to observation/ url
-  if(user && name == 'login'){
-    this.navigate('observation/', {trigger: true});
-    return false;
-  }
-
-  return Backbone.Router.prototype.execute.apply(this, arguments);
+ initialize: function(){
+//   //Parse setup to set headers and configure API url
+//   parse.setup({
+//     base_api_url: 'https://jb3-serve.herokuapp.com'
+//   });
+// },
+// execute: function(callback, args, name) {
+//   //check to see if user is logged in
+//   //if user is not logged in, go to index
+//   var user = User.current();
+//   if (!user && name != 'login') {
+//     this.navigate('', {trigger: true});
+//     return false;
+//   }
+//   //if user is logged in, proceed to observation/ url
+//   if(user && name == 'login'){
+//     this.navigate('observation/', {trigger: true});
+//     return false;
+//   }
+//
+//   return Backbone.Router.prototype.execute.apply(this, arguments);
   },
 index: function() {
   ReactDOM.render(
