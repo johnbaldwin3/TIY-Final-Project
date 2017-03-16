@@ -19,7 +19,17 @@ var Organism = Backbone.Model.extend({
   //
   //   return _.pluck(descriptions)
   // },
-  urlRoot: 'https://api.gbif.org/v1/species/'
+  urlRoot: 'https://api.gbif.org/v1/species/',
+  getTaxonTree() {
+    var kingdom = this.get('kingdom');
+    var phylum = this.get('phylum');
+    var classOf = this.get('class');
+    var order = this.get('order');
+    var family = this.get('family');
+    var genus = this.get('genus');
+    var speciesNameToSplit = this.get('species');
+    return (kingdom+' --> '+ phylum + ' --> '+ classOf + ' --> '+ order + ' --> '+ genus + ' --> '+ speciesNameToSplit);
+  }
 
 
 });

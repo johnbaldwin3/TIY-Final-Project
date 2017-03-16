@@ -26,7 +26,8 @@ var Observation = parse.ParseModel.extend({
       }
     )
   },
-  urlRoot: 'https://jb3-serve.herokuapp.com/classes/Observations/'
+  urlRoot: 'https://jb3-serve.herokuapp.com/classes/Observations/',
+  
 });
 
 var ObservationCollection = parse.ParseCollection.extend({
