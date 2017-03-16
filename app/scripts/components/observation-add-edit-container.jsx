@@ -21,6 +21,9 @@ class ObservationsAddEditContainer extends React.Component {
     super(props);
     var observedSpecies = new models.Organism();
     var observation = new Observation();
+
+    this.createNewObservation = this.createNewObservation.bind(this);
+
     observedSpecies.set('speciesKey', props.speciesKey);
 //hey if this comp - if this,props.id
     observedSpecies.fetch().then(() => {
@@ -30,9 +33,7 @@ class ObservationsAddEditContainer extends React.Component {
         originalDiscoveryInfo: observedSpecies.get("authorship"),
         taxonTree: observedSpecies.getTaxonTree()
       });
-
       this.setState({observation: observation});
-      //console.log('observedSpecies', observedSpecies);
 
     });
 
@@ -43,20 +44,13 @@ class ObservationsAddEditContainer extends React.Component {
 
   }
   createNewObservation(data) {
-    var pic = this.state.pic;
-    var fileUpload = new ParseFile(pic);
-    console.log('fu', fileUpload);
-    fileUpload.save({}, {
-      data: pic
-    }).then((response)=>{
-      var imageUrl = response.url;
-
-      console.log('observation1', observation);
-      observation.save().then(function(){
+    var observation = this.state.observation;
+    observation.set(data)
+    observation.save().then(function(){
         console.log('observation', observation);
         // Backbone.history.navigate('detail/', {trigger: true});
       });
-    });
+
   }
   render() {
     //console.log('os', this.state.observedSpecies);
@@ -73,7 +67,6 @@ class ObservationsAddEditContainer extends React.Component {
 class ObservationForm extends React.Component{
   constructor(props){
     super(props);
-    console.log('props', this.props.observedSpecies);
 
     //binding this for methods
     this.handlePicChange = this.handlePicChange.bind(this);
@@ -102,35 +95,40 @@ class ObservationForm extends React.Component{
   }
   componentWillReceiveProps(nextProps) {
     var newState = $.extend({}, this.state, nextProps.observation.toJSON());
-
     this.setState(newState);
   }
   handlePicChange(e) {
-    var file = e.target.files[0];
-    this.setState({pic: file});
-    console.log('file', file);
-    // User file reader object to display preview
-    var reader = new FileReader();
-    reader.onloadend = ()=>{
     //********************************
     //http://danielhindrikes.se/web/get-coordinates-from-photo-with-javascript/
     //structure for EXIF so mewhat from above reference
     //********************************
+    var file = e.target.files[0];
+    this.setState({
+      pic: file,
+      //name: file.name
+    });
+    console.log('file', file);
+
+    // User file reader object to display preview
+    var reader = new FileReader();
+    reader.onloadend = ()=>{
+
       var exif = EXIF.getData(file, () => {
       var lat = EXIF.getTag(file, "GPSLatitude");
-      //console.log('lat', lat);
       var lon = EXIF.getTag(file, "GPSLongitude");
-      //console.log('lon', lon);
-
       //Convert coordinates to WGS84 decimal
       var latRef = EXIF.getTag(file, "GPSLatitudeRef") || "N";
       var lonRef = EXIF.getTag(file, "GPSLongitudeRef") || "W";
-
       lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
       lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
 
       this.setState(
        {
+        locationOfObservation : {
+          "__type": "GeoPoint",
+          "latitude": lat,
+          "longitude": lon
+        },
          lat: lat,
          lon: lon,
          latRef: latRef,
@@ -139,7 +137,6 @@ class ObservationForm extends React.Component{
      );
      return this;
     });
-
     this.setState({preview: reader.result});
     }
     reader.readAsDataURL(file);
@@ -155,9 +152,12 @@ class ObservationForm extends React.Component{
   }
   handleObservationDate(e) {
     var newDate = new Date(e.target.value);
-    //console.log('datetype',typeof newDate);
-    //console.log('date',newDate);
-    this.setState({observationDate: newDate.iso});
+
+    var dateParse = {
+      "__type" : "Date",
+      "iso" : newDate
+    }
+    this.setState({observationDate: dateParse});
   }
   handleLocationChange(e) {
     this.setState({locationOfObservation: e.target.value});
@@ -181,17 +181,31 @@ class ObservationForm extends React.Component{
   handleObservationSubmit(e) {
     e.preventDefault();
     // 1. we need to upload the image
-    this.props.action(this.state)
-
+    var pic = this.state.pic;
+    var fileUpload = new ParseFile(pic);
+    console.log('fu', fileUpload);
+    fileUpload.save({}, {
+      data: pic
+    }).then((response)=>{
+      var imageUrl = response.url;
+      var formData = $.extend({}, this.state);
+      formData.pic = {
+        name: pic.name,
+        url: imageUrl
+      };
+      delete formData.preview;
+    this.props.action(formData)
+    });
   }
   render() {
 
     return (
       <form onSubmit={this.handleObservationSubmit} className="col-sm-10">
+        <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
         <div className="row">
           <div className="form-group col-sm-4">
-            <label htmlFor="exampleInputFile">Picture Upload</label>
-            <input onChange={this.handlePicChange} type="file" id="exampleInputFile"/>
+            <label htmlFor="image">Picture Upload</label>
+            <input onChange={this.handlePicChange} name="image" type="file" id="image" filename={this.state.image}/>
             <p className="help-block">Upload your species image here.</p>
           </div>
           <div className="media col-sm-5">
@@ -204,6 +218,7 @@ class ObservationForm extends React.Component{
           </div>
 
         </div>
+        <div className="well"><h4>Step Two: Fill in the remaining info!</h4></div>
         <div className="form-group">
           <label htmlFor="speciesCommonName">Common Name</label>
           <input onChange={this.handleCommonName} type="text" className="form-control" id="speciesCommonName" placeholder="Species Common Name" value={this.state.commonName}/>
@@ -216,7 +231,7 @@ class ObservationForm extends React.Component{
         <div className="form-group">
           <label htmlFor="discovery">Originally Described By and First Description Date (example: Darwin, 1859)</label>
           <input onChange={this.handleDiscovery} type="text" className="form-control" id="discovery" placeholder="Discovering Naturalist and Date of First Description"
-          value={this.state.authorship}/>
+          value={this.state.originalDiscoveryInfo}/>
         </div>
         <div className="form-group">
           <label htmlFor="dateTime">Date of Observation</label>
@@ -232,7 +247,7 @@ class ObservationForm extends React.Component{
             value={ this.state.taxonTree }/>
         </div>
         <div className="form-group">
-          <label htmlFor="locationFound">Observation Notes</label>
+          <label htmlFor="observationNotes">Observation Notes</label>
           <textarea onChange={this.handleObservationNotes} className="form-control" id="observationNotes" placeholder="Some details of your find..." rows="3" />
         </div>
 

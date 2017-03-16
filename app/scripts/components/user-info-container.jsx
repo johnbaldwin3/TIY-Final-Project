@@ -12,14 +12,14 @@ var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var UserProfile = require('../models/userProfile.js').UserProfile;
 
 //********************************
-//Individual Observation / Add / Edit / View
+//User Profile Add / Edit / View
 //********************************
 class UserInfoContainer extends React.Component {
   constructor(props) {
     super(props);
     var userProfile = new UserProfile();
     var currentUser = User.current();
-    
+
     this.state = {
       userProfile: userProfile,
       currentUser: currentUser
@@ -29,7 +29,7 @@ class UserInfoContainer extends React.Component {
     console.log('data', data);
     this.state.userProfile.create(data, {success: () => {
       this.setState({userProfile: this.state})
-    }})
+    }});
   }
   render() {
 
