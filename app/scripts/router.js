@@ -5,6 +5,10 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var Backbone = require('backbone');
 
+//********************************
+//Models, Utilities, Layouts
+//********************************
+var User = require('./models/user').User;
 
 //********************************
 //Controllers
@@ -56,6 +60,21 @@ var AppRouter = Backbone.Router.extend({
 },
  initialize: function(){
 
+},
+execute: function(callback, args, name) {
+      var user = User.current();
+      
+      if (!user && name != 'login') {
+        this.navigate('', {trigger: true});
+        return false;
+      }
+
+      if(user && name == 'login'){
+        this.navigate('#observation/', {trigger: true});
+        return false;
+      }
+
+      return Backbone.Router.prototype.execute.apply(this, arguments);
   },
 index: function() {
   ReactDOM.render(
