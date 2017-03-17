@@ -43,9 +43,14 @@ var User = parse.ParseModel.extend({
     localStorage.setItem('user', JSON.stringify(user.toJSON()));
   },
   //logout function *Thanks Andrea*
-  logout: function(user) {
-    delete localStorage.user;
-    Backbone.history.navigate('', {trigger: true});
+  logout: function(callback) {
+    var url = 'https://jb3-serve.herokuapp.com/logout';
+    parse.parse.initialize();
+
+    $.post(url).then(data => {
+      localStorage.removeItem('user');
+      callback();
+    });
   },
   //get the current user at any given time
   current: function(){

@@ -9,6 +9,7 @@ var React = require('react');
 //call in base layout
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var ObservationCollection = require('../models/observations.js').ObservationCollection;
+var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
 
 //********************************
 //Observation Dashboard - Main App Screen
@@ -18,7 +19,7 @@ class ObservationDashContainer extends React.Component {
     super(props);
 
     var observationCollection = new ObservationCollection();
-
+    
     observationCollection.fetch().then(()=> {
       this.setState({observationCollection: observationCollection});
       console.log(observationCollection);

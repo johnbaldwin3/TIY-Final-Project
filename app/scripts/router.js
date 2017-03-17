@@ -37,6 +37,8 @@ var AppRouter = Backbone.Router.extend({
     '':'index',
     //login page
     'login/':'login',
+
+    'logout/':'logout',
     //sign up page
     'signup/':'signUp',
     //new user info
@@ -61,21 +63,25 @@ var AppRouter = Backbone.Router.extend({
  initialize: function(){
 
 },
-// execute: function(callback, args, name) {
-//   var user = User.current();
-//
-//   if (!user && name != 'login') {
-//     this.navigate('', {trigger: true});
-//     return false;
-//   }
-//
-//   if(user && name == 'login'){
-//     this.navigate('#observation/', {trigger: true});
-//     return false;
-//   }
-//
-//   return Backbone.Router.prototype.execute.apply(this, arguments);
-// },
+execute: function(callback, args, name) {
+  var user = User.current();
+
+  if(!user){
+    if(['login', 'index'].indexOf(name) === -1){
+      this.navigate('', {trigger: true});
+      return false;
+    }
+
+  } else {
+
+    if(['login', 'signup',].indexOf(name)!== -1){
+      this.navigate('#observation/', {trigger: true});
+      return false;
+      }
+  }
+
+  return Backbone.Router.prototype.execute.apply(this, arguments);
+},
 index: function() {
   ReactDOM.render(
     React.createElement(MarketingContainer),
@@ -87,6 +93,11 @@ login: function() {
     React.createElement(LoginContainer),
     document.getElementById('app')
   )
+},
+logout: function() {
+  User.logout(()=> {
+    this.navigate('', {trigger: true})
+  });
 },
 signUp: function() {
   ReactDOM.render(

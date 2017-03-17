@@ -41,7 +41,7 @@ class BaseLayout extends React.Component {
                 <li><a href="#">Observation Detail</a></li>
               </ul>
               <ul className="nav navbar-nav navbar-right">
-                <li><button  onClick={User.logout} type="button" className="btn btn-danger">Log Out</button></li>
+                <li><a  href="#logout/" type="button" className="btn btn-danger">Log Out</a></li>
               </ul>
             </div>
           </div>

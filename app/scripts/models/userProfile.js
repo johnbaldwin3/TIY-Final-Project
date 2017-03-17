@@ -28,10 +28,16 @@ var UserProfile = parse.ParseModel.extend({
   urlRoot: 'https://jb3-serve.herokuapp.com/classes/UserProfiles/'
 });
 
+var UserProfileCollection = parse.ParseCollection.extend({
+  model: UserProfile,
+  url: 'https://jb3-serve.herokuapp.com/classes/UserProfiles/'
+});
+
 
 //********************************
 //Exports
 //********************************
 module.exports = {
-  UserProfile
+  UserProfile,
+  UserProfileCollection
 };

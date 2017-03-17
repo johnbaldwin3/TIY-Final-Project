@@ -52,7 +52,6 @@ class ObservationsAddEditContainer extends React.Component {
     observation.setPointer("observer", '_User', User.current().get("objectId"));
 
     observation.save().then(function(){
-
      Backbone.history.navigate('observation/', {trigger: true});
 
     });
@@ -137,7 +136,7 @@ class ObservationForm extends React.Component{
       var elevationMeters = (elevation.numerator / elevation.denominator).toFixed(4) ;
       //elevation converted to feet
       var elevationFeet = (elevationMeters * 3.2804).toFixed(4);
-      //set state of picture exif data 
+      //set state of picture exif data
       this.setState(
        {
         locationOfObservation : {

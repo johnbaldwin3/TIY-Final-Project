@@ -2,7 +2,6 @@
 //Third Party Libraries
 //********************************
 var React = require('react');
-var User = require('../models/user.js').User;
 var $ = require('jquery');
 var Backbone = require('backbone');
 
@@ -12,6 +11,7 @@ var Backbone = require('backbone');
 var ParseFile = require('../parse.js').ParseFile;
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var UserProfile = require('../models/userProfile.js').UserProfile;
+var User = require('../models/user.js').User;
 
 //********************************
 //User Profile Add / Edit / View
