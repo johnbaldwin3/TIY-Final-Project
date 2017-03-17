@@ -4,6 +4,7 @@
 var React = require('react');
 var EXIF = require('exif-js');
 var $ = require('jquery');
+var Backbone = require('backbone');
 
 //********************************
 //Models, Utilities, Layouts
@@ -31,7 +32,8 @@ class ObservationsAddEditContainer extends React.Component {
         commonName: observedSpecies.get("vernacularName"),
         scientificName: observedSpecies.get("canonicalName"),
         originalDiscoveryInfo: observedSpecies.get("authorship"),
-        taxonTree: observedSpecies.getTaxonTree()
+        taxonTree: observedSpecies.getTaxonTree(),
+
       });
       this.setState({observation: observation});
 
@@ -47,10 +49,10 @@ class ObservationsAddEditContainer extends React.Component {
     var observation = this.state.observation;
     observation.set(data)
     observation.save().then(function(){
-        console.log('observation', observation);
-        // Backbone.history.navigate('detail/', {trigger: true});
-      });
+     Backbone.history.navigate('observation/', {trigger: true});
 
+    });
+    //Backbone.history.navigate('observation/', {trigger: true});
   }
   render() {
     //console.log('os', this.state.observedSpecies);
@@ -77,6 +79,7 @@ class ObservationForm extends React.Component{
     this.handleLocationChange = this.handleLocationChange.bind(this);
     this.handleSpeciesTree = this.handleSpeciesTree.bind(this);
     this.handlePublicOrPrivate = this.handlePublicOrPrivate.bind(this);
+    this.handleObservationNotes = this.handleObservationNotes.bind(this);
     this.handleObservationSubmit = this.handleObservationSubmit.bind(this);
 
     this.state = $.extend({}, {

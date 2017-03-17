@@ -3,6 +3,8 @@
 //********************************
 var React = require('react');
 var User = require('../models/user.js').User;
+var $ = require('jquery');
+var Backbone = require('backbone');
 
 //********************************
 //Models, Utilities, Layouts
@@ -20,16 +22,24 @@ class UserInfoContainer extends React.Component {
     var userProfile = new UserProfile();
     var currentUser = User.current();
 
+    this.createUserProfile = this.createUserProfile.bind(this);
+
     this.state = {
       userProfile: userProfile,
       currentUser: currentUser
     }
   }
   createUserProfile(data) {
-    console.log('data', data);
-    this.state.userProfile.create(data, {success: () => {
-      this.setState({userProfile: this.state})
-    }});
+    var userProfile = this.state.userProfile;
+    userProfile.set(data)
+    userProfile.save().then(function(){
+     Backbone.history.navigate('observation/', {trigger: true});
+
+    });
+    // console.log('data', data);
+    // this.state.userProfile.create(data, {success: () => {
+    //   this.setState({userProfile: this.state})
+    // }});
   }
   render() {
 
@@ -90,7 +100,13 @@ class UserProfileForm extends React.Component {
   }
   handleBirthdayChange(e) {
     var newDate = new Date(e.target.value);
-    this.setState({birthday: newDate.iso});
+
+    var dateParse = {
+      "__type" : "Date",
+      "iso" : newDate
+    }
+    this.setState({birthday: dateParse});
+
   }
   handleUserBioInfo(e) {
     console.log(e.target.value);
@@ -101,8 +117,23 @@ class UserProfileForm extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
+    var pic = this.state.pic;
+    var fileUpload = new ParseFile(pic);
 
-    this.props.action(this.state);
+    console.log('fu', fileUpload);
+
+    fileUpload.save({}, {
+      data: pic
+    }).then((response)=>{
+      var imageUrl = response.url;
+      var formData = $.extend({}, this.state);
+      formData.pic = {
+        name: pic.name,
+        url: imageUrl
+      };
+      delete formData.preview;
+      this.props.action(formData);
+    });
   }
   render() {
     return(
@@ -119,7 +150,7 @@ class UserProfileForm extends React.Component {
         </div>
         <div className="form-group col-sm-6">
           <label htmlFor="userName">Your Nickname or Real Name</label>
-          <input  onChange={this.handleUserName} type="text" className="form-control" id="userName" placeholder="Your Name Here"/>
+          <input  onChange={this.handleUserNameChange} type="text" className="form-control" id="userName" placeholder="Your Name Here"/>
         </div>
         <div className="row">
 
