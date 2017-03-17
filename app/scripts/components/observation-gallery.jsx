@@ -8,6 +8,7 @@ var React = require('react');
 //********************************
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var ObservationCollection = require('../models/observations.js').ObservationCollection;
+//var User = require('../models/user.js').User;
 
 //********************************
 //Observation Gallery (Photos Gallery)
@@ -17,7 +18,7 @@ class ObservationGalleryContainer extends React.Component {
     super(props);
     var observationCollection = new ObservationCollection();
 
-    //currentRecipe.set('objectId', props.id);
+    //currentCollection.set('objectId', props.id);
     observationCollection.fetch().then(()=> {
       this.setState({observationCollection: observationCollection});
       console.log(observationCollection);
@@ -43,9 +44,9 @@ class GalleryListings extends React.Component {
 
   }
   render() {
-    console.log('tpoc', this.props.observationCollection);
+    //console.log('tpoc', this.props.observationCollection);
     var obsGallery = this.props.observationCollection.map((obsPics)=> {
-      console.log('obs', obsPics);
+      //console.log('obs', obsPics);
       return (
 
           <div className="col-sm-6 col-md-4">

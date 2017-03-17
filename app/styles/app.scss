@@ -31,6 +31,17 @@ img {
   color: white;
 }
 
+.thumbnail {
+  display: flex;
+  flex-wrap: wrap;
+  height: 460px;
+  //flex-wrap: wrap;
+  img{
+    max-height: 300px;
+    overflow: hidden;
+  }
+
+}
 // .sizer img {
 //   max-height: 100px;
 //   max-width: 100px;

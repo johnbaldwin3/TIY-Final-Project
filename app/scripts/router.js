@@ -44,7 +44,7 @@ var AppRouter = Backbone.Router.extend({
     //view user info for public users
     'userinfo/:id/': 'userInfoAddViewEdit',
     //main dashboard : recent/top obs, map, user ranks
-    'observation/' : 'observationsDash',
+    'observation/': 'observationsDash',
     //edit existing user observation (if user)
     'observation/:id/edit/' : 'observationsAddEdit',
     //view all of a single user's observations
@@ -61,21 +61,21 @@ var AppRouter = Backbone.Router.extend({
  initialize: function(){
 
 },
-execute: function(callback, args, name) {
-      var user = User.current();
-      
-      if (!user && name != 'login') {
-        this.navigate('', {trigger: true});
-        return false;
-      }
-
-      if(user && name == 'login'){
-        this.navigate('#observation/', {trigger: true});
-        return false;
-      }
-
-      return Backbone.Router.prototype.execute.apply(this, arguments);
-  },
+// execute: function(callback, args, name) {
+//   var user = User.current();
+//
+//   if (!user && name != 'login') {
+//     this.navigate('', {trigger: true});
+//     return false;
+//   }
+//
+//   if(user && name == 'login'){
+//     this.navigate('#observation/', {trigger: true});
+//     return false;
+//   }
+//
+//   return Backbone.Router.prototype.execute.apply(this, arguments);
+// },
 index: function() {
   ReactDOM.render(
     React.createElement(MarketingContainer),

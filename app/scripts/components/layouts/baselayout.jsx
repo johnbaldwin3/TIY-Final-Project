@@ -5,9 +5,10 @@ var React = require('react');
 var Backbone = require('backbone');
 
 //********************************
-//Utilities
+//Models, Utilities
 //********************************
 var utility = require('../../utilities.js');
+var User = require('../../models/user.js').User;
 
 //********************************
 //BaseLayout for all main app screens
@@ -40,7 +41,7 @@ class BaseLayout extends React.Component {
                 <li><a href="#">Observation Detail</a></li>
               </ul>
               <ul className="nav navbar-nav navbar-right">
-                <li><a type="button" className="btn btn-danger" href="#">Log Out</a></li>
+                <li><button  onClick={User.logout} type="button" className="btn btn-danger">Log Out</button></li>
               </ul>
             </div>
           </div>

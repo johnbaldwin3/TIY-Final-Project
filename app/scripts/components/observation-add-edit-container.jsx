@@ -13,6 +13,7 @@ var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var models = require('../models/organism.js');
 var ParseFile = require('../parse.js').ParseFile;
 var Observation = require('../models/observations.js').Observation;
+var User = require('../models/user.js').User;
 
 //********************************
 //Individual Observation / Add / Edit / View
@@ -47,15 +48,16 @@ class ObservationsAddEditContainer extends React.Component {
   }
   createNewObservation(data) {
     var observation = this.state.observation;
-    observation.set(data)
+    observation.set(data);
+    observation.setPointer("observer", '_User', User.current().get("objectId"));
+
     observation.save().then(function(){
+
      Backbone.history.navigate('observation/', {trigger: true});
 
     });
-    //Backbone.history.navigate('observation/', {trigger: true});
   }
   render() {
-    //console.log('os', this.state.observedSpecies);
     return (
         <BaseLayout>
           <div className="container">
@@ -81,9 +83,10 @@ class ObservationForm extends React.Component{
     this.handlePublicOrPrivate = this.handlePublicOrPrivate.bind(this);
     this.handleObservationNotes = this.handleObservationNotes.bind(this);
     this.handleObservationSubmit = this.handleObservationSubmit.bind(this);
+    this.handleLocationChange = this.handleLocationChange.bind(this);
 
+    //extending state to mash up with observationCollection
     this.state = $.extend({}, {
-
       pic: null,
       preview: null,
       observationDate: new Date(),
@@ -92,7 +95,9 @@ class ObservationForm extends React.Component{
       lat: null,
       lon: null,
       latRef: null,
-      lonRef: null
+      lonRef: null,
+      elevationFoundMeters: null,
+      elevationFoundFeet: null,
 
     }, this.props.observation.toJSON() );
   }
@@ -101,6 +106,7 @@ class ObservationForm extends React.Component{
     this.setState(newState);
   }
   handlePicChange(e) {
+    //********************************
     //********************************
     //http://danielhindrikes.se/web/get-coordinates-from-photo-with-javascript/
     //structure for EXIF so mewhat from above reference
@@ -111,11 +117,9 @@ class ObservationForm extends React.Component{
       //name: file.name
     });
     console.log('file', file);
-
     // User file reader object to display preview
     var reader = new FileReader();
     reader.onloadend = ()=>{
-
       var exif = EXIF.getData(file, () => {
       var lat = EXIF.getTag(file, "GPSLatitude");
       var lon = EXIF.getTag(file, "GPSLongitude");
@@ -124,7 +128,16 @@ class ObservationForm extends React.Component{
       var lonRef = EXIF.getTag(file, "GPSLongitudeRef") || "W";
       lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
       lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
+      //********************************
+      //********************************
 
+      //get elevation data (given in meters)
+      var elevation = EXIF.getTag(file, "GPSAltitude");
+      //elevation converted to meters (num/denom)
+      var elevationMeters = (elevation.numerator / elevation.denominator).toFixed(4) ;
+      //elevation converted to feet
+      var elevationFeet = (elevationMeters * 3.2804).toFixed(4);
+      //set state of picture exif data 
       this.setState(
        {
         locationOfObservation : {
@@ -135,7 +148,10 @@ class ObservationForm extends React.Component{
          lat: lat,
          lon: lon,
          latRef: latRef,
-         lonRef: lonRef
+         lonRef: lonRef,
+         elevationFoundFeet: elevationFeet,
+         elevationFoundMeters: elevationMeters,
+
        }
      );
      return this;
@@ -163,7 +179,13 @@ class ObservationForm extends React.Component{
     this.setState({observationDate: dateParse});
   }
   handleLocationChange(e) {
-    this.setState({locationOfObservation: e.target.value});
+   this.setState({locationOfObservation: e.target.value});
+  }
+  handleElevationFeetChange(e) {
+    this.setState({elevationFoundFeet: e.target.value});
+  }
+  handleElevationMetersChange(e) {
+    this.setState({elevationFoundMetersFound: e.target.value});
   }
   handleSpeciesTree(e) {
     this.setState({taxonTree: e.target.value});
@@ -243,6 +265,14 @@ class ObservationForm extends React.Component{
         <div className="form-group">
           <label htmlFor="locationFound">Location Found</label>
           <input onChange={this.handleLocationChange} type="text" className="form-control" id="locationFound" placeholder="Where did you find it?" value={(this.state.lat + " " + this.state.latRef ) +", "+(this.state.lon + " " + this.state.lonRef)}/>
+        </div>
+        <div className="form-group col-sm-6">
+          <label htmlFor="elevationFeetFound">Elevation of Observation (Feet) </label>
+          <input onChange={this.handleElevationFeetChange} type="text" className="form-control" id="elevationFeetFound" placeholder="Elevation of your find (ft)..." value={this.state.elevationFoundFeet + " feet"}/>
+        </div>
+        <div className="form-group col-sm-6">
+          <label htmlFor="elevationMetersFound">Elevation of Observation (Meters)</label>
+          <input onChange={this.handleElevationMetersChange} type="text" className="form-control" id="elevationMetersFound" placeholder="Elevation of your find (m)..." value={this.state.elevationFoundMeters + " meters"}/>
         </div>
         <div className="form-group">
           <label htmlFor="familyTree">Taxonimical Heirarchy (example: Kingdom - Phylum - Class - Order - Genus - Species) </label>

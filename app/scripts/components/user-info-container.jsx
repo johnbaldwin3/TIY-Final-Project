@@ -31,15 +31,13 @@ class UserInfoContainer extends React.Component {
   }
   createUserProfile(data) {
     var userProfile = this.state.userProfile;
-    userProfile.set(data)
+    userProfile.set(data);
+    userProfile.setPointer("userProfileAccount", "_User", User.current().get("objectId"));
     userProfile.save().then(function(){
      Backbone.history.navigate('observation/', {trigger: true});
 
     });
-    // console.log('data', data);
-    // this.state.userProfile.create(data, {success: () => {
-    //   this.setState({userProfile: this.state})
-    // }});
+
   }
   render() {
 

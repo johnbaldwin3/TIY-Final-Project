@@ -28,9 +28,7 @@ var User = parse.ParseModel.extend({
       User.store(newUser);
       callback(newUser);
     });
-
   //  parse.parse.deinitialize();
-
   },
   //signup method for existing users
   signup: function(credentials){
@@ -44,11 +42,14 @@ var User = parse.ParseModel.extend({
   store: function(user){
     localStorage.setItem('user', JSON.stringify(user.toJSON()));
   },
-
+  //logout function *Thanks Andrea*
+  logout: function(user) {
+    delete localStorage.user;
+    Backbone.history.navigate('', {trigger: true});
+  },
   //get the current user at any given time
   current: function(){
     var user = localStorage.getItem('user');
-
     // if no user in local storage - Exit
     if (!user) {
       return false;
