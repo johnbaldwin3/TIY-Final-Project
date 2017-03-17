@@ -7,9 +7,10 @@ var React = require('react');
 var Backbone = require('backbone');
 
 //********************************
-//Utilities
+//Models, Utilities
 //********************************
 var utility = require('../../utilities.js');
+var User = require('../../models/user.js').User;
 
 //********************************
 //BaseLayout for all main app screens
@@ -42,7 +43,7 @@ class BaseLayout extends React.Component {
                 React.createElement("li", null, React.createElement("a", {href: "#"}, "Observation Detail"))
               ), 
               React.createElement("ul", {className: "nav navbar-nav navbar-right"}, 
-                React.createElement("li", null, React.createElement("a", {type: "button", className: "btn btn-danger", href: "#"}, "Log Out"))
+                React.createElement("li", null, React.createElement("button", {onClick: User.logout, type: "button", className: "btn btn-danger"}, "Log Out"))
               )
             )
           )
@@ -71,7 +72,7 @@ module.exports = {
   BaseLayout
 };
 
-},{"../../utilities.js":18,"backbone":19,"react":179}],2:[function(require,module,exports){
+},{"../../models/user.js":14,"../../utilities.js":18,"backbone":19,"react":179}],2:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -293,6 +294,7 @@ var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var models = require('../models/organism.js');
 var ParseFile = require('../parse.js').ParseFile;
 var Observation = require('../models/observations.js').Observation;
+var User = require('../models/user.js').User;
 
 //********************************
 //Individual Observation / Add / Edit / View
@@ -327,15 +329,16 @@ class ObservationsAddEditContainer extends React.Component {
   }
   createNewObservation(data) {
     var observation = this.state.observation;
-    observation.set(data)
+    observation.set(data);
+    observation.setPointer("observer", '_User', User.current().get("objectId"));
+
     observation.save().then(function(){
+
      Backbone.history.navigate('observation/', {trigger: true});
 
     });
-    //Backbone.history.navigate('observation/', {trigger: true});
   }
   render() {
-    //console.log('os', this.state.observedSpecies);
     return (
         React.createElement(BaseLayout, null, 
           React.createElement("div", {className: "container"}, 
@@ -361,9 +364,10 @@ class ObservationForm extends React.Component{
     this.handlePublicOrPrivate = this.handlePublicOrPrivate.bind(this);
     this.handleObservationNotes = this.handleObservationNotes.bind(this);
     this.handleObservationSubmit = this.handleObservationSubmit.bind(this);
+    this.handleLocationChange = this.handleLocationChange.bind(this);
 
+    //extending state to mash up with observationCollection
     this.state = $.extend({}, {
-
       pic: null,
       preview: null,
       observationDate: new Date(),
@@ -372,7 +376,9 @@ class ObservationForm extends React.Component{
       lat: null,
       lon: null,
       latRef: null,
-      lonRef: null
+      lonRef: null,
+      elevationFoundMeters: null,
+      elevationFoundFeet: null,
 
     }, this.props.observation.toJSON() );
   }
@@ -381,6 +387,7 @@ class ObservationForm extends React.Component{
     this.setState(newState);
   }
   handlePicChange(e) {
+    //********************************
     //********************************
     //http://danielhindrikes.se/web/get-coordinates-from-photo-with-javascript/
     //structure for EXIF so mewhat from above reference
@@ -391,11 +398,9 @@ class ObservationForm extends React.Component{
       //name: file.name
     });
     console.log('file', file);
-
     // User file reader object to display preview
     var reader = new FileReader();
     reader.onloadend = ()=>{
-
       var exif = EXIF.getData(file, () => {
       var lat = EXIF.getTag(file, "GPSLatitude");
       var lon = EXIF.getTag(file, "GPSLongitude");
@@ -404,7 +409,16 @@ class ObservationForm extends React.Component{
       var lonRef = EXIF.getTag(file, "GPSLongitudeRef") || "W";
       lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
       lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
+      //********************************
+      //********************************
 
+      //get elevation data (given in meters)
+      var elevation = EXIF.getTag(file, "GPSAltitude");
+      //elevation converted to meters (num/denom)
+      var elevationMeters = (elevation.numerator / elevation.denominator).toFixed(4) ;
+      //elevation converted to feet
+      var elevationFeet = (elevationMeters * 3.2804).toFixed(4);
+      //set state of picture exif data 
       this.setState(
        {
         locationOfObservation : {
@@ -415,7 +429,10 @@ class ObservationForm extends React.Component{
          lat: lat,
          lon: lon,
          latRef: latRef,
-         lonRef: lonRef
+         lonRef: lonRef,
+         elevationFoundFeet: elevationFeet,
+         elevationFoundMeters: elevationMeters,
+
        }
      );
      return this;
@@ -443,7 +460,13 @@ class ObservationForm extends React.Component{
     this.setState({observationDate: dateParse});
   }
   handleLocationChange(e) {
-    this.setState({locationOfObservation: e.target.value});
+   this.setState({locationOfObservation: e.target.value});
+  }
+  handleElevationFeetChange(e) {
+    this.setState({elevationFoundFeet: e.target.value});
+  }
+  handleElevationMetersChange(e) {
+    this.setState({elevationFoundMetersFound: e.target.value});
   }
   handleSpeciesTree(e) {
     this.setState({taxonTree: e.target.value});
@@ -524,6 +547,14 @@ class ObservationForm extends React.Component{
           React.createElement("label", {htmlFor: "locationFound"}, "Location Found"), 
           React.createElement("input", {onChange: this.handleLocationChange, type: "text", className: "form-control", id: "locationFound", placeholder: "Where did you find it?", value: (this.state.lat + " " + this.state.latRef ) +", "+(this.state.lon + " " + this.state.lonRef)})
         ), 
+        React.createElement("div", {className: "form-group col-sm-6"}, 
+          React.createElement("label", {htmlFor: "elevationFeetFound"}, "Elevation of Observation (Feet) "), 
+          React.createElement("input", {onChange: this.handleElevationFeetChange, type: "text", className: "form-control", id: "elevationFeetFound", placeholder: "Elevation of your find (ft)...", value: this.state.elevationFoundFeet + " feet"})
+        ), 
+        React.createElement("div", {className: "form-group col-sm-6"}, 
+          React.createElement("label", {htmlFor: "elevationMetersFound"}, "Elevation of Observation (Meters)"), 
+          React.createElement("input", {onChange: this.handleElevationMetersChange, type: "text", className: "form-control", id: "elevationMetersFound", placeholder: "Elevation of your find (m)...", value: this.state.elevationFoundMeters + " meters"})
+        ), 
         React.createElement("div", {className: "form-group"}, 
           React.createElement("label", {htmlFor: "familyTree"}, "Taxonimical Heirarchy (example: Kingdom - Phylum - Class - Order - Genus - Species) "), 
           React.createElement("input", {onChange: this.handleSpeciesTree, type: "text", className: "form-control", id: "familyTree", placeholder: "Species family tree... ", 
@@ -551,7 +582,7 @@ module.exports = {
   ObservationsAddEditContainer
 };
 
-},{"../models/observations.js":12,"../models/organism.js":13,"../parse.js":16,"./layouts/baselayout.jsx":1,"backbone":19,"exif-js":20,"jquery":48,"react":179}],6:[function(require,module,exports){
+},{"../models/observations.js":12,"../models/organism.js":13,"../models/user.js":14,"../parse.js":16,"./layouts/baselayout.jsx":1,"backbone":19,"exif-js":20,"jquery":48,"react":179}],6:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -563,47 +594,35 @@ var React = require('react');
 //********************************
 //call in base layout
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
+var ObservationCollection = require('../models/observations.js').ObservationCollection;
 
 //********************************
 //Observation Dashboard - Main App Screen
 //********************************
 class ObservationDashContainer extends React.Component {
+  constructor(props) {
+    super(props);
+
+    var observationCollection = new ObservationCollection();
+
+    observationCollection.fetch().then(()=> {
+      this.setState({observationCollection: observationCollection});
+      console.log(observationCollection);
+      this.forceUpdate();
+    });
+
+    this.state = {
+      observationCollection
+    }
+  }
   render() {
     return (
       React.createElement(BaseLayout, null, 
         React.createElement("div", {className: "container"}, 
           React.createElement("div", {className: "row"}, 
-            React.createElement("div", {className: "col-sm-4"}, 
-              React.createElement("div", {className: "list-group"}, 
-                React.createElement("a", {href: "#", className: "list-group-item"}, 
-                  React.createElement("h4", {className: "list-group-item-heading"}, " A title of observation here"), 
-                  React.createElement("p", {className: "list-group-item-text"}, "some nature details here")
-                ), 
-                React.createElement("a", {href: "#", className: "list-group-item"}, " ", React.createElement("h4", {className: "list-group-item-heading"}, " A title of observation here"), 
-                  React.createElement("p", {className: "list-group-item-text"}, "some nature details here")
-                ), 
-                React.createElement("a", {href: "#", className: "list-group-item"}, 
-                  React.createElement("h4", {className: "list-group-item-heading"}, " A title of observation here"), 
-                  React.createElement("p", {className: "list-group-item-text"}, "some nature details here")
-                ), 
-                React.createElement("a", {href: "#", className: "list-group-item"}, 
-                  React.createElement("h4", {className: "list-group-item-heading"}, " A title of observation here"), 
-                  React.createElement("p", {className: "list-group-item-text"}, "some nature details here")
-                ), 
-                React.createElement("a", {href: "#", className: "list-group-item"}, 
-                  React.createElement("h4", {className: "list-group-item-heading"}, " A title of observation here"), 
-                  React.createElement("p", {className: "list-group-item-text"}, "some nature details here")
-                ), 
-                React.createElement("a", {href: "#", className: "list-group-item"}, 
-                  React.createElement("h4", {className: "list-group-item-heading"}, " A title of observation here"), 
-                  React.createElement("p", {className: "list-group-item-text"}, "some nature details here")
-                )
-              )
-            ), 
-            React.createElement("div", {className: "col-sm-5"}, 
-              React.createElement("img", {src: "https://www.codeproject.com/KB/web-image/Google_map/sampleMap.JPG"})
-            ), 
-            React.createElement("div", {className: "col-sm-3"}, 
+            React.createElement(ObservationListings, {observationCollection: this.state.observationCollection}), 
+            React.createElement(ObservationMapListing, null), 
+            React.createElement("div", {className: "col-sm-2"}, 
               React.createElement("div", {className: "row"}, 
                 React.createElement("button", {className: "btn btn-primary col-sm-12", type: "button"}, "UserName ", React.createElement("span", {className: "badge"}, "4")
                 )
@@ -642,12 +661,55 @@ class ObservationDashContainer extends React.Component {
   }
 }
 
+class ObservationMapListing extends React.Component {
+  constructor(props){
+    super(props);
+
+    // this.state = {
+    //   zoom: 10,
+    //
+    // }
+  }
+  render() {
+    return(
+      React.createElement("div", {className: "col-sm-7"}, 
+        React.createElement("img", {src: "https://www.codeproject.com/KB/web-image/Google_map/sampleMap.JPG"})
+      )
+    )
+  }
+}
+
+class ObservationListings extends React.Component {
+  constructor(props) {
+    super(props);
+
+  }
+  render() {
+    var obsListing = this.props.observationCollection.map((obsListItem)=> {
+
+      return (
+        React.createElement("a", {key: obsListItem.get("objectId"), href: "#observation/", className: "list-group-item"}, 
+          React.createElement("h4", {className: "list-group-item-heading"}, obsListItem.get("commonName")), 
+          React.createElement("p", {className: "list-group-item-text"}, "usernamehere"), 
+          React.createElement("p", {className: "list-group-item-text"}, obsListItem.get("observationDate").iso)
+        )
+      )
+    });
+    return (
+      React.createElement("div", {className: "col-sm-3"}, 
+        React.createElement("div", {className: "list-group"}, 
+          obsListing
+        )
+      )
+    )
+  }
+}
 
 module.exports = {
   ObservationDashContainer
 };
 
-},{"./layouts/baselayout.jsx":1,"react":179}],7:[function(require,module,exports){
+},{"../models/observations.js":12,"./layouts/baselayout.jsx":1,"react":179}],7:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -659,6 +721,7 @@ var React = require('react');
 //********************************
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var ObservationCollection = require('../models/observations.js').ObservationCollection;
+//var User = require('../models/user.js').User;
 
 //********************************
 //Observation Gallery (Photos Gallery)
@@ -668,7 +731,7 @@ class ObservationGalleryContainer extends React.Component {
     super(props);
     var observationCollection = new ObservationCollection();
 
-    //currentRecipe.set('objectId', props.id);
+    //currentCollection.set('objectId', props.id);
     observationCollection.fetch().then(()=> {
       this.setState({observationCollection: observationCollection});
       console.log(observationCollection);
@@ -682,7 +745,7 @@ class ObservationGalleryContainer extends React.Component {
   render() {
     return (
       React.createElement(BaseLayout, null, 
-        React.createElement(GalleryListings, null)
+        React.createElement(GalleryListings, {observationCollection: this.state.observationCollection})
       )
     )
   }
@@ -694,22 +757,32 @@ class GalleryListings extends React.Component {
 
   }
   render() {
+    //console.log('tpoc', this.props.observationCollection);
+    var obsGallery = this.props.observationCollection.map((obsPics)=> {
+      //console.log('obs', obsPics);
+      return (
+
+          React.createElement("div", {className: "col-sm-6 col-md-4"}, 
+            React.createElement("div", {className: "thumbnail"}, 
+              React.createElement("img", {src: obsPics.get("pic").url, alt: "..."}), 
+              React.createElement("div", {className: "caption"}, 
+                React.createElement("h3", null, obsPics.get("commonName")), 
+                React.createElement("p", null, "captured by: John B"), 
+                React.createElement("p", null, React.createElement("a", {href: "", className: "btn btn-primary", role: "button"}, "See John's Other List"), " ", React.createElement("a", {href: "#", className: "btn btn-default", role: "button"}, "Observation Details"))
+              )
+            )
+          )
+
+      )
+
+    });
 
     return(
       React.createElement("div", {className: "container"}, 
-            React.createElement("div", {className: "row"}, 
-              React.createElement("div", {className: "col-sm-6 col-md-4"}, 
-                React.createElement("div", {className: "thumbnail"}, 
-                  React.createElement("img", {src: "https://www.fillmurray.com/240/240", alt: "..."}), 
-                  React.createElement("div", {className: "caption"}, 
-                    React.createElement("h3", null, "Bill Murray in his natural environment"), 
-                    React.createElement("p", null, "captured by: John B"), 
-                    React.createElement("p", null, React.createElement("a", {href: "", className: "btn btn-primary", role: "button"}, "See John's Other List"), " ", React.createElement("a", {href: "#", className: "btn btn-default", role: "button"}, "Observation Details"))
-                  )
-                )
-              )
-            )
+        React.createElement("div", {className: "row"}, 
+          obsGallery
         )
+      )
     )
   }
 
@@ -1014,15 +1087,13 @@ class UserInfoContainer extends React.Component {
   }
   createUserProfile(data) {
     var userProfile = this.state.userProfile;
-    userProfile.set(data)
+    userProfile.set(data);
+    userProfile.setPointer("userProfileAccount", "_User", User.current().get("objectId"));
     userProfile.save().then(function(){
      Backbone.history.navigate('observation/', {trigger: true});
 
     });
-    // console.log('data', data);
-    // this.state.userProfile.create(data, {success: () => {
-    //   this.setState({userProfile: this.state})
-    // }});
+
   }
   render() {
 
@@ -1325,9 +1396,7 @@ var User = parse.ParseModel.extend({
       User.store(newUser);
       callback(newUser);
     });
-
   //  parse.parse.deinitialize();
-
   },
   //signup method for existing users
   signup: function(credentials){
@@ -1341,11 +1410,14 @@ var User = parse.ParseModel.extend({
   store: function(user){
     localStorage.setItem('user', JSON.stringify(user.toJSON()));
   },
-
+  //logout function *Thanks Andrea*
+  logout: function(user) {
+    delete localStorage.user;
+    Backbone.history.navigate('', {trigger: true});
+  },
   //get the current user at any given time
   current: function(){
     var user = localStorage.getItem('user');
-
     // if no user in local storage - Exit
     if (!user) {
       return false;
@@ -1558,6 +1630,10 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var Backbone = require('backbone');
 
+//********************************
+//Models, Utilities, Layouts
+//********************************
+var User = require('./models/user').User;
 
 //********************************
 //Controllers
@@ -1593,7 +1669,7 @@ var AppRouter = Backbone.Router.extend({
     //view user info for public users
     'userinfo/:id/': 'userInfoAddViewEdit',
     //main dashboard : recent/top obs, map, user ranks
-    'observation/' : 'observationsDash',
+    'observation/': 'observationsDash',
     //edit existing user observation (if user)
     'observation/:id/edit/' : 'observationsAddEdit',
     //view all of a single user's observations
@@ -1609,7 +1685,22 @@ var AppRouter = Backbone.Router.extend({
 },
  initialize: function(){
 
-  },
+},
+// execute: function(callback, args, name) {
+//   var user = User.current();
+//
+//   if (!user && name != 'login') {
+//     this.navigate('', {trigger: true});
+//     return false;
+//   }
+//
+//   if(user && name == 'login'){
+//     this.navigate('#observation/', {trigger: true});
+//     return false;
+//   }
+//
+//   return Backbone.Router.prototype.execute.apply(this, arguments);
+// },
 index: function() {
   ReactDOM.render(
     React.createElement(MarketingContainer),
@@ -1675,7 +1766,7 @@ module.exports = {
   appRouter
 };
 
-},{"./components/login-container.jsx":3,"./components/marketing-container.jsx":4,"./components/observation-add-edit-container.jsx":5,"./components/observation-dash-container.jsx":6,"./components/observation-gallery.jsx":7,"./components/observation-search.jsx":8,"./components/signup-container.jsx":9,"./components/user-info-container.jsx":10,"./parse":16,"backbone":19,"react":179,"react-dom":50}],18:[function(require,module,exports){
+},{"./components/login-container.jsx":3,"./components/marketing-container.jsx":4,"./components/observation-add-edit-container.jsx":5,"./components/observation-dash-container.jsx":6,"./components/observation-gallery.jsx":7,"./components/observation-search.jsx":8,"./components/signup-container.jsx":9,"./components/user-info-container.jsx":10,"./models/user":14,"./parse":16,"backbone":19,"react":179,"react-dom":50}],18:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries

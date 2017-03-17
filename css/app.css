@@ -5777,4 +5777,18 @@ img {
 .quote {
   color: white; }
 
+.blockqoute {
+  background-color: rgba(255, 255, 255, 0.73); }
+
+.thumbnail {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  height: 460px; }
+  .thumbnail img {
+    max-height: 300px;
+    overflow: hidden; }
+
 /*# sourceMappingURL=app.css.map */
