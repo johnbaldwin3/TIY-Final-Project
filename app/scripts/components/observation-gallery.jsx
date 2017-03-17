@@ -31,7 +31,7 @@ class ObservationGalleryContainer extends React.Component {
   render() {
     return (
       <BaseLayout>
-        <GalleryListings />
+        <GalleryListings observationCollection={this.state.observationCollection}/>
       </BaseLayout>
     )
   }
@@ -43,22 +43,32 @@ class GalleryListings extends React.Component {
 
   }
   render() {
+    console.log('tpoc', this.props.observationCollection);
+    var obsGallery = this.props.observationCollection.map((obsPics)=> {
+      console.log('obs', obsPics);
+      return (
+
+          <div className="col-sm-6 col-md-4">
+            <div className="thumbnail">
+              <img src={obsPics.get("pic").url} alt="..."/>
+              <div className="caption">
+                <h3>{obsPics.get("commonName")}</h3>
+                <p>captured by: John B</p>
+                <p><a href="" className="btn btn-primary" role="button">See John's Other List</a> <a href="#" className="btn btn-default" role="button">Observation Details</a></p>
+              </div>
+            </div>
+          </div>
+
+      )
+
+    });
 
     return(
       <div className="container">
-            <div className="row">
-              <div className="col-sm-6 col-md-4">
-                <div className="thumbnail">
-                  <img src="https://www.fillmurray.com/240/240" alt="..."/>
-                  <div className="caption">
-                    <h3>Bill Murray in his natural environment</h3>
-                    <p>captured by: John B</p>
-                    <p><a href="" className="btn btn-primary" role="button">See John's Other List</a> <a href="#" className="btn btn-default" role="button">Observation Details</a></p>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div className="row">
+          {obsGallery}
         </div>
+      </div>
     )
   }
 
