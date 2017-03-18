@@ -31,9 +31,13 @@ class UserInfoContainer extends React.Component {
   }
   createUserProfile(data) {
     var userProfile = this.state.userProfile;
+
+    var userId = User.editUser();
+    userProfile.set('objectId', userId)
     userProfile.set(data);
-    userProfile.setPointer("userProfileAccount", "_User", User.current().get("objectId"));
-    userProfile.save().then(function(){
+    //userProfile.setPointer("_User", "_User", User.current().get("objectId"));
+    //************************
+   userProfile.save().then(function(){
      Backbone.history.navigate('observation/', {trigger: true});
 
     });
@@ -85,7 +89,6 @@ class UserProfileForm extends React.Component {
   handlePicChange(e) {
     var file = e.target.files[0];
     this.setState({pic: file});
-    console.log('file', file);
     // User file reader object to display preview
     var reader = new FileReader();
     reader.onloadend = ()=>{
@@ -103,11 +106,11 @@ class UserProfileForm extends React.Component {
       "__type" : "Date",
       "iso" : newDate
     }
+
     this.setState({birthday: dateParse});
 
   }
   handleUserBioInfo(e) {
-    console.log(e.target.value);
     this.setState({bioInfo: e.target.value});
   }
   handleUserSpeciesInterests(e) {
@@ -117,8 +120,6 @@ class UserProfileForm extends React.Component {
     e.preventDefault();
     var pic = this.state.pic;
     var fileUpload = new ParseFile(pic);
-
-    console.log('fu', fileUpload);
 
     fileUpload.save({}, {
       data: pic

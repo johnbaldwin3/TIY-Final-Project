@@ -52,6 +52,32 @@ var User = parse.ParseModel.extend({
       callback();
     });
   },
+  editUser: function(callback) {
+    var user = localStorage.getItem('user');
+
+    if (!user) {
+      return false
+    }
+
+    var currentUser = new User(JSON.parse(user));
+
+    if (!currentUser.get('sessionToken')){
+      return false
+    }
+
+    console.log('cuId', currentUser);
+    console.log('cuId', currentUser.id);
+
+    return currentUser.id;
+    // var url = 'https://jb3-serve.herokuapp.com/users/' + currentUser.id;
+    // parse.parse.initialize();
+    //
+    // $.save(url).then(data => {
+    //
+    //   callback();
+    // });
+    //
+    },
   //get the current user at any given time
   current: function(){
     var user = localStorage.getItem('user');

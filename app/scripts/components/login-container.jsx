@@ -22,7 +22,7 @@ class LoginContainer extends React.Component {
     this.loginUser = this.loginUser.bind(this);
 
     this.state = {
-      username: '',
+      email: '',
       password: ''
     }
   }

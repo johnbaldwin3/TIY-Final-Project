@@ -25,12 +25,12 @@ var UserProfile = parse.ParseModel.extend({
       }
     )
   },
-  urlRoot: 'https://jb3-serve.herokuapp.com/classes/UserProfiles/'
+  urlRoot: 'https://jb3-serve.herokuapp.com/users',
 });
 
 var UserProfileCollection = parse.ParseCollection.extend({
   model: UserProfile,
-  url: 'https://jb3-serve.herokuapp.com/classes/UserProfiles/'
+  url: 'https://jb3-serve.herokuapp.com/classes/user'
 });
 
 

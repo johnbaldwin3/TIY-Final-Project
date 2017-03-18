@@ -2,6 +2,7 @@
 //Third Party Libraries
 //********************************
 var Backbone = require('backbone');
+var $ = require('jquery');
 
 //********************************
 // Utilities
@@ -27,7 +28,17 @@ var Observation = parse.ParseModel.extend({
     )
   },
   urlRoot: 'https://jb3-serve.herokuapp.com/classes/Observations/',
-  
+  getUserProfile: function(objectId) {
+    var url = 'https://jb3-serve.herokuapp.com/users/' + objectId;
+    parse.parse.initialize();
+    
+    $.get(url).then(() => {
+
+
+    });
+
+  }
+
 });
 
 var ObservationCollection = parse.ParseCollection.extend({

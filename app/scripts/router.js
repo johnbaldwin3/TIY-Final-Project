@@ -34,19 +34,19 @@ var parse = require('./parse').parse;
 var AppRouter = Backbone.Router.extend({
   routes: {
     //splash marketing page
-    '':'index',
+    '' : 'index',
     //login page
-    'login/':'login',
-
-    'logout/':'logout',
+    'login/' : 'login',
+    //logout redirect to index
+    'logout/' : 'logout',
     //sign up page
-    'signup/':'signUp',
+    'signup/' : 'signUp',
     //new user info
-    'userinfo/': 'userInfoAddViewEdit',
+    'userinfo/' : 'userInfoAddViewEdit',
     //view user info for public users
-    'userinfo/:id/': 'userInfoAddViewEdit',
+    'userinfo/:id/' : 'userInfoAddViewEdit',
     //main dashboard : recent/top obs, map, user ranks
-    'observation/': 'observationsDash',
+    'observation/' : 'observationsDash',
     //edit existing user observation (if user)
     'observation/:id/edit/' : 'observationsAddEdit',
     //view all of a single user's observations
@@ -60,24 +60,30 @@ var AppRouter = Backbone.Router.extend({
     //view all rankings in filterable fashion
     'observation/rankings/' : 'observationRankings'
 },
- initialize: function(){
+initialize: function(){
 
 },
 execute: function(callback, args, name) {
   var user = User.current();
 
+  //if user is not user...
   if(!user){
-    if(['login', 'index'].indexOf(name) === -1){
+    //if page name is not login, signup, index
+    if(['login','signUp','index'].indexOf(name) === -1){
+      //then navigate to index page
       this.navigate('', {trigger: true});
+      //escape loop
       return false;
     }
 
   } else {
 
-    if(['login', 'signup',].indexOf(name)!== -1){
+    if(['login', 'signUp'].indexOf(name)!== -1){
       this.navigate('#observation/', {trigger: true});
+
       return false;
-      }
+    }
+
   }
 
   return Backbone.Router.prototype.execute.apply(this, arguments);
