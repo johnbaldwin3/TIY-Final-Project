@@ -34,7 +34,7 @@ class GoogleMapContainer extends React.Component {
         googleMapElement = {
           <GoogleMap
 
-            defaultZoom={5}
+            defaultZoom={4}
             defaultCenter={this.props.center}
 
             options={{streetViewControl: false, mapTypeControl: false}}>

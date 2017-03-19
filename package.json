@@ -70,6 +70,7 @@
   "dependencies": {
     "exif-js": "^2.1.1",
     "google-map-react": "^0.23.0",
+    "moment": "^2.18.0",
     "react-google-maps": "^4.11.0"
   }
 }

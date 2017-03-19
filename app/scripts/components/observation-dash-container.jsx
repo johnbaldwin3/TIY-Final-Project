@@ -2,6 +2,7 @@
 //Third Party Libraries
 //********************************
 var React = require('react');
+var Moment = require('moment');
 
 //********************************
 //Models, Utilities, Layouts
@@ -33,17 +34,23 @@ class ObservationDashContainer extends React.Component {
   }
   render() {
     var location = {
-      lat: 34.8526000,
-      lng: -82.3940000
+      lat: 38.974873,
+      lng: -98.368122
     };
-    var markers = [
-      {
-        location: {
-           lat: 34.8526000,
-           lng: -82.3940000
+    var markers =
+     this.state.observationCollection.map((obsLocations) => {
+
+       return (
+         {
+           location: {
+              lat: obsLocations.get('lat'),
+              lng: obsLocations.get('lon')
+            }
          }
-      }
-    ]
+       )
+
+    });
+
     return (
       <BaseLayout>
         <div className="container">
@@ -95,28 +102,28 @@ class ObservationDashContainer extends React.Component {
   }
 }
 
-class ObservationMapListing extends React.Component {
-  constructor(props){
-    super(props);
-
-    // this.state = {
-    //   zoom: 10,
-    //
-    // }
-  }
-  render() {
-    return(
-      <div
-        defaultCenter={this.props.center}
-        defaultZoom={this.props.zoom}>
-
-        <img src="https://www.codeproject.com/KB/web-image/Google_map/sampleMap.JPG"/>
-
-      </div>
-
-    )
-  }
-}
+// class ObservationMapListing extends React.Component {
+//   constructor(props){
+//     super(props);
+//
+//     // this.state = {
+//     //   zoom: 10,
+//     //
+//     // }
+//   }
+//   render() {
+//     return(
+//       <div
+//         defaultCenter={this.props.center}
+//         defaultZoom={this.props.zoom}>
+//
+//         <img src="https://www.codeproject.com/KB/web-image/Google_map/sampleMap.JPG"/>
+//
+//       </div>
+//
+//     )
+//   }
+// }
 
 class ObservationListings extends React.Component {
   constructor(props) {
@@ -130,7 +137,7 @@ class ObservationListings extends React.Component {
         <a key={obsListItem.get("objectId")} href="#observation/" className="list-group-item">
           <h4 className="list-group-item-heading">{obsListItem.get("commonName")}</h4>
           <p className="list-group-item-text">usernamehere</p>
-          <p className="list-group-item-text">{obsListItem.get("observationDate").iso}</p>
+          <p className="list-group-item-text">{Moment(obsListItem.get("observationDate").iso).format('LL')}</p>
         </a>
       )
     });
