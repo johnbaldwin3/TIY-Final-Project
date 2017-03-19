@@ -10,6 +10,7 @@ var React = require('react');
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var ObservationCollection = require('../models/observations.js').ObservationCollection;
 var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
+var GoogleMapContainer = require('./map.jsx').GoogleMapContainer;
 
 //********************************
 //Observation Dashboard - Main App Screen
@@ -19,7 +20,7 @@ class ObservationDashContainer extends React.Component {
     super(props);
 
     var observationCollection = new ObservationCollection();
-    
+
     observationCollection.fetch().then(()=> {
       this.setState({observationCollection: observationCollection});
       console.log(observationCollection);
@@ -31,12 +32,30 @@ class ObservationDashContainer extends React.Component {
     }
   }
   render() {
+    var location = {
+      lat: 34.8526000,
+      lng: -82.3940000
+    };
+    var markers = [
+      {
+        location: {
+           lat: 34.8526000,
+           lng: -82.3940000
+         }
+      }
+    ]
     return (
       <BaseLayout>
         <div className="container">
           <div className="row">
             <ObservationListings observationCollection={this.state.observationCollection}/>
-            <ObservationMapListing />
+
+            <div className="col-sm-7" style={{height:400, background:'gray'}}>
+
+            <GoogleMapContainer center={location} markers={markers}/>
+
+            </div>
+
             <div className="col-sm-2">
               <div className="row">
                 <button className="btn btn-primary col-sm-12" type="button">UserName <span className="badge">4</span>
@@ -87,9 +106,14 @@ class ObservationMapListing extends React.Component {
   }
   render() {
     return(
-      <div className="col-sm-7">
+      <div
+        defaultCenter={this.props.center}
+        defaultZoom={this.props.zoom}>
+
         <img src="https://www.codeproject.com/KB/web-image/Google_map/sampleMap.JPG"/>
+
       </div>
+
     )
   }
 }

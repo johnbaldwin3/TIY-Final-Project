@@ -176,6 +176,10 @@ class UserProfileForm extends React.Component {
   }
 }
 
+
+//********************************
+//Exports
+//********************************
 module.exports = {
   UserInfoContainer
 };

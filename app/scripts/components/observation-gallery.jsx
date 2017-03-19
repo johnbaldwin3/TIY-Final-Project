@@ -88,7 +88,9 @@ class GalleryListings extends React.Component {
 
 }
 
-
+//********************************
+//Exports
+//********************************
 module.exports = {
   ObservationGalleryContainer
 };
