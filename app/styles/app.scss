@@ -26,7 +26,7 @@ img {
 }
 
 .wrapper-market {
-  background-image: url('../images/sky-earth-galaxy-universe.jpg');
+  background-image: url('../images/AdobeStock_14513047.jpeg');
   background-repeat: no-repeat;
   background-size: cover;
   //filter: blur(5px);
@@ -36,12 +36,20 @@ img {
   margin-top: 100px;
 }
 
+.block-footer {
+  color: #005b80;
+}
+
 .quote {
-  color: white;
+  color: black;
 
 }
 
-.blockqoute {
+.marketing-jumbo {
+  background-color: rgba(255, 255, 255, 0.73);
+}
+
+#eO {
   background-color: rgba(255, 255, 255, 0.73);
 }
 .thumbnail {
@@ -55,13 +63,13 @@ img {
   }
 
 }
-// .sizer img {
-//   max-height: 100px;
-//   max-width: 100px;
-//   overflow: hidden;
-//   image-resolution: snap;
-// }
-// .media-object {
-//   height: 100px;
-//   width: 100px;
-// }
+
+.obs-list-dash {
+  height: 600px;
+  overflow: scroll;
+  border: 3px solid grey;
+}
+
+.obs-users-dash {
+  @extend .obs-list-dash;
+}
