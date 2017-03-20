@@ -5,11 +5,19 @@ var React = require('react');
 var GoogleMapLoader = require('react-google-maps').GoogleMapLoader;
 var GoogleMap = require('react-google-maps').GoogleMap;
 var Marker = require('react-google-maps').Marker;
+var MarkerClusterer = require('react-google-maps/lib/addons/MarkerClusterer');
+
+console.log(MarkerClusterer);
+//var MarkerClusterer = require('markerclustererplus').MarkerClusterer;
+// var MarkerClusterer = require('../markerclusterer.js').MarkerClusterer;
 require('react-google-maps');
 
 //********************************
 // Map Component
 //********************************
+
+// var markerCluster = new MarkerClusterer(mapContainer, markers,
+//         {imagePath: '../../images'});
 
 //some tips for set up from the following:
 //****** https://www.youtube.com/watch?v=N1J7Q1qJPQM *******
@@ -26,8 +34,10 @@ class GoogleMapContainer extends React.Component {
           lng: venue.location.lng
         }
       }
+
       return <Marker key={i} {...marker} />
     });
+
     return (
       <GoogleMapLoader
         containerElement = { mapContainer }
@@ -38,7 +48,10 @@ class GoogleMapContainer extends React.Component {
             defaultCenter={this.props.center}
 
             options={{streetViewControl: false, mapTypeControl: false}}>
-            {markers}
+            <MarkerClusterer>
+              {markers}
+            </MarkerClusterer>
+
           </GoogleMap>
         }/>
     )
