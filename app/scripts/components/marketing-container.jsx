@@ -8,11 +8,11 @@ class MarketingContainer extends React.Component {
     return(
       <MarketAuthLayout>
         <div className="container">
-          <blockquote className="eO">
+          <blockquote id="eO">
             <p className="quote">"Science, its imperfections notwithstanding, is the sword in the stone that humanity finally pulled."</p>
-            <footer>Edward O. Wilson in <cite title="Source Title">The Unity of Knowledge (1998)</cite></footer>
+            <footer className="block-footer">Edward O. Wilson in <cite title="Source Title">The Unity of Knowledge (1998)</cite></footer>
           </blockquote>
-          <div className="jumbotron">
+          <div className="jumbotron marketing-jumbo">
             <h1>Observe your world!</h1>
             <h3>Put on your biologist hat and explore and keep track of the world around you...</h3>
             <p>The ______ app allows you to create an account to keep track all of your species encounters in one place. Log your birding trips, record your very own herbarium here, check off lifelist species for your herpetological records, all in one place. Record data about your location, weather, experience. Upload images to each observation. Allow for optional public viewing and have friendly competitions between friends and family to see who can log the most organisms. Also learn a little bit more about your logged encounters after each event is added. Log back in or join today!</p>
