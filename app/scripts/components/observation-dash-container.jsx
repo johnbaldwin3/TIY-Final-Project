@@ -34,8 +34,8 @@ class ObservationDashContainer extends React.Component {
   }
   render() {
     var location = {
-      lat: 38.974873,
-      lng: -98.368122
+      lat: 39.124233,
+      lng: -96.919273
     };
     var markers =
      this.state.observationCollection.map((obsLocations) => {
