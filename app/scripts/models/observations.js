@@ -31,11 +31,19 @@ var Observation = parse.ParseModel.extend({
   getUserProfile: function(objectId) {
     var url = 'https://jb3-serve.herokuapp.com/users/' + objectId;
     parse.parse.initialize();
-    
-    $.get(url).then(() => {
 
 
-    });
+    function someFunction() {
+      return  $.get(url).then((results) => {
+        console.log('results', results);
+
+        return results;
+      });
+    }
+
+
+
+    return someFunction();
 
   }
 
@@ -43,7 +51,18 @@ var Observation = parse.ParseModel.extend({
 
 var ObservationCollection = parse.ParseCollection.extend({
   model: Observation,
-  baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/'
+  baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/',
+  // getUserProfile: function(objectId) {
+  //   var url = 'https://jb3-serve.herokuapp.com/users/' + objectId;
+  //   parse.parse.initialize();
+  //   //console.log('url', url);
+  //   $.get(url).then((results) => {
+  //   console.log('results', results);
+  //     return results;
+  //   });
+  //
+  // }
+
 });
 
 //********************************

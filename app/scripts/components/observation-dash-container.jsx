@@ -57,13 +57,13 @@ class ObservationDashContainer extends React.Component {
           <div className="row">
             <ObservationListings observationCollection={this.state.observationCollection}/>
 
-            <div className="col-sm-7" style={{height:400, background:'gray'}}>
+            <div className="col-sm-7" style={{height:600, background:'gray'}}>
 
             <GoogleMapContainer center={location} markers={markers}/>
 
             </div>
 
-            <div className="col-sm-2">
+            <div className="col-sm-2 obs-users-dash">
               <div className="row">
                 <button className="btn btn-primary col-sm-12" type="button">UserName <span className="badge">4</span>
                 </button>
@@ -132,7 +132,7 @@ class ObservationListings extends React.Component {
   }
   render() {
     var obsListing = this.props.observationCollection.map((obsListItem)=> {
-
+      // obsListItem.getUserProfile(obsListItem.get('objectId'))
       return (
         <a key={obsListItem.get("objectId")} href="#observation/" className="list-group-item">
           <h4 className="list-group-item-heading">{obsListItem.get("commonName")}</h4>
@@ -142,7 +142,7 @@ class ObservationListings extends React.Component {
       )
     });
     return (
-      <div className="col-sm-3">
+      <div className="col-sm-3 obs-list-dash">
         <div className="list-group">
           {obsListing}
         </div>

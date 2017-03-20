@@ -2,6 +2,8 @@
 //Third Party Libraries
 //********************************
 var React = require('react');
+var $ = require('jquery');
+// var Parse = require('parse');
 
 //********************************
 //Models, Utilities, Layouts
@@ -21,13 +23,17 @@ class ObservationGalleryContainer extends React.Component {
 
     userProfileCollection.fetch().then(() => {
       this.setState({userProfileCollection: userProfileCollection});
+      this.forceUpdate();
     });
     //currentCollection.set('objectId', props.id);
     observationCollection.fetch().then(()=> {
       this.setState({observationCollection: observationCollection});
-      console.log(observationCollection);
       this.forceUpdate();
+      // userProfileCollection.fetch().then(()=> {
+      //   this.setState({userProfileCollection: userProfileCollection});
+      //  this.setState({observationCollection: observationCollection});
     });
+      //console.log(observationCollection);
 
     this.state = {
       observationCollection,
@@ -48,17 +54,29 @@ class GalleryListings extends React.Component {
   constructor(props) {
     super(props);
 
+    // this.state = {
+    //   userProfileCollection: this.props.userProfileCollection
+    // }
   }
+  // componentWillReceiveProps(nextProps) {
+  //   var newState = $.extend({}, this.state, nextProps.userProfileCollection.toJSON());
+  //   this.setState(newState);
+  // }
+
   render() {
+    console.log('upc', this.props.userProfileCollection);
     //console.log('tpoc', this.props.observationCollection);
     var obsGallery = this.props.observationCollection.map((obsPics)=> {
       console.log('obs', obsPics);
-      console.log('obs', obsPics.get('observer').objectId);
+      //console.log('obs', obsPics.get('observer').objectId);
       var observerId = obsPics.get('observer').objectId;
-
-      console.log('upc', obsPics);
-
-
+      // var userList = this.props.userProfileCollection.map((user) => {
+      //   console.log(user);
+      //   return user;
+      // });
+      //console.log('upc', obsPics);
+        //console.log(userList);
+      //console.log('upd', obsPics.getUserProfile(observerId));
 
       return (
 
@@ -67,8 +85,8 @@ class GalleryListings extends React.Component {
               <img src={obsPics.get("pic").url} alt="..."/>
               <div className="caption">
                 <h3>{obsPics.get("commonName")}</h3>
-                <p>Observed By by: John B</p>
-                <p><a href="" className="btn btn-primary" role="button">See John's Other List</a> <a href="#" className="btn btn-default" role="button">Observation Details</a></p>
+                <p>Observed By by: {obsPics.get("observerName")}</p>
+                <p><a href="#" className="btn btn-primary" role="button">{"See " + (obsPics.get("observerName")) + "'s Other Lists"}</a> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default" role="button">Observation Details</a></p>
               </div>
             </div>
           </div>

@@ -5,6 +5,7 @@ var React = require('react');
 var EXIF = require('exif-js');
 var $ = require('jquery');
 var Backbone = require('backbone');
+var moment = require('moment');
 
 //********************************
 //Models, Utilities, Layouts
@@ -28,18 +29,28 @@ class ObservationsAddEditContainer extends React.Component {
 
     observedSpecies.set('speciesKey', props.speciesKey);
 //hey if this comp - if this,props.id
-    observedSpecies.fetch().then(() => {
+    if(this.props.id) {
+      observation.set('objectId', this.props.id);
+
+      observation.fetch().then(() => {
+        this.setState({pic: this.state.pic})
+        this.setState({observation: observation});
+      });
+    } else {
+
+      observedSpecies.fetch().then(() => {
       observation.set({
+
         commonName: observedSpecies.get("vernacularName"),
         scientificName: observedSpecies.get("canonicalName"),
         originalDiscoveryInfo: observedSpecies.get("authorship"),
         taxonTree: observedSpecies.getTaxonTree(),
-
+        observationUser: User.current()
       });
       this.setState({observation: observation});
 
     });
-
+  }
     this.state = {
       observation: observation,
 
@@ -104,6 +115,9 @@ class ObservationForm extends React.Component{
     var newState = $.extend({}, this.state, nextProps.observation.toJSON());
     this.setState(newState);
   }
+  // componentDidMount() {
+  //   console.log('picture', this.state.pic);
+  // }
   handlePicChange(e) {
     //********************************
     //********************************
@@ -221,21 +235,24 @@ class ObservationForm extends React.Component{
     this.props.action(formData)
     });
   }
-  render() {
 
+  render() {
+    var picture = this.state.pic;
+
+    console.log('tpu', picture);
     return (
       <form onSubmit={this.handleObservationSubmit} className="col-sm-10">
         <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
         <div className="row">
           <div className="form-group col-sm-4">
             <label htmlFor="image">Picture Upload</label>
-            <input onChange={this.handlePicChange} name="image" type="file" id="image" filename={this.state.image}/>
+            <input onChange={this.handlePicChange} name="image" type="file" id="image" filename={this.state.image} value={this.state.image}/>
             <p className="help-block">Upload your species image here.</p>
           </div>
           <div className="media col-sm-5">
             <div className="media-right">
               <div className="sizer">
-                <img className="media-object" src={this.state.preview} />
+                <img className="media-object" src={this.state.preview ? this.state.preview : null } />
                 <p className="help-block">Image preview</p>
               </div>
             </div>
@@ -259,7 +276,7 @@ class ObservationForm extends React.Component{
         </div>
         <div className="form-group">
           <label htmlFor="dateTime">Date of Observation</label>
-          <input onChange={this.handleObservationDate} type="date" className="form-control" id="dateTime" placeholder="When did you observe it?"/>
+          <input onChange={this.handleObservationDate} type="date" className="form-control" id="dateTime" placeholder="When did you observe it?" value={console.log((this.state.observationDate).iso)}/>
         </div>
         <div className="form-group">
           <label htmlFor="locationFound">Location Found</label>
@@ -280,7 +297,7 @@ class ObservationForm extends React.Component{
         </div>
         <div className="form-group">
           <label htmlFor="observationNotes">Observation Notes</label>
-          <textarea onChange={this.handleObservationNotes} className="form-control" id="observationNotes" placeholder="Some details of your find..." rows="3" />
+          <textarea onChange={this.handleObservationNotes} className="form-control" id="observationNotes" placeholder="Some details of your find..." rows="3" value={this.state.observationNotes} />
         </div>
 
 

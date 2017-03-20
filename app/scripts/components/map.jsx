@@ -6,10 +6,6 @@ var GoogleMapLoader = require('react-google-maps').GoogleMapLoader;
 var GoogleMap = require('react-google-maps').GoogleMap;
 var Marker = require('react-google-maps').Marker;
 var MarkerClusterer = require('react-google-maps/lib/addons/MarkerClusterer');
-
-console.log(MarkerClusterer);
-//var MarkerClusterer = require('markerclustererplus').MarkerClusterer;
-// var MarkerClusterer = require('../markerclusterer.js').MarkerClusterer;
 require('react-google-maps');
 
 //********************************

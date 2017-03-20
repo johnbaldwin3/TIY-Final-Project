@@ -51,6 +51,8 @@ var AppRouter = Backbone.Router.extend({
     'observation/:id/edit/' : 'observationsAddEdit',
     //view all of a single user's observations
     'observation/:id/list/' : 'observationList',
+
+
     //add new user observation
     'observation/add/(:speciesKey/)' : 'observationsAddWithSpeciesKey',
     //search for exact species before creating observation
@@ -58,7 +60,8 @@ var AppRouter = Backbone.Router.extend({
     //view all observation photos
     'observation/gallery/' : 'observationGallery',
     //view all rankings in filterable fashion
-    'observation/rankings/' : 'observationRankings'
+    'observation/rankings/' : 'observationRankings',
+    'observation/:id/' : 'observationsAddEdit',
 },
 initialize: function(){
 
