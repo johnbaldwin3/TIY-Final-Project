@@ -14,11 +14,6 @@ var Organism = Backbone.Model.extend({
     //console.log('VN', this.get('vernacularNames'));
     return _.pluck(vernacularNames, 'vernacularName').join(", ");
   },
-  // getSpeciesDescription: function () {
-  //   var description = _.where(this.get('descriptions'), {language: "eng"});
-  //
-  //   return _.pluck(descriptions)
-  // },
   urlRoot: 'https://api.gbif.org/v1/species/',
   getTaxonTree() {
     var kingdom = this.get('kingdom');

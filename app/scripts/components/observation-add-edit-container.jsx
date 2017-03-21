@@ -252,7 +252,7 @@ class ObservationForm extends React.Component{
           <div className="media col-sm-5">
             <div className="media-right">
               <div className="sizer">
-                <img className="media-object" src={this.state.preview ? this.state.preview : null } />
+                <img className="media-object" src={this.state.preview ? this.state.preview : this.state.pic } />
                 <p className="help-block">Image preview</p>
               </div>
             </div>
