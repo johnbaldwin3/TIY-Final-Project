@@ -50,7 +50,7 @@ var AppRouter = Backbone.Router.extend({
     //edit existing user observation (if user)
     'observation/:id/edit/' : 'observationsAddEdit',
     //view all of a single user's observations
-    'observation/:id/list/' : 'observationList',
+    'observation/gallery/:id/' : 'observationList',
 
 
     //add new user observation
@@ -141,9 +141,9 @@ observationsAddEdit: function(id, speciesKey) {
 observationsAddWithSpeciesKey: function(speciesKey){
   this.observationsAddEdit(null, speciesKey);
 },
-observationGallery: function() {
+observationGallery: function(id) {
   ReactDOM.render(
-    React.createElement(ObservationGalleryContainer),
+    React.createElement(ObservationGalleryContainer, {id: id}),
     document.getElementById('app')
   )
 },

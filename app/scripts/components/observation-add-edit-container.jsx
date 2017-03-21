@@ -151,6 +151,8 @@ class ObservationForm extends React.Component{
       //elevation converted to feet
       var elevationFeet = (elevationMeters * 3.2804).toFixed(4);
       //set state of picture exif data
+
+
       this.setState(
        {
         locationOfObservation : {

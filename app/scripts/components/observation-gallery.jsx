@@ -32,6 +32,8 @@ class ObservationGalleryContainer extends React.Component {
     //   this.setState({userProfileCollection: userProfileCollection});
     //   this.forceUpdate();
     // });
+
+    enhancedObservationCollection.urlSetter('observer');
     enhancedObservationCollection.fetch().then(() => {
       console.log('response', enhancedObservationCollection);
 
