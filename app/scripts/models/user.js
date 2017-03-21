@@ -97,9 +97,18 @@ var User = parse.ParseModel.extend({
   }
 });
 
+var UserCollection = parse.ParseCollection.extend({
+  model: User,
+  baseUrl: 'https://jb3-serve.herokuapp.com/users',
+  parse: function(data) {
+    return data.results;
+  }
+});
+
 //********************************
 //Exports
 //********************************
 module.exports = {
-  User
+  User,
+  UserCollection
 };

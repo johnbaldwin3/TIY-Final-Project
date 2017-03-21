@@ -97,7 +97,7 @@ class ObservationForm extends React.Component{
 
     //extending state to mash up with observationCollection
     this.state = $.extend({}, {
-      pic: null,
+      pic: {},
       preview: null,
       observationDate: new Date(),
       observationNotes: '',
@@ -237,11 +237,9 @@ class ObservationForm extends React.Component{
   }
 
   render() {
-    var picture = this.state.pic;
-
-    console.log('tpu', picture);
+    console.log('date', moment(this.state.observationDate.iso).format("L"));
     return (
-      <form onSubmit={this.handleObservationSubmit} className="col-sm-10">
+      <form onSubmit={this.handleObservationSubmit} className="col-sm-12">
         <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
         <div className="row">
           <div className="form-group col-sm-4">
@@ -252,8 +250,8 @@ class ObservationForm extends React.Component{
           <div className="media col-sm-5">
             <div className="media-right">
               <div className="sizer">
-                <img className="media-object" src={this.state.preview ? this.state.preview : this.state.pic } />
-                <p className="help-block">Image preview</p>
+                <img className="media-object" src={this.state.preview ? this.state.preview : this.state.pic.url } />
+                <p className="help-block">{this.state.pic.name ? this.state.pic.name : "Image preview"}</p>
               </div>
             </div>
           </div>
@@ -276,7 +274,7 @@ class ObservationForm extends React.Component{
         </div>
         <div className="form-group">
           <label htmlFor="dateTime">Date of Observation</label>
-          <input onChange={this.handleObservationDate} type="date" className="form-control" id="dateTime" placeholder="When did you observe it?" value={console.log((this.state.observationDate).iso)}/>
+          <input onChange={this.handleObservationDate} type="date" className="form-control" id="dateTime" placeholder="When did you observe it?" value={moment(this.state.observationDate.iso).format("YYYY-MM-DD")}/>
         </div>
         <div className="form-group">
           <label htmlFor="locationFound">Location Found</label>

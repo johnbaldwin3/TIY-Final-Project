@@ -10,8 +10,9 @@ var Moment = require('moment');
 //call in base layout
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var ObservationCollection = require('../models/observations.js').ObservationCollection;
-var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
+var UserCollection = require('../models/user.js').UserCollection;
 var GoogleMapContainer = require('./map.jsx').GoogleMapContainer;
+var EnhancedObservationCollection = require('../models/observations.js').EnhancedObservationCollection;
 
 //********************************
 //Observation Dashboard - Main App Screen
@@ -19,17 +20,27 @@ var GoogleMapContainer = require('./map.jsx').GoogleMapContainer;
 class ObservationDashContainer extends React.Component {
   constructor(props) {
     super(props);
-
+    var userCollection = new UserCollection();
     var observationCollection = new ObservationCollection();
+    var enhancedObservationCollection = new EnhancedObservationCollection();
 
-    observationCollection.fetch().then(()=> {
-      this.setState({observationCollection: observationCollection});
-      console.log(observationCollection);
-      this.forceUpdate();
+    userCollection.fetch().then(() => {
+      console.log('upc', userCollection);
+      this.setState({userCollection: userCollection});
     });
+    //then(() => {
+      enhancedObservationCollection.fetch().then(()=> {
+        this.setState({observationCollection: enhancedObservationCollection, userCollection: userCollection});
+        // console.log(observationCollection);
+        this.forceUpdate();
+      });
+    //});
+
+
 
     this.state = {
-      observationCollection
+      observationCollection,
+      userCollection
     }
   }
   render() {
@@ -55,6 +66,7 @@ class ObservationDashContainer extends React.Component {
       <BaseLayout>
         <div className="container">
           <div className="row">
+
             <ObservationListings observationCollection={this.state.observationCollection}/>
 
             <div className="col-sm-7" style={{height:600, background:'gray'}}>
@@ -63,67 +75,42 @@ class ObservationDashContainer extends React.Component {
 
             </div>
 
-            <div className="col-sm-2 obs-users-dash">
-              <div className="row">
-                <button className="btn btn-primary col-sm-12" type="button">UserName <span className="badge">4</span>
-                </button>
-              </div>
-              <br/>
-              <div className="row">
-                <button className="btn btn-primary col-sm-12" type="button">UserName <span className="badge">4</span>
-                </button>
-              </div>
-              <br/>
-              <div className="row">
-                <button className="btn btn-primary col-sm-12" type="button">UserName <span className="badge">4</span>
-                </button>
-              </div>
-              <br/>
-              <div className="row">
-                <button className="btn btn-primary col-sm-12" type="button">UserName <span className="badge">4</span>
-                </button>
-              </div>
-              <br/>
-              <div className="row">
-                <button className="btn btn-primary col-sm-12" type="button">UserName <span className="badge">4</span>
-                </button>
-              </div>
-              <br/>
-              <div className="row">
-                <button className="btn btn-primary col-sm-12" type="button">UserName <span className="badge">4</span>
-                </button>
-              </div>
+            <UserListings userCollection={this.state.userCollection} />
+
 
             </div>
           </div>
-        </div>
       </BaseLayout>
     )
   }
 }
 
-// class ObservationMapListing extends React.Component {
-//   constructor(props){
-//     super(props);
-//
-//     // this.state = {
-//     //   zoom: 10,
-//     //
-//     // }
-//   }
-//   render() {
-//     return(
-//       <div
-//         defaultCenter={this.props.center}
-//         defaultZoom={this.props.zoom}>
-//
-//         <img src="https://www.codeproject.com/KB/web-image/Google_map/sampleMap.JPG"/>
-//
-//       </div>
-//
-//     )
-//   }
-// }
+class UserListings extends React.Component {
+  constructor(props) {
+    super(props);
+
+
+
+  }
+  render() {
+    //console.log('tpup', this.props.userCollection);
+    var users = this.props.userCollection.map((user) => {
+      //console.log('here', user);
+      return (
+        <div key={user.get("objectId")} className="row">
+          <a type="button" className="btn btn-primary col-sm-12" type="button">{user.get("realOrNickName")} <span className="badge">4</span>
+          </a>
+        </div>
+
+      );
+    });
+    return(
+      <div className="col-sm-2 obs-users-dash">
+         {users}
+      </div>
+    )
+  }
+}
 
 class ObservationListings extends React.Component {
   constructor(props) {
@@ -134,9 +121,9 @@ class ObservationListings extends React.Component {
     var obsListing = this.props.observationCollection.map((obsListItem)=> {
       // obsListItem.getUserProfile(obsListItem.get('objectId'))
       return (
-        <a key={obsListItem.get("objectId")} href="#observation/" className="list-group-item">
+        <a key={obsListItem.get("objectId")} href={"#observation/" + obsListItem.get('objectId') + '/' } className="list-group-item">
           <h4 className="list-group-item-heading">{obsListItem.get("commonName")}</h4>
-          <p className="list-group-item-text">usernamehere</p>
+          <p className="list-group-item-text">{obsListItem.get("observer").realOrNickName}</p>
           <p className="list-group-item-text">{Moment(obsListItem.get("observationDate").iso).format('LL')}</p>
         </a>
       )
