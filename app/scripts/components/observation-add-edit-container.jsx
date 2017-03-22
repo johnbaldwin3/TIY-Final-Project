@@ -99,7 +99,7 @@ class ObservationForm extends React.Component{
     this.state = $.extend({}, {
       pic: {},
       preview: null,
-      observationDate: new Date(),
+      observationDate: null,
       observationNotes: '',
       publicList: true,
       lat: null,
@@ -108,6 +108,10 @@ class ObservationForm extends React.Component{
       lonRef: null,
       elevationFoundMeters: null,
       elevationFoundFeet: null,
+      orientation: null,
+      //date: new Date(),
+      //time: new Date(),
+      dateAndTime: null
 
     }, this.props.observation.toJSON() );
   }
@@ -144,13 +148,30 @@ class ObservationForm extends React.Component{
       //********************************
       //********************************
 
+      //get date and time from original photo at time of shot
+      var dater = EXIF.getTag(file, "DateTimeOriginal");
+      console.log('dater', dater);
+      var date = dater.substr(0,10).split(':').join('-');
+      console.log(date);
+      var time = dater.substr(11,16);
+      console.log('time' , time );
+      //console.log(moment(time).format('LTS'));
+      var dateAndTime = date + "T" + time;
+
+      console.log('dateAndTime', dateAndTime );
       //get elevation data (given in meters)
       var elevation = EXIF.getTag(file, "GPSAltitude");
       //elevation converted to meters (num/denom)
-      var elevationMeters = (elevation.numerator / elevation.denominator).toFixed(4) ;
+      var elevationMeters = (elevation.numerator / elevation.denominator).toFixed(4);
       //elevation converted to feet
       var elevationFeet = (elevationMeters * 3.2804).toFixed(4);
       //set state of picture exif data
+
+
+      //get orientation of picture at time of photo from exif
+      var orientation = EXIF.getTag(file, "Orientation");
+      console.log('orientation', orientation);
+
 
 
       this.setState(
@@ -166,6 +187,13 @@ class ObservationForm extends React.Component{
          lonRef: lonRef,
          elevationFoundFeet: elevationFeet,
          elevationFoundMeters: elevationMeters,
+         date: date,
+         time: time,
+         observationDate: {
+           "__type" : "Date",
+           "iso" : date
+         },
+         dateAndTime: dateAndTime
 
        }
      );
@@ -185,6 +213,7 @@ class ObservationForm extends React.Component{
     this.setState({originalDiscoveryInfo: e.target.value});
   }
   handleObservationDate(e) {
+    console.log("*******", e.target.value);
     var newDate = new Date(e.target.value);
 
     var dateParse = {
@@ -239,7 +268,7 @@ class ObservationForm extends React.Component{
   }
 
   render() {
-    console.log('date', moment(this.state.observationDate.iso).format("L"));
+    //console.log('date', moment(this.state.observationDate.iso).format("L"));
     return (
       <form onSubmit={this.handleObservationSubmit} className="col-sm-12">
         <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
@@ -275,8 +304,12 @@ class ObservationForm extends React.Component{
           value={this.state.originalDiscoveryInfo}/>
         </div>
         <div className="form-group">
-          <label htmlFor="dateTime">Date of Observation</label>
-          <input onChange={this.handleObservationDate} type="date" className="form-control" id="dateTime" placeholder="When did you observe it?" value={moment(this.state.observationDate.iso).format("YYYY-MM-DD")}/>
+          <label htmlFor="date">Date of Observation</label>
+          <input onChange={this.handleObservationDate} type="date" className="form-control" id="date" placeholder="When did you observe it?" value={this.state.observationDate}/>
+        </div>
+        <div className="form-group">
+          <label htmlFor="dateTime">Time of Observation</label>
+          <input type="datetime" className="form-control" id="time" placeholder="When did you observe it?" />
         </div>
         <div className="form-group">
           <label htmlFor="locationFound">Location Found</label>

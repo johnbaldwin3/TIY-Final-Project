@@ -19,7 +19,7 @@ var Observation = parse.ParseModel.extend({
         commonName: '',
         scientificName: '',
         originalDiscoveryInfo: '',
-        observationDate: new Date(),
+        //observationDate: new Date(),
         locationOfObservation: '',
         taxonTree: '',
         observationNotes: '',
@@ -33,21 +33,7 @@ var Observation = parse.ParseModel.extend({
 
 var ObservationCollection = parse.ParseCollection.extend({
   model: Observation,
-  baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/',
-  includer: function(param) {
-    var baseUrl = 'https://jb3-serve.herokuapp.com/classes/Observations/?include=';
-    var param = param;
-    var includeUrl = baseUrl + param + '/';
-    parse.parse.initialize;
-    var collection = $.get(includeUrl).then(response =>{
-      return response;
-    });
-
-    return collection;
-  },
-  parse: function(data) {
-    return data.results;
-  }
+  baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/'
 
 });
 
@@ -55,6 +41,8 @@ var EnhancedObservationCollection = parse.ParseCollection.extend({
   model: Observation,
   baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/',
   urlSetter: function(field) {
+    //allows for dynamic search of pointer fields
+    //field gets passed in on Component
     this.baseUrl = 'https://jb3-serve.herokuapp.com/classes/Observations/?include=' + field;
   }
 })
