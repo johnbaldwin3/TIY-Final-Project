@@ -29,11 +29,11 @@ class ObservationDashContainer extends React.Component {
       this.setState({userCollection: userCollection});
     });
     //then(() => {
-      enhancedObservationCollection.fetch().then(()=> {
-        this.setState({observationCollection: enhancedObservationCollection, userCollection: userCollection});
-        // console.log(observationCollection);
-        this.forceUpdate();
-      });
+    enhancedObservationCollection.fetch().then(()=> {
+      this.setState({observationCollection: enhancedObservationCollection, userCollection: userCollection});
+      // console.log(observationCollection);
+      this.forceUpdate();
+    });
     //});
 
 

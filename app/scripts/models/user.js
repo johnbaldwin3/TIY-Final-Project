@@ -28,7 +28,7 @@ var User = parse.ParseModel.extend({
       User.store(newUser);
       callback(newUser);
     });
-  //  parse.parse.deinitialize();
+    parse.parse.deinitialize();
   },
   //signup method for existing users
   signup: function(credentials){

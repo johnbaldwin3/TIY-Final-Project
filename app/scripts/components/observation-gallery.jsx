@@ -3,7 +3,7 @@
 //********************************
 var React = require('react');
 var $ = require('jquery');
-var Parse = require('parse');
+//var Parse = require('parse');
 
 //********************************
 //Models, Utilities, Layouts

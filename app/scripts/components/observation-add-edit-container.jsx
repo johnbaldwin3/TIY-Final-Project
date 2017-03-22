@@ -24,18 +24,27 @@ class ObservationsAddEditContainer extends React.Component {
     super(props);
     var observedSpecies = new models.Organism();
     var observation = new Observation();
+    var userId = User.current().get('objectId');
 
     this.createNewObservation = this.createNewObservation.bind(this);
-
+    //set the species
     observedSpecies.set('speciesKey', props.speciesKey);
-//hey if this comp - if this,props.id
-    if(this.props.id) {
-      observation.set('objectId', this.props.id);
 
+    //checking to see if their is a model id being passed in
+    if(this.props.id) {
+      //if true, set objectId
+      observation.set('objectId', this.props.id);
+      //fetch this model
       observation.fetch().then(() => {
         this.setState({pic: this.state.pic})
         this.setState({observation: observation});
+        console.log('img', observation.get('pic').url);
+        var observerId = observation.get('observer').objectId
+          observerId != userId ? this.setState({ isOwner: false }) : null
+          console.log(observerId, userId);
+        this.forceUpdate();
       });
+
     } else {
 
       observedSpecies.fetch().then(() => {
@@ -53,7 +62,7 @@ class ObservationsAddEditContainer extends React.Component {
   }
     this.state = {
       observation: observation,
-
+      isOwner: true
     }
 
   }
@@ -70,8 +79,10 @@ class ObservationsAddEditContainer extends React.Component {
   render() {
     return (
         <BaseLayout>
+          <DeleteModal observation={this.state.observation} />
           <div className="container">
-            <ObservationForm action={this.createNewObservation} observation={this.state.observation} />
+            <ObservationForm
+              action={this.createNewObservation} isOwner={this.state.isOwner} observation={this.state.observation} />
           </div>
         </BaseLayout>
       )
@@ -94,6 +105,8 @@ class ObservationForm extends React.Component{
     this.handleObservationNotes = this.handleObservationNotes.bind(this);
     this.handleObservationSubmit = this.handleObservationSubmit.bind(this);
     this.handleLocationChange = this.handleLocationChange.bind(this);
+
+    this.handleBackButton = this.handleBackButton.bind(this);
 
     //extending state to mash up with observationCollection
     this.state = $.extend({}, {
@@ -189,10 +202,11 @@ class ObservationForm extends React.Component{
          elevationFoundMeters: elevationMeters,
          date: date,
          time: time,
-         observationDate: {
-           "__type" : "Date",
-           "iso" : date
-         },
+         observationDate: date,
+        //  observationDate: {
+        //    "__type" : "Date",
+        //    "iso" : date
+        //  },
          dateAndTime: dateAndTime
 
        }
@@ -249,7 +263,18 @@ class ObservationForm extends React.Component{
   }
   handleObservationSubmit(e) {
     e.preventDefault();
-    // 1. we need to upload the image
+    //checking to see if date entered was from exif data
+    //or if date was manually entered
+    //date will need to be converted for parse server
+    if (typeof this.state.observationDate == 'string') {
+     var date = new Date(this.state.observationDate)
+     var dateParse = {
+      "__type" : "Date",
+      "iso" : date
+      }
+     this.setState({ observationDate: dateParse} );
+    }
+    //image uploading here on submit
     var pic = this.state.pic;
     var fileUpload = new ParseFile(pic);
     console.log('fu', fileUpload);
@@ -266,13 +291,18 @@ class ObservationForm extends React.Component{
     this.props.action(formData)
     });
   }
+  handleBackButton(e) {
+
+    Backbone.history.navigate('observation/gallery/', {trigger: true});
+  }
 
   render() {
-    //console.log('date', moment(this.state.observationDate.iso).format("L"));
+    /////IMAGE UPLOAD ISSUE WITH EDIT OF RECORD//////
     return (
       <form onSubmit={this.handleObservationSubmit} className="col-sm-12">
         <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
         <div className="row">
+
           <div className="form-group col-sm-4">
             <label htmlFor="image">Picture Upload</label>
             <input onChange={this.handlePicChange} name="image" type="file" id="image" filename={this.state.image} value={this.state.image}/>
@@ -339,13 +369,69 @@ class ObservationForm extends React.Component{
             <input onChange={this.handlePublicOrPrivate} type="checkbox" value="true"/> Public?
           </label>
         </div>
-        <input type="submit" className="btn btn-default" value="Submit Your Find"/>
+        {
+         this.props.isOwner ? <input type="submit" className="btn btn-success" value={ true ? 'Edit Your Observation' : 'Submit Your Find' }/> : <input type="button" onClick={this.handleBackButton} className="btn btn-default" value="Back"/>
+        }
+        {
+        this.props.isOwner ? <input type="button" onClick={this.handleBackButton} className="btn btn-warning" value="Back to Gallery"/> : null
+        }
+        <div className="pull-right">
+          {
+          this.props.isOwner ? <input type="button" data-toggle="modal" data-target="#deleteModal"  className="btn btn-danger" value="Delete Observation" /> : null
+          }
+        </div>
+
+
       </form>
     )
 
   }
 }
 
+class DeleteModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleDeleteObservationButton = this.handleDeleteObservationButton.bind(this);
+
+    this.state = {
+      observation: this.props.observation
+    }
+  }
+  handleDeleteObservationButton(e) {
+    //alert("Are you sure?");
+    var modelToDelete = this.props.observation;
+    modelToDelete.destroy();
+    this.setState({observation: this.state.observation})
+    //console.log(this.props.observation);
+
+    Backbone.history.navigate('observation/gallery/', {trigger: true});
+
+  }
+  render() {
+    return (
+      <div className="modal fade" id="deleteModal" tabIndex="-1" role="dialog">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 className="modal-title">Delete Your Observation?</h4>
+            </div>
+            <div className="modal-body">
+              <p>This change will be permanent and can not be undone, are you sure?</p>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-warning" data-dismiss="modal">Cancel</button>
+              <button onClick={this.handleDeleteObservationButton}  type="button" data-dismiss="modal" className="btn btn-danger">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
 module.exports = {
   ObservationsAddEditContainer
 };
+
+//
