@@ -29,7 +29,7 @@ class ObservationGalleryContainer extends React.Component {
     if(this.props.id != null) {
 
       observationCollection.parseWhere('observer', 'Observations', this.props.id).fetch().then((response)=> {
-          console.log('userId: ' + this.props.id + ' observations: ' + response  );
+        console.log('userId: ' + this.props.id + ' observations: ' + response);
       });
 
 
