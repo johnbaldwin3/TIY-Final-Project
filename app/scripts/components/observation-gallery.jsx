@@ -3,18 +3,16 @@
 //********************************
 var React = require('react');
 var $ = require('jquery');
-//var Parse = require('parse');
+var Backbone = require('backbone');
 
 //********************************
 //Models, Utilities, Layouts
 //********************************
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var ObservationCollection = require('../models/observations.js').ObservationCollection;
-
 var EnhancedObservationCollection = require('../models/observations.js').EnhancedObservationCollection;
-//var User = require('../models/user.js').User;
 var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
-//var UserProfile = require('../models/userProfile.js').UserProfile;
+
 //********************************
 //Observation Gallery (Photos Gallery)
 //********************************
@@ -24,35 +22,32 @@ class ObservationGalleryContainer extends React.Component {
     var observationCollection = new ObservationCollection();
     var userProfileCollection = new UserProfileCollection();
     var enhancedObservationCollection = new EnhancedObservationCollection();
+    var UserCollection = require('../models/user.js').UserCollection;
 
-    // console.log('log', observationCollection.includer('observer').then((response) => {
-    //   console.log('response', response);
-    // }));
-    // userProfileCollection.fetch().then(() => {
-    //   this.setState({userProfileCollection: userProfileCollection});
-    //   this.forceUpdate();
-    // });
+    console.log('propsid', this.props.id);
 
-    enhancedObservationCollection.urlSetter('observer');
-    enhancedObservationCollection.fetch().then(() => {
-      console.log('response', enhancedObservationCollection);
+    if(this.props.id != null) {
 
-      this.setState({observationCollection: enhancedObservationCollection });
-    });
-    //currentCollection.set('objectId', props.id);
-    // observationCollection.fetch('observer').then((response)=> {
-    //   //console.log('response', response);
-    //   this.setState({observationCollection: observationCollection});
-    //   this.forceUpdate();
-    //   // userProfileCollection.fetch().then(()=> {
-    //   //   this.setState({userProfileCollection: userProfileCollection});
-    //   //  this.setState({observationCollection: observationCollection});
-    // });
-      //console.log(observationCollection);
+      observationCollection.parseWhere('observer', 'Observations', this.props.id).fetch().then((response)=> {
+          console.log('userId: ' + this.props.id + ' observations: ' + response  );
+      });
+
+
+    } else {
+
+      enhancedObservationCollection.urlSetter('observer');
+      enhancedObservationCollection.fetch().then(() => {
+        console.log('response', enhancedObservationCollection);
+
+        this.setState({observationCollection: enhancedObservationCollection});
+      });
+
+    }
 
     this.state = {
       observationCollection,
-      userProfileCollection
+      userProfileCollection,
+
     }
   }
   render() {
@@ -67,19 +62,15 @@ class ObservationGalleryContainer extends React.Component {
 class GalleryListings extends React.Component {
   constructor(props) {
     super(props);
-
-    // this.state = {
-    //   userProfileCollection: this.props.userProfileCollection
-    // }
+    this.handleUserList = this.handleUserList.bind(this);
   }
-  // componentWillReceiveProps(nextProps) {
-  //   var newState = $.extend({}, this.state, nextProps.userProfileCollection.toJSON());
-  //   this.setState(newState);
-  // }
-
+  handleUserList(e) {
+    console.log("e", e.target.value);
+    var url = "/observation/gallery/" + e.target.value + "/";
+    Backbone.history.navigate(url, {trigger: true});
+  }
   render() {
-    //console.log('upc', this.props.userProfileCollection);
-    //console.log('tpoc', this.props.observationCollection);
+
     var obsGallery = this.props.observationCollection.map((obsPics)=> {
 
       return (
@@ -88,9 +79,9 @@ class GalleryListings extends React.Component {
             <div className="thumbnail">
               <img src={obsPics.get("pic").url} alt="..."/>
               <div className="caption">
-                <h3>{obsPics.get("commonName")}</h3>
-                <p>Observed By: {obsPics.get("observer").realOrNickName}</p>
-                <p><a href="#" className="btn btn-primary" role="button">{"See " + (obsPics.get("observer").realOrNickName) + "'s Other Lists"}</a> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default" role="button">Observation Details</a></p>
+                <h4>{obsPics.get("commonName")}</h4>
+                <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
+                <p><button onClick={this.handleUserList} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button">Observation Details</a></p>
               </div>
             </div>
           </div>

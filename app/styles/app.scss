@@ -56,12 +56,16 @@ img {
   display: flex;
   flex-wrap: wrap;
   height: 460px;
-  //flex-wrap: wrap;
+  flex-wrap: wrap;
   img{
     max-height: 300px;
     overflow: hidden;
   }
 
+}
+
+.masonry-img {
+  max-width: 200px;
 }
 
 .obs-list-dash {
@@ -72,4 +76,8 @@ img {
 
 .obs-users-dash {
   @extend .obs-list-dash;
+}
+
+.gal-button {
+  font-size: 12px;
 }

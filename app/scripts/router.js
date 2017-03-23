@@ -21,7 +21,8 @@ var ObservationDashContainer = require('./components/observation-dash-container.
 var ObservationsAddEditContainer = require('./components/observation-add-edit-container.jsx').ObservationsAddEditContainer;
 var ObservationGalleryContainer = require('./components/observation-gallery.jsx').ObservationGalleryContainer;
 var ObservationSpeciesSearchContainer = require('./components/observation-search.jsx').ObservationSpeciesSearchContainer;
-
+var ObservationLightboxContainer = require('./components/observation-lightbox.jsx').ObservationLightboxContainer;
+var ObservationListContainer = require('./components/observation-user-listing.jsx').ObservationListContainer;
 //********************************
 //Models and Utilities
 //********************************
@@ -50,9 +51,9 @@ var AppRouter = Backbone.Router.extend({
     //edit existing user observation (if user)
     'observation/:id/edit/' : 'observationsAddEdit',
     //view all of a single user's observations
-    'observation/gallery/:id/' : 'observationList',
+    'observation/listings/:id' : 'observationListing',
 
-
+    'observation/gallery/:id/' : 'observationGallery',
     //add new user observation
     'observation/add/(:speciesKey/)' : 'observationsAddWithSpeciesKey',
     //search for exact species before creating observation
@@ -61,7 +62,16 @@ var AppRouter = Backbone.Router.extend({
     'observation/gallery/' : 'observationGallery',
     //view all rankings in filterable fashion
     'observation/rankings/' : 'observationRankings',
+    //display lightbox gallery
+    'observation/lightbox/' : 'observationLightbox',
+    //edit observation if
+
+
+    'observation/listings/' : 'observationListing',
+
     'observation/:id/' : 'observationsAddEdit',
+
+
 },
 initialize: function(){
 
@@ -147,6 +157,18 @@ observationGallery: function(id) {
     document.getElementById('app')
   )
 },
+observationLightbox: function() {
+  ReactDOM.render(
+    React.createElement(ObservationLightboxContainer),
+    document.getElementById('app')
+  )
+},
+observationListing: function(id) {
+  ReactDOM.render(
+    React.createElement(ObservationListContainer, {id:id}),
+    document.getElementById('app')
+  )
+}
 
 });
 

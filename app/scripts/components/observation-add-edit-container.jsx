@@ -132,9 +132,6 @@ class ObservationForm extends React.Component{
     var newState = $.extend({}, this.state, nextProps.observation.toJSON());
     this.setState(newState);
   }
-  // componentDidMount() {
-  //   console.log('picture', this.state.pic);
-  // }
   handlePicChange(e) {
     //********************************
     //********************************
@@ -163,30 +160,26 @@ class ObservationForm extends React.Component{
 
       //get date and time from original photo at time of shot
       var dater = EXIF.getTag(file, "DateTimeOriginal");
-      console.log('dater', dater);
+      //console.log('dater', dater);
       var date = dater.substr(0,10).split(':').join('-');
-      console.log(date);
+      //console.log(date);
       var time = dater.substr(11,16);
-      console.log('time' , time );
+      //console.log('time' , time );
       //console.log(moment(time).format('LTS'));
       var dateAndTime = date + "T" + time;
 
-      console.log('dateAndTime', dateAndTime );
+      //console.log('dateAndTime', dateAndTime );
       //get elevation data (given in meters)
       var elevation = EXIF.getTag(file, "GPSAltitude");
       //elevation converted to meters (num/denom)
       var elevationMeters = (elevation.numerator / elevation.denominator).toFixed(4);
       //elevation converted to feet
       var elevationFeet = (elevationMeters * 3.2804).toFixed(4);
-      //set state of picture exif data
-
-
       //get orientation of picture at time of photo from exif
       var orientation = EXIF.getTag(file, "Orientation");
-      console.log('orientation', orientation);
+      //console.log('orientation', orientation);
 
-
-
+      //set state of picture exif data
       this.setState(
        {
         locationOfObservation : {
@@ -203,10 +196,6 @@ class ObservationForm extends React.Component{
          date: date,
          time: time,
          observationDate: date,
-        //  observationDate: {
-        //    "__type" : "Date",
-        //    "iso" : date
-        //  },
          dateAndTime: dateAndTime
 
        }
@@ -275,8 +264,20 @@ class ObservationForm extends React.Component{
      this.setState({ observationDate: dateParse} );
     }
     //image uploading here on submit
+
     var pic = this.state.pic;
-    var fileUpload = new ParseFile(pic);
+
+    //SOME LOGIC FOR IMAGE WHEN EDITING (NOT CREATING)#######
+
+    // var fileUpload = new ParseFile(pic);
+    // if(!fileUpload){
+    //   console.log('no pic', typeof fileUpload);
+    // } else {
+    //   console.log('pic!', fileUpload);
+    // }
+
+    //###################################################
+
     console.log('fu', fileUpload);
     fileUpload.save({}, {
       data: pic
@@ -288,11 +289,11 @@ class ObservationForm extends React.Component{
         url: imageUrl
       };
       delete formData.preview;
-    this.props.action(formData)
+      this.props.action(formData)
     });
   }
   handleBackButton(e) {
-
+    //back to gallery after viewing the description
     Backbone.history.navigate('observation/gallery/', {trigger: true});
   }
 
@@ -301,23 +302,21 @@ class ObservationForm extends React.Component{
     return (
       <form onSubmit={this.handleObservationSubmit} className="col-sm-12">
         <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
-        <div className="row">
-
-          <div className="form-group col-sm-4">
-            <label htmlFor="image">Picture Upload</label>
-            <input onChange={this.handlePicChange} name="image" type="file" id="image" filename={this.state.image} value={this.state.image}/>
-            <p className="help-block">Upload your species image here.</p>
-          </div>
-          <div className="media col-sm-5">
-            <div className="media-right">
-              <div className="sizer">
-                <img className="media-object" src={this.state.preview ? this.state.preview : this.state.pic.url } />
-                <p className="help-block">{this.state.pic.name ? this.state.pic.name : "Image preview"}</p>
+          <div className="row">
+            <div className="form-group col-sm-4">
+              <label htmlFor="image">Picture Upload</label>
+              <input onChange={this.handlePicChange} name="image" type="file" id="image" filename={this.state.image} value={this.state.image}/>
+              <p className="help-block">Upload your species image here.</p>
+            </div>
+            <div className="media col-sm-5">
+              <div className="media-right">
+                <div className="sizer">
+                  <img className="media-object" src={this.state.preview ? this.state.preview : this.state.pic.url } />
+                  <p className="help-block">{this.state.pic.name ? this.state.pic.name : "Image preview"}</p>
+                </div>
               </div>
             </div>
           </div>
-
-        </div>
         <div className="well"><h4>Step Two: Fill in the remaining info!</h4></div>
         <div className="form-group">
           <label htmlFor="speciesCommonName">Common Name</label>
@@ -362,13 +361,19 @@ class ObservationForm extends React.Component{
           <label htmlFor="observationNotes">Observation Notes</label>
           <textarea onChange={this.handleObservationNotes} className="form-control" id="observationNotes" placeholder="Some details of your find..." rows="3" value={this.state.observationNotes} />
         </div>
-
-
         <div className="checkbox">
           <label>
             <input onChange={this.handlePublicOrPrivate} type="checkbox" value="true"/> Public?
           </label>
         </div>
+        {/***********************
+          Logic to determine the button options:
+          1) if user is the owner of observation, present user with the option to edit or delete
+          2) if user is not the owner, present user with back button to return to Gallery
+          3) if user is creating a new observation submit the record, submit button presented
+          **********************
+          if user wants to delete, display modal will confirm delete, then take user to gallery
+          ***********************/}
         {
          this.props.isOwner ? <input type="submit" className="btn btn-success" value={ true ? 'Edit Your Observation' : 'Submit Your Find' }/> : <input type="button" onClick={this.handleBackButton} className="btn btn-default" value="Back"/>
         }
@@ -380,8 +385,6 @@ class ObservationForm extends React.Component{
           this.props.isOwner ? <input type="button" data-toggle="modal" data-target="#deleteModal"  className="btn btn-danger" value="Delete Observation" /> : null
           }
         </div>
-
-
       </form>
     )
 
@@ -399,11 +402,13 @@ class DeleteModal extends React.Component {
   }
   handleDeleteObservationButton(e) {
     //alert("Are you sure?");
+    //delete instance of this model
     var modelToDelete = this.props.observation;
     modelToDelete.destroy();
     this.setState({observation: this.state.observation})
     //console.log(this.props.observation);
 
+    //navigate back to gallery after delete
     Backbone.history.navigate('observation/gallery/', {trigger: true});
 
   }
