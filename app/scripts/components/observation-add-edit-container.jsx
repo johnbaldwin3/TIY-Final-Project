@@ -124,8 +124,7 @@ class ObservationForm extends React.Component{
       orientation: null,
       //date: new Date(),
       //time: new Date(),
-      dateAndTime: null,
-      newPic: false
+      dateAndTime: null
 
     }, this.props.observation.toJSON() );
   }
@@ -197,8 +196,7 @@ class ObservationForm extends React.Component{
          date: date,
          time: time,
          observationDate: date,
-         dateAndTime: dateAndTime,
-         newPic: true
+         dateAndTime: dateAndTime
 
        }
      );
@@ -257,69 +255,43 @@ class ObservationForm extends React.Component{
     //checking to see if date entered was from exif data
     //or if date was manually entered
     //date will need to be converted for parse server
+    if (typeof this.state.observationDate == 'string') {
+     var date = new Date(this.state.observationDate)
+     var dateParse = {
+      "__type" : "Date",
+      "iso" : date
+      }
+     this.setState({ observationDate: dateParse} );
+    }
     //image uploading here on submit
 
-    var cloneState = Object.assign({}, this.state);
-    delete cloneState.newPic;
-    console.log(cloneState);
+    var pic = this.state.pic;
 
-    if (this.state.newPic) {
+    //SOME LOGIC FOR IMAGE WHEN EDITING (NOT CREATING)#######
 
-      console.log('newPic?: ' + this.state.newPic, this.state.newPic)
+   var fileUpload = new ParseFile(pic);
 
-      var cloneState = {}
+    // if(!fileUpload){
+    //   console.log('no pic', typeof fileUpload);
+    // } else {
+    //   console.log('pic!', fileUpload);
+    // }
 
-      // if (typeof this.state.observationDate == 'string') {
-      //  var date = new Date(this.state.observationDate)
-      //  var dateParse = {
-      //   "__type" : "Date",
-      //   "iso" : date
-      //   }
-      //  this.setState({ observationDate: dateParse} );
-      // }
+    //###################################################
 
-      var date = new Date(this.state.observationDate)
-      var dateParse = {
-       "__type" : "Date",
-       "iso" : date
-       }
-      this.setState({ observationDate: dateParse} );
-
-      var pic = this.state.pic;
-
-      var cloneState = Object.assign({}, this.state);
-      delete cloneState.newPic;
-      console.log(cloneState);
-      console.log('pic', pic);
-
-      //SOME LOGIC FOR IMAGE WHEN EDITING (NOT CREATING)#######
-
-      var fileUpload = new ParseFile(pic);
-
-      console.log('fu', fileUpload);
-
-      fileUpload.save({}, {
-        data: pic
-      }).then((response)=>{
-        var imageUrl = response.url;
-        var formData = $.extend({}, cloneState);
-        formData.pic = {
-          name: pic.name,
-          url: imageUrl
-        };
-        delete formData.preview;
-        this.props.action(formData)
-        this.setState({newPic: false});
-      });
-
-
-    } else {
-
-      console.log('newPic?: ' + this.state.newPic, this.state.newPic)
-
-      this.props.action(cloneState)
-    }
-
+    console.log('fu', fileUpload);
+    fileUpload.save({}, {
+      data: pic
+    }).then((response)=>{
+      var imageUrl = response.url;
+      var formData = $.extend({}, this.state);
+      formData.pic = {
+        name: pic.name,
+        url: imageUrl
+      };
+      delete formData.preview;
+      this.props.action(formData)
+    });
   }
   handleBackButton(e) {
     //back to gallery after viewing the description
