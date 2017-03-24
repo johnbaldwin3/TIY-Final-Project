@@ -87,7 +87,7 @@ var ParseCollection = Backbone.Collection.extend({
     }
 
     this.whereClause[field] = value;
-
+    console.log('parseWhere', this.whereClause);
     return this;
   },
   parseInclude: function(field, value, objectId) {

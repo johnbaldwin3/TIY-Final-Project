@@ -34,7 +34,6 @@ var Observation = parse.ParseModel.extend({
 var ObservationCollection = parse.ParseCollection.extend({
   model: Observation,
   baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/'
-
 });
 
 var EnhancedObservationCollection = parse.ParseCollection.extend({

@@ -32,7 +32,7 @@ class ObservationGalleryContainer extends React.Component {
     //   console.log('responseUSERLIST', userCollection);
     // });
     // //################################################
-    // this.toggleGallery = this.toggleGallery.bind(this);
+    this.toggleGallery = this.toggleGallery.bind(this);
 
     console.log('propsid', this.props.id);
 
@@ -64,6 +64,7 @@ class ObservationGalleryContainer extends React.Component {
   }
   toggleGallery() {
    console.log('firing');
+   console.log('check',this.state.observationCollection);
    var state = !this.state.showGallery;
    this.setState({ showGallery: state });
   }
@@ -134,6 +135,7 @@ class UserListings extends React.Component{
 
     this.handleBackToGallery = this.handleBackToGallery.bind(this);
     userCollection.parseWhere('observer', 'Observations', 'EsxjstxjJi').fetch().then(()=> {
+
       console.log('responseUSERLIST', userCollection);
     });
   }
@@ -145,6 +147,7 @@ class UserListings extends React.Component{
     this.props.toggleGallery();
   }
   render() {
+    console.log('my props', this.props);
     // var obsGallery = this.props.observationCollection.map((obsPics)=> {
     //
     //   return (
