@@ -74,6 +74,7 @@ var ParseModel = Backbone.Model.extend({
 
 var ParseCollection = Backbone.Collection.extend({
   whereClause: {},
+  includeClause: {},
   parseWhere: function(field, value, objectId){
     // If an objectId is passed in then we are building a pointer where
     if(objectId){
@@ -89,15 +90,30 @@ var ParseCollection = Backbone.Collection.extend({
 
     return this;
   },
+  parseInclude: function(field, value, objectId) {
+    if(objectId) {
+      value = {
+        className: value,
+        objectId: objectId,
+        '__type': 'Pointer'
+      };
+   }
+   this.includeClause[field] = value;
+   return this;
+  },
   url: function(){
-    var url = this.baseUrl;
+   var url = this.baseUrl;
+   if(Object.keys(this.whereClause).length > 0){
+     url += '?where=' + JSON.stringify(this.whereClause);
+     this.whereClause = {};
+   }
 
-    if(Object.keys(this.whereClause).length > 0){
-      url += '?where=' + JSON.stringify(this.whereClause);
-      this.whereClause = {};
-    }
+   if(Object.keys(this.includeClause).length > 0){
+     url += '?include=' + JSON.stringify(this.includeClause);
+     this.includeClause = {};
+   }
 
-    return url;
+   return url;
   },
   parse: function(data){
     return data.results;
@@ -118,6 +134,7 @@ var ParseCollection = Backbone.Collection.extend({
 
     return xhr;
   },
+
 });
 
 var ParseFile = ParseModel.extend({

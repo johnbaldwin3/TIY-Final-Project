@@ -124,9 +124,9 @@ signUp: function() {
     document.getElementById('app')
   )
 },
-userInfoAddViewEdit: function() {
+userInfoAddViewEdit: function(id) {
   ReactDOM.render(
-    React.createElement(UserInfoContainer),
+    React.createElement(UserInfoContainer, {id : id}),
     document.getElementById('app')
   )
 },

@@ -23,8 +23,10 @@ class SignupContainer extends React.Component {
     this.createUserAccount = this.createUserAccount.bind(this);
   }
   createUserAccount(creds) {
-    var user = User.signup(creds);
-    Backbone.history.navigate('userinfo/', {trigger: true});
+    var user = User.signup(creds, function(){
+      Backbone.history.navigate('userinfo/', {trigger: true});
+    });
+
   }
   render() {
     return (

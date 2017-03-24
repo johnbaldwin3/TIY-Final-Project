@@ -12,6 +12,7 @@ var ParseFile = require('../parse.js').ParseFile;
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var UserProfile = require('../models/userProfile.js').UserProfile;
 var User = require('../models/user.js').User;
+var UserCollection = require('../models/user.js').UserCollection;
 
 //********************************
 //User Profile Add / Edit / View
@@ -20,10 +21,21 @@ class UserInfoContainer extends React.Component {
   constructor(props) {
     super(props);
     var userProfile = new UserProfile();
+    var userCollection = new UserCollection();
     var currentUser = User.current();
+    var userId = this.props.id;
 
     this.createUserProfile = this.createUserProfile.bind(this);
+    console.log('propsId', this.props.id);
 
+    if(userId != null) {
+      console.log("theres a user");
+      userProfile.set('objectId', this.props.id);
+      userProfile.fetch().then((response) => {
+        this.setState({userProfile: response});
+      })
+
+    }
     this.state = {
       userProfile: userProfile,
       currentUser: currentUser
@@ -135,12 +147,13 @@ class UserProfileForm extends React.Component {
     });
   }
   render() {
+    console.log('thpropup', this.props.userProfile);
     return(
       <form onSubmit={this.handleSubmit}>
         <div className="form-group col-sm-6">
           <div className="media-right">
             <div className="sizer">
-              <img className="media-object" src={this.state.preview} />
+              <img className="media-object" src={this.state.preview ? this.state.preview : null }/>
               <p className="help-block">Image preview</p>
             </div>
           </div>
@@ -149,24 +162,24 @@ class UserProfileForm extends React.Component {
         </div>
         <div className="form-group col-sm-6">
           <label htmlFor="userName">Your Nickname or Real Name</label>
-          <input  onChange={this.handleUserNameChange} type="text" className="form-control" id="userName" placeholder="Your Name Here"/>
+          <input  onChange={this.handleUserNameChange} type="text" className="form-control" id="userName" placeholder="Your Name Here" value={this.props.userProfile.realOrNickName}/>
         </div>
         <div className="row">
 
           <div className="form-group col-sm-6 col-sm-offset-6">
             <label htmlFor="birthday">Your Birthday (optional)</label>
-            <input onChange={this.handleBirthdayChange} type="date" className="form-control" id="birthday"/>
+            <input onChange={this.handleBirthdayChange} type="date" className="form-control" id="birthday" value={this.props.userProfile.birthday}/>
           </div>
         </div>
 
           <div className="form-group col-sm-12">
             <label htmlFor="personalBio">Your Bio Information (optional)</label>
-            <textarea onChange={this.handleUserBioInfo} id="personalBio" className="form-control" placeholder="Your Personal Bio" rows="3"></textarea>
+            <textarea onChange={this.handleUserBioInfo} id="personalBio" className="form-control" placeholder="Your Personal Bio" rows="3" value={this.props.userProfile.bioInfo}></textarea>
           </div>
 
         <div className="form-group col-sm-12">
           <label htmlFor="personalInterests">What kind of organisms do you like to find?</label>
-          <textarea onChange={this.handleUserSpeciesInterests} id="personalInterests" className="form-control" placeholder="Your Interests" rows="3"></textarea>
+          <textarea onChange={this.handleUserSpeciesInterests} id="personalInterests" className="form-control" placeholder="Your Interests" rows="3" value={this.props.userProfile.speciesInterests}></textarea>
           <p className="help-block">(Example: "Mammals, Reptiles, and Fish"... or something more specific such as "I like to observe hummingbird migrations")</p>
         </div>
         <button type="submit" className="btn btn-success">Submit User Info</button>

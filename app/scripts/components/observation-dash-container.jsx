@@ -13,6 +13,7 @@ var ObservationCollection = require('../models/observations.js').ObservationColl
 var UserCollection = require('../models/user.js').UserCollection;
 var GoogleMapContainer = require('./map.jsx').GoogleMapContainer;
 var EnhancedObservationCollection = require('../models/observations.js').EnhancedObservationCollection;
+var User = require('../models/user.js').User;
 
 //********************************
 //Observation Dashboard - Main App Screen
@@ -24,6 +25,7 @@ class ObservationDashContainer extends React.Component {
     var observationCollection = new ObservationCollection();
     var enhancedObservationCollection = new EnhancedObservationCollection();
 
+    console.log(User.current().get("realOrNickName"));
     userCollection.fetch().then(() => {
       console.log('upc', userCollection);
       this.setState({userCollection: userCollection});
@@ -66,7 +68,7 @@ class ObservationDashContainer extends React.Component {
       <BaseLayout>
         <div className="container">
           <div className="row">
-
+            <h3>Welcome Back {User.current().get("realOrNickName")}</h3>
             <ObservationListings observationCollection={this.state.observationCollection}/>
 
             <div className="col-sm-7" style={{height:600, background:'gray'}}>

@@ -35,11 +35,21 @@ class BaseLayout extends React.Component {
                 <li className={utility.activeClass('observation/')}><a href="#observation/">Observation Dashboard<span className="sr-only">(current)</span></a></li>
                 <li className={utility.activeClass('observation/search/')}><a href="#observation/search/">Add New Observation</a></li>
                 <li className={utility.activeClass('observation/gallery/')}> <a href="#observation/gallery/">Photo Gallery</a></li>
-                <li><a href="#">User Listings (users collect)</a></li>
+                <li className={utility.activeClass('observation/listings/')}><a href="#observation/listings/">User Listings (users collect)</a></li>
                 <li><a href="#">Rankings</a></li>
                 <li><a href="#">Observation Detail</a></li>
               </ul>
               <ul className="nav navbar-nav navbar-right">
+                <li className="dropdown">
+                  <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{User.current().get("realOrNickName")} <span className="caret"></span></a>
+                  <ul className="dropdown-menu">
+                    <li><a href={"#userinfo/" + (User.current().get("objectId")) + "/" }>Your Profile</a></li>
+                    <li><a href="#">Another action</a></li>
+                    <li><a href="#">Something else here</a></li>
+                    <li role="separator" className="divider"></li>
+                    <li><a href="#">Separated link</a></li>
+                  </ul>
+                </li>
                 <li><a  href="#logout/" type="button" className="btn btn-danger">Log Out</a></li>
               </ul>
             </div>

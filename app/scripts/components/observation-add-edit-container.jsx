@@ -67,15 +67,14 @@ class ObservationsAddEditContainer extends React.Component {
 
   }
   createNewObservation(data) {
-    var observation = this.state.observation;
-    observation.set(data);
-    observation.setPointer("observer", '_User', User.current().get("objectId"));
+   var observation = this.state.observation;
+   observation.set(data);
 
-    observation.save().then(function(){
+   observation.setPointer("observer", '_User', User.current().get("objectId"));
+   observation.save().then(function(){
      Backbone.history.navigate('observation/', {trigger: true});
-
-    });
-  }
+   });
+ }
   render() {
     return (
         <BaseLayout>
@@ -131,6 +130,7 @@ class ObservationForm extends React.Component{
   componentWillReceiveProps(nextProps) {
     var newState = $.extend({}, this.state, nextProps.observation.toJSON());
     this.setState(newState);
+    this.setState({observationDate: this.props.observation.get('date')});
   }
   handlePicChange(e) {
     //********************************
@@ -251,48 +251,46 @@ class ObservationForm extends React.Component{
 
   }
   handleObservationSubmit(e) {
-    e.preventDefault();
-    //checking to see if date entered was from exif data
-    //or if date was manually entered
-    //date will need to be converted for parse server
-    if (typeof this.state.observationDate == 'string') {
-     var date = new Date(this.state.observationDate)
-     var dateParse = {
-      "__type" : "Date",
-      "iso" : date
-      }
-     this.setState({ observationDate: dateParse} );
-    }
-    //image uploading here on submit
+     e.preventDefault();
 
-    var pic = this.state.pic;
+     var formData = $.extend({}, this.state);
 
-    //SOME LOGIC FOR IMAGE WHEN EDITING (NOT CREATING)#######
+     if (formData.preview) {
 
-   var fileUpload = new ParseFile(pic);
+       // handle date
+       var date = new Date(formData.date);
+       var dateParse = {
+         "__type": "Date",
+         "iso": date
+       }
+       formData.observationDate = dateParse
 
-    // if(!fileUpload){
-    //   console.log('no pic', typeof fileUpload);
-    // } else {
-    //   console.log('pic!', fileUpload);
-    // }
+       // handle pic
+       var pic = formData.pic;
+       var fileUpload = new ParseFile(pic);
+       fileUpload.save({}, {
+         data: pic
+       }).then((response)=>{
+         var imageUrl = response.url;
+         formData.pic = {
+           name: pic.name,
+           url: imageUrl
+         };
+         delete formData.preview;
+         this.props.action(formData);
+       });
+     } else {
+       // handle date
+       var date = new Date(formData.date);
+       var dateParse = {
+         "__type": "Date",
+         "iso": date
+       }
+       formData.observationDate = dateParse
+       this.props.action(formData);
+     }
 
-    //###################################################
-
-    console.log('fu', fileUpload);
-    fileUpload.save({}, {
-      data: pic
-    }).then((response)=>{
-      var imageUrl = response.url;
-      var formData = $.extend({}, this.state);
-      formData.pic = {
-        name: pic.name,
-        url: imageUrl
-      };
-      delete formData.preview;
-      this.props.action(formData)
-    });
-  }
+   }
   handleBackButton(e) {
     //back to gallery after viewing the description
     Backbone.history.navigate('observation/gallery/', {trigger: true});
@@ -376,7 +374,7 @@ class ObservationForm extends React.Component{
           if user wants to delete, display modal will confirm delete, then take user to gallery
           ***********************/}
         {
-         this.props.isOwner ? <input type="submit" className="btn btn-success" value={ true ? 'Edit Your Observation' : 'Submit Your Find' }/> : <input type="button" onClick={this.handleBackButton} className="btn btn-default" value="Back"/>
+         this.props.isOwner ? <input type="submit" className="btn btn-success" value={ this.props.observation.isNew() ? 'Submit Your Find' : 'Edit Your Observation'}/> : <input type="button" onClick={this.handleBackButton} className="btn btn-default" value="Back"/>
         }
         {
         this.props.isOwner ? <input type="button" onClick={this.handleBackButton} className="btn btn-warning" value="Back to Gallery"/> : null

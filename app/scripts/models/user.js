@@ -31,10 +31,11 @@ var User = parse.ParseModel.extend({
     parse.parse.deinitialize();
   },
   //signup method for existing users
-  signup: function(credentials){
+  signup: function(credentials, callback){
     var newUser = new User(credentials);
     newUser.save().then(() => {
       User.store(newUser);
+      callback();
     });
     return newUser;
   },
