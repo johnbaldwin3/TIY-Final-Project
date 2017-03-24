@@ -43,7 +43,7 @@ class GoogleMapContainer extends React.Component {
             defaultZoom={4}
             defaultCenter={this.props.center}
 
-            options={{streetViewControl: false, mapTypeControl: false}}>
+            options={{streetViewControl: false, mapTypeControl: true}}>
             <MarkerClusterer>
               {markers}
             </MarkerClusterer>
