@@ -21,57 +21,53 @@ class ObservationGalleryContainer extends React.Component {
   constructor(props) {
     super(props);
     var observationCollection = new ObservationCollection();
-    var userProfileCollection = new UserProfileCollection();
     var enhancedObservationCollection = new EnhancedObservationCollection();
-   //#################################################
-    var userCollection = new UserCollection();
     var userObservations = new ObservationCollection();
 
-    // //this.handleBackToGallery = this.handleBackToGallery.bind(this);
-    // userCollection.parseWhere('observer', '_User', 'vkpH6o1pep').fetch().then(()=> {
-    //   console.log('responseUSERLIST', userCollection);
-    // });
-    // //################################################
     this.toggleGallery = this.toggleGallery.bind(this);
-
+    this.handleNewCollection = this.handleNewCollection.bind(this);
     console.log('propsid', this.props.id);
 
-    // if(this.props.id != null) {
-    //   console.log('ifstatement');
-    //   observationCollection.parseWhere('observer', 'Observations', this.props.id).fetch().then((response)=> {
-    //     console.log('userId: ' + this.props.id + ' observations: ' + response);
-    //   });
+    enhancedObservationCollection.urlSetter('observer');
+    enhancedObservationCollection.fetch().then(() => {
+      console.log('response', enhancedObservationCollection);
 
-
-    //} else {
-
-      enhancedObservationCollection.urlSetter('observer');
-      enhancedObservationCollection.fetch().then(() => {
-        console.log('response', enhancedObservationCollection);
-
-        this.setState({observationCollection: enhancedObservationCollection});
-      });
-
-  //  }
+      this.setState({observationCollection: enhancedObservationCollection});
+    });
 
     this.state = {
       observationCollection,
-      userProfileCollection,
+      userObservations,
       showGallery: true,
 
 
     }
   }
+  handleNewCollection(data) {
+    var clickedUser = data;
+    var userObservations = new ObservationCollection();
+
+    //fetch data related to user here
+
+    /************************************
+    Need a parseInclude to also fetch the user's profile
+    for display purpose on the user's collections in UserListings
+    component 
+    *********************************/
+    userObservations.parseWhere('observer', '_User', clickedUser).fetch().then(()=> {
+      this.setState({userObservations});
+    });
+  }
   toggleGallery() {
-   console.log('firing');
-   console.log('check',this.state.observationCollection);
-   var state = !this.state.showGallery;
-   this.setState({ showGallery: state });
+    var state = !this.state.showGallery;
+    this.setState({ showGallery: state });
   }
   render() {
     return (
       <BaseLayout>
-        {this.state.showGallery ? <GalleryListings toggleGallery={this.toggleGallery} observationCollection={this.state.observationCollection}/> : <UserListings toggleGallery={this.toggleGallery} userId={this.props.id} userCollection={this.state.observationCollection} /> }
+        {this.state.showGallery ? <GalleryListings toggleGallery={this.toggleGallery} observationCollection={this.state.observationCollection}
+        action={this.handleNewCollection}/> : <UserListings toggleGallery={this.toggleGallery} userId={this.props.id} userObservations={this.state.userObservations}
+         /> }
       </BaseLayout>
     )
   }
@@ -86,14 +82,12 @@ class GalleryListings extends React.Component {
     this.handleUserList = this.handleUserList.bind(this);
   }
   handleUserList(e) {
-   console.log("e", e.target.value);
-   var url = "/observation/gallery/" + e.target.value + "/";
-   Backbone.history.navigate(url, {trigger: true});
-   this.props.toggleGallery();
-
+    var url = "/observation/gallery/" + e.target.value + "/";
+    this.props.action(e.target.value);
+    Backbone.history.navigate(url, {trigger: true});
+    this.props.toggleGallery();
   }
   render() {
-
     var obsGallery = this.props.observationCollection.map((obsPics)=> {
 
       return (
@@ -134,12 +128,6 @@ class UserListings extends React.Component{
     var userObservations = new ObservationCollection();
 
     this.handleBackToGallery = this.handleBackToGallery.bind(this);
-    userCollection.parseWhere('observer', 'Observations', 'EsxjstxjJi').fetch().then(()=> {
-
-      console.log('responseUSERLIST', userCollection);
-    });
-  }
-  componentWillReceiveProps(nextProps) {
 
   }
   handleBackToGallery(e) {
@@ -147,30 +135,33 @@ class UserListings extends React.Component{
     this.props.toggleGallery();
   }
   render() {
-    console.log('my props', this.props);
-    // var obsGallery = this.props.observationCollection.map((obsPics)=> {
-    //
-    //   return (
-    //
-    //     <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
-    //       <div className="thumbnail">
-    //         <img src={obsPics.get("pic").url} alt="..."/>
-    //         <div className="caption">
-    //           <h4>{obsPics.get("commonName")}</h4>
-    //           <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
-    //           <p><button onClick={this.handleBackToGallery} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">Back to Gallery</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button">Observation Details</a></p>
-    //         </div>
-    //       </div>
-    //     </div>
-    //
-    //
-    //   )
-    //
-    // });
+    /************************************
+    Need to get User Info from pointer with include
+    so that the following will display user names
+    *********************************/
+    var obsGallery = this.props.userObservations.map((obsPics)=> {
+
+      return (
+
+        <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
+          <div className="thumbnail">
+            <img src={obsPics.get("pic").url} alt="..."/>
+            <div className="caption">
+              <h4>{obsPics.get("commonName")}</h4>
+              <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
+              <p><button onClick={this.handleBackToGallery} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">Back to Gallery</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button">Observation Details</a></p>
+            </div>
+          </div>
+        </div>
+
+
+      )
+
+    });
     return(
       <div className="container">
         <div className="row">
-          {"stuff here"}
+          {obsGallery}
         </div>
       </div>
     )

@@ -79,10 +79,10 @@ var ParseCollection = Backbone.Collection.extend({
     // If an objectId is passed in then we are building a pointer where
     if(objectId){
       value = {
-        field: field,
+        '__type': 'Pointer',
         className: value,
         objectId: objectId,
-        '__type': 'Pointer'
+
       };
     }
 
@@ -103,14 +103,17 @@ var ParseCollection = Backbone.Collection.extend({
   },
   url: function(){
    var url = this.baseUrl;
-   if(Object.keys(this.whereClause).length > 0){
-     url += '?where=' + JSON.stringify(this.whereClause);
-     this.whereClause = {};
-   }
 
-   if(Object.keys(this.includeClause).length > 0){
-     url += '?include=' + JSON.stringify(this.includeClause);
+   if(Object.keys(this.whereClause).length > 0 && Object.keys(this.includeClause).length > 0){
+     url +=  '?include=' + JSON.stringify(this.includeClause) + '&where=' + JSON.stringify(this.whereClause);
+     this.whereClause = {};
      this.includeClause = {};
+   } else if(Object.keys(this.whereClause).length > 0) {
+       url += '?where=' + JSON.stringify(this.whereClause);
+       this.whereClause = {};
+   } else if(0 && Object.keys(this.includeClause).length > 0) {
+     url += '?include=' + JSON.stringify(this.includeClause);
+     this.includeClause = {}
    }
 
    return url;
