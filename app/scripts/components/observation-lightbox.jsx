@@ -3,6 +3,7 @@
 //********************************
 var React = require('react');
 var Masonry = require('react-masonry-component');
+var LazyLoad = require('react-lazyload');
 
 //********************************
 //Models, Utilities, Layouts
@@ -47,7 +48,9 @@ class ObservationLightboxContainer extends React.Component {
         //console.log('image', image.get("pic").url)
         //observationImagesArray.push({src: image.get("pic").url})
         <div className="image-element-class">
+
           <img className="masonry-img" src={image.get("pic").url} />
+        
         </div>
       )
     });

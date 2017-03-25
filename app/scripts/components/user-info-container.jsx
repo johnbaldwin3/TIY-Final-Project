@@ -62,8 +62,8 @@ class UserInfoContainer extends React.Component {
       <div className="container">
         <div className="row">
           <div className="col-sm-8 col-sm-offset-2 well">
-            <h2>Thanks for signing up, {this.state.currentUser.get("username")} !</h2>
-            <p>Feel free to add to your profile below, or click "No Thanks" to come back later and do it.</p>
+            <h2> {(this.state.currentUser.get("realOrNickName"))? ("Edit Your Profile, " + this.state.currentUser.get("realOrNickName") + "?"): ("Thanks for signing up, " + this.state.currentUser.get("username")+ "!")} </h2>
+            <p>Feel free to add to or edit your profile below, or click "No Thanks" to come back later and do it.</p>
           </div>
         </div>
           <div className="row">

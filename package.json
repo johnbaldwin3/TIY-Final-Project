@@ -71,8 +71,10 @@
     "exif-js": "^2.1.1",
     "google-map-react": "^0.23.0",
     "moment": "^2.18.0",
+    "react-cropper": "^0.10.1",
     "react-google-maps": "^4.11.0",
     "react-images": "^0.5.2",
+    "react-lazyload": "^2.2.5",
     "react-masonry-component": "^5.0.3"
   }
 }

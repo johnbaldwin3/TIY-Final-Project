@@ -93,13 +93,17 @@ var ParseCollection = Backbone.Collection.extend({
   parseInclude: function(field, value, objectId) {
     if(objectId) {
       value = {
+        '__type': 'Pointer',
         className: value,
         objectId: objectId,
-        '__type': 'Pointer'
+
       };
    }
    this.includeClause[field] = value;
    return this;
+  },
+  parseWhereInclude: function() {
+
   },
   url: function(){
    var url = this.baseUrl;
@@ -108,16 +112,20 @@ var ParseCollection = Backbone.Collection.extend({
      url +=  '?include=' + JSON.stringify(this.includeClause) + '&where=' + JSON.stringify(this.whereClause);
      this.whereClause = {};
      this.includeClause = {};
+     console.log('fireme1', url);
    } else if(Object.keys(this.whereClause).length > 0) {
        url += '?where=' + JSON.stringify(this.whereClause);
        this.whereClause = {};
-   } else if(0 && Object.keys(this.includeClause).length > 0) {
+       console.log('fireme2', url);
+   } else if(Object.keys(this.whereClause).length == 0 && Object.keys(this.includeClause).length > 0) {
      url += '?include=' + JSON.stringify(this.includeClause);
-     this.includeClause = {}
+     this.includeClause = {};
+     console.log('fireme3', url);
    }
 
    return url;
   },
+
   parse: function(data){
     return data.results;
   },

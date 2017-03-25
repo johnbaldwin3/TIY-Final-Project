@@ -6,6 +6,7 @@ var EXIF = require('exif-js');
 var $ = require('jquery');
 var Backbone = require('backbone');
 var moment = require('moment');
+//var Cropper = require('react-cropper').Cropper;
 
 //********************************
 //Models, Utilities, Layouts
@@ -15,6 +16,7 @@ var models = require('../models/organism.js');
 var ParseFile = require('../parse.js').ParseFile;
 var Observation = require('../models/observations.js').Observation;
 var User = require('../models/user.js').User;
+//var imageOrientationFix = require('../utilities.js').imageOrientationFix;
 
 //********************************
 //Individual Observation / Add / Edit / View
@@ -139,6 +141,7 @@ class ObservationForm extends React.Component{
     //structure for EXIF so mewhat from above reference
     //********************************
     var file = e.target.files[0];
+    //imageOrientationFix(file);
     this.setState({
       pic: file,
       //name: file.name
