@@ -15,7 +15,9 @@ var User = require('../../models/user.js').User;
 //********************************
 
 class BaseLayout extends React.Component {
+
   render() {
+
     return(
 
       <div className="wrapper">
@@ -44,7 +46,7 @@ class BaseLayout extends React.Component {
                   <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{User.current().get("realOrNickName")} <span className="caret"></span></a>
                   <ul className="dropdown-menu">
                     <li><a href={"#userinfo/" + (User.current().get("objectId")) + "/" }>Your Profile</a></li>
-                    <li><a href="#">Another action</a></li>
+                    <li><a href={"#observation/gallery/" + (User.current().get("objectId")) + "/"}>My Collection</a></li>
                     <li><a href="#">Something else here</a></li>
                     <li role="separator" className="divider"></li>
                     <li><a href="#">Separated link</a></li>

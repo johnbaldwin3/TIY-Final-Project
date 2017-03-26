@@ -12,8 +12,6 @@ require('react-google-maps');
 // Map Component
 //********************************
 
-// var markerCluster = new MarkerClusterer(mapContainer, markers,
-//         {imagePath: '../../images'});
 
 //some tips for set up from the following:
 //****** https://www.youtube.com/watch?v=N1J7Q1qJPQM *******
@@ -30,8 +28,8 @@ class GoogleMapContainer extends React.Component {
           lng: venue.location.lng
         }
       }
-
-      return <Marker key={i} {...marker} />
+      console.log('ven', venue.kingdom);
+      return <Marker key={i} animation={"bounce"} icon={'./images/frog-2.png'}{...marker} />
     });
 
     return (

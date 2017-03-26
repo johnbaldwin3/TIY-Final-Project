@@ -69,5 +69,6 @@ function imageOrientationFix(file) {
 module.exports = {
   isActive,
   activeClass,
-  imageOrientationFix
+  imageOrientationFix,
+
 }

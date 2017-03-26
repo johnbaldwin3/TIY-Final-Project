@@ -47,9 +47,9 @@ class UserInfoContainer extends React.Component {
     var userId = User.editUser();
     userProfile.set('objectId', userId)
     userProfile.set(data);
-    //userProfile.setPointer("_User", "_User", User.current().get("objectId"));
-    //************************
+
    userProfile.save().then(function(){
+     //User.store(userProfile);
      Backbone.history.navigate('observation/', {trigger: true});
 
     });

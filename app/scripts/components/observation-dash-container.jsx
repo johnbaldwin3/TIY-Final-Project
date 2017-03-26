@@ -25,7 +25,9 @@ class ObservationDashContainer extends React.Component {
     var observationCollection = new ObservationCollection();
     var enhancedObservationCollection = new EnhancedObservationCollection();
 
-    console.log(User.current().get("realOrNickName"));
+
+
+    console.log("here is NAME", User.current().get("realOrNickName"));
     userCollection.fetch().then(() => {
       console.log('upc', userCollection);
       this.setState({userCollection: userCollection});
@@ -50,15 +52,19 @@ class ObservationDashContainer extends React.Component {
       lat: 39.124233,
       lng: -96.919273
     };
+
     var markers =
      this.state.observationCollection.map((obsLocations) => {
-
+       var tree = obsLocations.get('taxonTree');
+       var kingdom = tree.substr(0, tree.indexOf(" "));
+       //console.log(kingdom);
        return (
          {
            location: {
               lat: obsLocations.get('lat'),
               lng: obsLocations.get('lon')
-            }
+            },
+            kingdom: kingdom
          }
        )
 
@@ -73,7 +79,7 @@ class ObservationDashContainer extends React.Component {
 
             <div className="col-sm-7" style={{height:600, background:'gray'}}>
 
-            <GoogleMapContainer center={location} markers={markers}/>
+            <GoogleMapContainer center={location} markers={markers} />
 
             </div>
 
