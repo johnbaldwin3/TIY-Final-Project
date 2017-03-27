@@ -17,7 +17,72 @@ require('react-google-maps');
 //****** https://www.youtube.com/watch?v=N1J7Q1qJPQM *******
 
 class GoogleMapContainer extends React.Component {
+  constructor(props){
+    super(props);
 
+    this.iconChooser = this.iconChooser.bind(this);
+  }
+
+
+  iconChooser(kingdom, classOf) {
+    //pics icon based on type of observed species
+    if(kingdom == 'Animalia') {
+
+      if(classOf == 'Mammalia') {
+
+        return './images/tiger-2.png';
+
+      } else if (classOf == 'Insecta') {
+
+        return './images/butterfly-2.png';
+
+      } else if (classOf == 'Aves') {
+
+        return './images/duck-export.png';
+
+      } else if (classOf == 'Reptilia') {
+
+        return './images/snakes.png';
+
+      } else if (classOf == 'Actinopterygii') {
+
+        return './images/fish.png';
+
+      } else if (classOf == 'Arachnida') {
+
+        return './images/spider.png';
+
+      } else if (classOf == 'Amphibia') {
+
+        return './images/frog-2.png';
+
+      } else {
+
+        return './images/bear.png';
+
+      }
+
+      return './images/frog-2.png';
+
+    } else if (kingdom == 'Plantae') {
+
+      return './images/flowers.png';
+
+    } else if (kingdom == 'Fungi') {
+
+      return './images/mushroom.png';
+
+    } else if (kingdom == 'Archaea' || kingdom == 'Bacteria') {
+
+      return './images/mushroom.png'
+
+    } else {
+
+      return './images/frog-2.png'
+
+    }
+
+  }
   render() {
     var mapContainer = <div style={{height: '100%', widht: '100%' }}></div> ;
     var markers = this.props.markers.map((venue, i) => {
@@ -29,7 +94,7 @@ class GoogleMapContainer extends React.Component {
         }
       }
       console.log('ven', venue.kingdom);
-      return <Marker key={i} animation={"bounce"} icon={'./images/frog-2.png'}{...marker} />
+      return <Marker key={i} animation={"bounce"} icon={this.iconChooser(venue.kingdom, venue.classOfAnimal)}{...marker} />
     });
 
     return (

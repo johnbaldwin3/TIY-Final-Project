@@ -57,14 +57,18 @@ class ObservationDashContainer extends React.Component {
      this.state.observationCollection.map((obsLocations) => {
        var tree = obsLocations.get('taxonTree');
        var kingdom = tree.substr(0, tree.indexOf(" "));
-       //console.log(kingdom);
+       var taxons = tree.split(" --> ");
+       //console.log('taxons', taxons);
+       var classOfAnimal = taxons[2];
+       console.log('classOfAnimal', classOfAnimal );
        return (
          {
            location: {
               lat: obsLocations.get('lat'),
               lng: obsLocations.get('lon')
             },
-            kingdom: kingdom
+            kingdom: kingdom,
+            classOfAnimal: classOfAnimal
          }
        )
 
