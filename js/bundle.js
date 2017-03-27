@@ -17,7 +17,9 @@ var User = require('../../models/user.js').User;
 //********************************
 
 class BaseLayout extends React.Component {
+
   render() {
+
     return(
 
       React.createElement("div", {className: "wrapper"}, 
@@ -36,13 +38,22 @@ class BaseLayout extends React.Component {
               React.createElement("ul", {className: "nav navbar-nav"}, 
                 React.createElement("li", {className: utility.activeClass('observation/')}, React.createElement("a", {href: "#observation/"}, "Observation Dashboard", React.createElement("span", {className: "sr-only"}, "(current)"))), 
                 React.createElement("li", {className: utility.activeClass('observation/search/')}, React.createElement("a", {href: "#observation/search/"}, "Add New Observation")), 
-                React.createElement("li", null, React.createElement("a", {href: "#"}, "All Listed Observations")), 
                 React.createElement("li", {className: utility.activeClass('observation/gallery/')}, " ", React.createElement("a", {href: "#observation/gallery/"}, "Photo Gallery")), 
-                React.createElement("li", null, React.createElement("a", {href: "#"}, "User Listings (users collect)")), 
+                React.createElement("li", {className: utility.activeClass('observation/listings/')}, React.createElement("a", {href: "#observation/listings/"}, "User Listings (users collect)")), 
                 React.createElement("li", null, React.createElement("a", {href: "#"}, "Rankings")), 
                 React.createElement("li", null, React.createElement("a", {href: "#"}, "Observation Detail"))
               ), 
               React.createElement("ul", {className: "nav navbar-nav navbar-right"}, 
+                React.createElement("li", {className: "dropdown"}, 
+                  React.createElement("a", {href: "#", className: "dropdown-toggle", "data-toggle": "dropdown", role: "button", "aria-haspopup": "true", "aria-expanded": "false"}, User.current().get("realOrNickName"), " ", React.createElement("span", {className: "caret"})), 
+                  React.createElement("ul", {className: "dropdown-menu"}, 
+                    React.createElement("li", null, React.createElement("a", {href: "#userinfo/" + (User.current().get("objectId")) + "/"}, "Your Profile")), 
+                    React.createElement("li", null, React.createElement("a", {href: "#observation/gallery/" + (User.current().get("objectId")) + "/"}, "My Collection")), 
+                    React.createElement("li", null, React.createElement("a", {href: "#"}, "Something else here")), 
+                    React.createElement("li", {role: "separator", className: "divider"}), 
+                    React.createElement("li", null, React.createElement("a", {href: "#"}, "Separated link"))
+                  )
+                ), 
                 React.createElement("li", null, React.createElement("a", {href: "#logout/", type: "button", className: "btn btn-danger"}, "Log Out"))
               )
             )
@@ -72,7 +83,7 @@ module.exports = {
   BaseLayout
 };
 
-},{"../../models/user.js":15,"../../utilities.js":19,"backbone":20,"react":227}],2:[function(require,module,exports){
+},{"../../models/user.js":17,"../../utilities.js":21,"backbone":22,"react":264}],2:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -114,7 +125,7 @@ module.exports = {
   MarketAuthLayout
 }
 
-},{"react":227}],3:[function(require,module,exports){
+},{"react":264}],3:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -234,7 +245,7 @@ module.exports = {
   LoginContainer
 };
 
-},{"../models/user":15,"./layouts/marketauth.jsx":2,"backbone":20,"react":227}],4:[function(require,module,exports){
+},{"../models/user":17,"./layouts/marketauth.jsx":2,"backbone":22,"react":264}],4:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -243,17 +254,84 @@ var React = require('react');
 var GoogleMapLoader = require('react-google-maps').GoogleMapLoader;
 var GoogleMap = require('react-google-maps').GoogleMap;
 var Marker = require('react-google-maps').Marker;
+var MarkerClusterer = require('react-google-maps/lib/addons/MarkerClusterer');
 require('react-google-maps');
 
 //********************************
 // Map Component
 //********************************
 
+
 //some tips for set up from the following:
 //****** https://www.youtube.com/watch?v=N1J7Q1qJPQM *******
 
 class GoogleMapContainer extends React.Component {
+  constructor(props){
+    super(props);
 
+    this.iconChooser = this.iconChooser.bind(this);
+  }
+
+
+  iconChooser(kingdom, classOf) {
+    //pics icon based on type of observed species
+    if(kingdom == 'Animalia') {
+
+      if(classOf == 'Mammalia') {
+
+        return './images/tiger-2.png';
+
+      } else if (classOf == 'Insecta') {
+
+        return './images/butterfly-2.png';
+
+      } else if (classOf == 'Aves') {
+
+        return './images/duck-export.png';
+
+      } else if (classOf == 'Reptilia') {
+
+        return './images/snakes.png';
+
+      } else if (classOf == 'Actinopterygii') {
+
+        return './images/fish.png';
+
+      } else if (classOf == 'Arachnida') {
+
+        return './images/spider.png';
+
+      } else if (classOf == 'Amphibia') {
+
+        return './images/frog-2.png';
+
+      } else {
+
+        return './images/bear.png';
+
+      }
+
+      return './images/frog-2.png';
+
+    } else if (kingdom == 'Plantae') {
+
+      return './images/flowers.png';
+
+    } else if (kingdom == 'Fungi') {
+
+      return './images/mushroom.png';
+
+    } else if (kingdom == 'Archaea' || kingdom == 'Bacteria') {
+
+      return './images/mushroom.png'
+
+    } else {
+
+      return './images/frog-2.png'
+
+    }
+
+  }
   render() {
     var mapContainer = React.createElement("div", {style: {height: '100%', widht: '100%'}}) ;
     var markers = this.props.markers.map((venue, i) => {
@@ -264,8 +342,10 @@ class GoogleMapContainer extends React.Component {
           lng: venue.location.lng
         }
       }
-      return React.createElement(Marker, React.__spread({key: i},  marker))
+      console.log('ven', venue.kingdom);
+      return React.createElement(Marker, React.__spread({key: i, animation: "bounce", icon: this.iconChooser(venue.kingdom, venue.classOfAnimal)}, marker))
     });
+
     return (
       React.createElement(GoogleMapLoader, {
         containerElement:  mapContainer, 
@@ -275,8 +355,11 @@ class GoogleMapContainer extends React.Component {
             defaultZoom: 4, 
             defaultCenter: this.props.center, 
 
-            options: {streetViewControl: false, mapTypeControl: false}}, 
-            markers
+            options: {streetViewControl: false, mapTypeControl: true}}, 
+            React.createElement(MarkerClusterer, null, 
+              markers
+            )
+
           )
         })
     )
@@ -300,7 +383,7 @@ module.exports = {
   GoogleMapContainer
 }
 
-},{"react":227,"react-google-maps":91}],5:[function(require,module,exports){
+},{"react":264,"react-google-maps":121,"react-google-maps/lib/addons/MarkerClusterer":95}],5:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -312,11 +395,11 @@ class MarketingContainer extends React.Component {
     return(
       React.createElement(MarketAuthLayout, null, 
         React.createElement("div", {className: "container"}, 
-          React.createElement("blockquote", {className: "eO"}, 
+          React.createElement("blockquote", {id: "eO"}, 
             React.createElement("p", {className: "quote"}, "\"Science, its imperfections notwithstanding, is the sword in the stone that humanity finally pulled.\""), 
-            React.createElement("footer", null, "Edward O. Wilson in ", React.createElement("cite", {title: "Source Title"}, "The Unity of Knowledge (1998)"))
+            React.createElement("footer", {className: "block-footer"}, "Edward O. Wilson in ", React.createElement("cite", {title: "Source Title"}, "The Unity of Knowledge (1998)"))
           ), 
-          React.createElement("div", {className: "jumbotron"}, 
+          React.createElement("div", {className: "jumbotron marketing-jumbo"}, 
             React.createElement("h1", null, "Observe your world!"), 
             React.createElement("h3", null, "Put on your biologist hat and explore and keep track of the world around you..."), 
             React.createElement("p", null, "The ______ app allows you to create an account to keep track all of your species encounters in one place. Log your birding trips, record your very own herbarium here, check off lifelist species for your herpetological records, all in one place. Record data about your location, weather, experience. Upload images to each observation. Allow for optional public viewing and have friendly competitions between friends and family to see who can log the most organisms. Also learn a little bit more about your logged encounters after each event is added. Log back in or join today!")
@@ -343,7 +426,7 @@ module.exports = {
   MarketingContainer
 };
 
-},{"./layouts/marketauth.jsx":2,"react":227}],6:[function(require,module,exports){
+},{"./layouts/marketauth.jsx":2,"react":264}],6:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -352,6 +435,8 @@ var React = require('react');
 var EXIF = require('exif-js');
 var $ = require('jquery');
 var Backbone = require('backbone');
+var moment = require('moment');
+//var Cropper = require('react-cropper').Cropper;
 
 //********************************
 //Models, Utilities, Layouts
@@ -361,6 +446,7 @@ var models = require('../models/organism.js');
 var ParseFile = require('../parse.js').ParseFile;
 var Observation = require('../models/observations.js').Observation;
 var User = require('../models/user.js').User;
+//var imageOrientationFix = require('../utilities.js').imageOrientationFix;
 
 //********************************
 //Individual Observation / Add / Edit / View
@@ -370,44 +456,64 @@ class ObservationsAddEditContainer extends React.Component {
     super(props);
     var observedSpecies = new models.Organism();
     var observation = new Observation();
+    var userId = User.current().get('objectId');
 
     this.createNewObservation = this.createNewObservation.bind(this);
-
+    //set the species
     observedSpecies.set('speciesKey', props.speciesKey);
-//hey if this comp - if this,props.id
-    observedSpecies.fetch().then(() => {
+
+    //checking to see if their is a model id being passed in
+    if(this.props.id) {
+      //if true, set objectId
+      observation.set('objectId', this.props.id);
+      //fetch this model
+      observation.fetch().then(() => {
+        this.setState({pic: this.state.pic})
+        this.setState({observation: observation});
+        console.log('img', observation.get('pic').url);
+        var observerId = observation.get('observer').objectId
+          observerId != userId ? this.setState({ isOwner: false }) : null
+          console.log(observerId, userId);
+        this.forceUpdate();
+      });
+
+    } else {
+
+      observedSpecies.fetch().then(() => {
       observation.set({
+
         commonName: observedSpecies.get("vernacularName"),
         scientificName: observedSpecies.get("canonicalName"),
         originalDiscoveryInfo: observedSpecies.get("authorship"),
         taxonTree: observedSpecies.getTaxonTree(),
-
+        observationUser: User.current()
       });
       this.setState({observation: observation});
 
     });
-
+  }
     this.state = {
       observation: observation,
-
+      isOwner: true
     }
 
   }
   createNewObservation(data) {
-    var observation = this.state.observation;
-    observation.set(data);
-    observation.setPointer("observer", '_User', User.current().get("objectId"));
+   var observation = this.state.observation;
+   observation.set(data);
 
-    observation.save().then(function(){
+   observation.setPointer("observer", '_User', User.current().get("objectId"));
+   observation.save().then(function(){
      Backbone.history.navigate('observation/', {trigger: true});
-
-    });
-  }
+   });
+ }
   render() {
     return (
         React.createElement(BaseLayout, null, 
+          React.createElement(DeleteModal, {observation: this.state.observation}), 
           React.createElement("div", {className: "container"}, 
-            React.createElement(ObservationForm, {action: this.createNewObservation, observation: this.state.observation})
+            React.createElement(ObservationForm, {
+              action: this.createNewObservation, isOwner: this.state.isOwner, observation: this.state.observation})
           )
         )
       )
@@ -431,11 +537,13 @@ class ObservationForm extends React.Component{
     this.handleObservationSubmit = this.handleObservationSubmit.bind(this);
     this.handleLocationChange = this.handleLocationChange.bind(this);
 
+    this.handleBackButton = this.handleBackButton.bind(this);
+
     //extending state to mash up with observationCollection
     this.state = $.extend({}, {
-      pic: null,
+      pic: {},
       preview: null,
-      observationDate: new Date(),
+      observationDate: null,
       observationNotes: '',
       publicList: true,
       lat: null,
@@ -444,12 +552,17 @@ class ObservationForm extends React.Component{
       lonRef: null,
       elevationFoundMeters: null,
       elevationFoundFeet: null,
+      orientation: null,
+      //date: new Date(),
+      //time: new Date(),
+      dateAndTime: null
 
     }, this.props.observation.toJSON() );
   }
   componentWillReceiveProps(nextProps) {
     var newState = $.extend({}, this.state, nextProps.observation.toJSON());
     this.setState(newState);
+    this.setState({observationDate: this.props.observation.get('date')});
   }
   handlePicChange(e) {
     //********************************
@@ -458,11 +571,12 @@ class ObservationForm extends React.Component{
     //structure for EXIF so mewhat from above reference
     //********************************
     var file = e.target.files[0];
+    //imageOrientationFix(file);
     this.setState({
       pic: file,
       //name: file.name
     });
-    console.log('file', file);
+    //console.log('file', file);
     // User file reader object to display preview
     var reader = new FileReader();
     reader.onloadend = ()=>{
@@ -477,12 +591,27 @@ class ObservationForm extends React.Component{
       //********************************
       //********************************
 
+      //get date and time from original photo at time of shot
+      var dater = EXIF.getTag(file, "DateTimeOriginal");
+      //console.log('dater', dater);
+      var date = dater.substr(0,10).split(':').join('-');
+      //console.log(date);
+      var time = dater.substr(11,16);
+      //console.log('time' , time );
+      //console.log(moment(time).format('LTS'));
+      var dateAndTime = date + "T" + time;
+
+      //console.log('dateAndTime', dateAndTime );
       //get elevation data (given in meters)
       var elevation = EXIF.getTag(file, "GPSAltitude");
       //elevation converted to meters (num/denom)
-      var elevationMeters = (elevation.numerator / elevation.denominator).toFixed(4) ;
+      var elevationMeters = (elevation.numerator / elevation.denominator).toFixed(4);
       //elevation converted to feet
       var elevationFeet = (elevationMeters * 3.2804).toFixed(4);
+      //get orientation of picture at time of photo from exif
+      var orientation = EXIF.getTag(file, "Orientation");
+      //console.log('orientation', orientation);
+
       //set state of picture exif data
       this.setState(
        {
@@ -497,6 +626,10 @@ class ObservationForm extends React.Component{
          lonRef: lonRef,
          elevationFoundFeet: elevationFeet,
          elevationFoundMeters: elevationMeters,
+         date: date,
+         time: time,
+         observationDate: date,
+         dateAndTime: dateAndTime
 
        }
      );
@@ -516,6 +649,7 @@ class ObservationForm extends React.Component{
     this.setState({originalDiscoveryInfo: e.target.value});
   }
   handleObservationDate(e) {
+    console.log("*******", e.target.value);
     var newDate = new Date(e.target.value);
 
     var dateParse = {
@@ -550,45 +684,71 @@ class ObservationForm extends React.Component{
 
   }
   handleObservationSubmit(e) {
-    e.preventDefault();
-    // 1. we need to upload the image
-    var pic = this.state.pic;
-    var fileUpload = new ParseFile(pic);
-    console.log('fu', fileUpload);
-    fileUpload.save({}, {
-      data: pic
-    }).then((response)=>{
-      var imageUrl = response.url;
-      var formData = $.extend({}, this.state);
-      formData.pic = {
-        name: pic.name,
-        url: imageUrl
-      };
-      delete formData.preview;
-    this.props.action(formData)
-    });
-  }
-  render() {
+     e.preventDefault();
 
+     var formData = $.extend({}, this.state);
+
+     if (formData.preview) {
+
+       // handle date
+       var date = new Date(formData.date);
+       var dateParse = {
+         "__type": "Date",
+         "iso": date
+       }
+       formData.observationDate = dateParse
+
+       // handle pic
+       var pic = formData.pic;
+       var fileUpload = new ParseFile(pic);
+       fileUpload.save({}, {
+         data: pic
+       }).then((response)=>{
+         var imageUrl = response.url;
+         formData.pic = {
+           name: pic.name,
+           url: imageUrl
+         };
+         delete formData.preview;
+         this.props.action(formData);
+       });
+     } else {
+       // handle date
+       var date = new Date(formData.date);
+       var dateParse = {
+         "__type": "Date",
+         "iso": date
+       }
+       formData.observationDate = dateParse
+       this.props.action(formData);
+     }
+
+   }
+  handleBackButton(e) {
+    //back to gallery after viewing the description
+    Backbone.history.navigate('observation/gallery/', {trigger: true});
+  }
+
+  render() {
+    /////IMAGE UPLOAD ISSUE WITH EDIT OF RECORD//////
     return (
-      React.createElement("form", {onSubmit: this.handleObservationSubmit, className: "col-sm-10"}, 
+      React.createElement("form", {onSubmit: this.handleObservationSubmit, className: "col-sm-12"}, 
         React.createElement("div", {className: "well"}, React.createElement("h4", null, "First Step: Upload Your Photo!")), 
-        React.createElement("div", {className: "row"}, 
-          React.createElement("div", {className: "form-group col-sm-4"}, 
-            React.createElement("label", {htmlFor: "image"}, "Picture Upload"), 
-            React.createElement("input", {onChange: this.handlePicChange, name: "image", type: "file", id: "image", filename: this.state.image}), 
-            React.createElement("p", {className: "help-block"}, "Upload your species image here.")
-          ), 
-          React.createElement("div", {className: "media col-sm-5"}, 
-            React.createElement("div", {className: "media-right"}, 
-              React.createElement("div", {className: "sizer"}, 
-                React.createElement("img", {className: "media-object", src: this.state.preview}), 
-                React.createElement("p", {className: "help-block"}, "Image preview")
+          React.createElement("div", {className: "row"}, 
+            React.createElement("div", {className: "form-group col-sm-4"}, 
+              React.createElement("label", {htmlFor: "image"}, "Picture Upload"), 
+              React.createElement("input", {onChange: this.handlePicChange, name: "image", type: "file", id: "image", filename: this.state.image, value: this.state.image}), 
+              React.createElement("p", {className: "help-block"}, "Upload your species image here.")
+            ), 
+            React.createElement("div", {className: "media col-sm-5"}, 
+              React.createElement("div", {className: "media-right"}, 
+                React.createElement("div", {className: "sizer"}, 
+                  React.createElement("img", {className: "media-object", src: this.state.preview ? this.state.preview : this.state.pic.url}), 
+                  React.createElement("p", {className: "help-block"}, this.state.pic.name ? this.state.pic.name : "Image preview")
+                )
               )
             )
-          )
-
-        ), 
+          ), 
         React.createElement("div", {className: "well"}, React.createElement("h4", null, "Step Two: Fill in the remaining info!")), 
         React.createElement("div", {className: "form-group"}, 
           React.createElement("label", {htmlFor: "speciesCommonName"}, "Common Name"), 
@@ -605,8 +765,12 @@ class ObservationForm extends React.Component{
           value: this.state.originalDiscoveryInfo})
         ), 
         React.createElement("div", {className: "form-group"}, 
-          React.createElement("label", {htmlFor: "dateTime"}, "Date of Observation"), 
-          React.createElement("input", {onChange: this.handleObservationDate, type: "date", className: "form-control", id: "dateTime", placeholder: "When did you observe it?"})
+          React.createElement("label", {htmlFor: "date"}, "Date of Observation"), 
+          React.createElement("input", {onChange: this.handleObservationDate, type: "date", className: "form-control", id: "date", placeholder: "When did you observe it?", value: this.state.observationDate})
+        ), 
+        React.createElement("div", {className: "form-group"}, 
+          React.createElement("label", {htmlFor: "dateTime"}, "Time of Observation"), 
+          React.createElement("input", {type: "datetime", className: "form-control", id: "time", placeholder: "When did you observe it?"})
         ), 
         React.createElement("div", {className: "form-group"}, 
           React.createElement("label", {htmlFor: "locationFound"}, "Location Found"), 
@@ -627,19 +791,79 @@ class ObservationForm extends React.Component{
         ), 
         React.createElement("div", {className: "form-group"}, 
           React.createElement("label", {htmlFor: "observationNotes"}, "Observation Notes"), 
-          React.createElement("textarea", {onChange: this.handleObservationNotes, className: "form-control", id: "observationNotes", placeholder: "Some details of your find...", rows: "3"})
+          React.createElement("textarea", {onChange: this.handleObservationNotes, className: "form-control", id: "observationNotes", placeholder: "Some details of your find...", rows: "3", value: this.state.observationNotes})
         ), 
-
-
         React.createElement("div", {className: "checkbox"}, 
           React.createElement("label", null, 
             React.createElement("input", {onChange: this.handlePublicOrPrivate, type: "checkbox", value: "true"}), " Public?"
           )
         ), 
-        React.createElement("input", {type: "submit", className: "btn btn-default", value: "Submit Your Find"})
+        /***********************
+          Logic to determine the button options:
+          1) if user is the owner of observation, present user with the option to edit or delete
+          2) if user is not the owner, present user with back button to return to Gallery
+          3) if user is creating a new observation submit the record, submit button presented
+          **********************
+          if user wants to delete, display modal will confirm delete, then take user to gallery
+          ***********************/
+        
+         this.props.isOwner ? React.createElement("input", {type: "submit", className: "btn btn-success", value:  this.props.observation.isNew() ? 'Submit Your Find' : 'Edit Your Observation'}) : React.createElement("input", {type: "button", onClick: this.handleBackButton, className: "btn btn-default", value: "Back"}), 
+        
+        
+        this.props.isOwner ? React.createElement("input", {type: "button", onClick: this.handleBackButton, className: "btn btn-warning", value: "Back to Gallery"}) : null, 
+        
+        React.createElement("div", {className: "pull-right"}, 
+          
+          this.props.isOwner ? React.createElement("input", {type: "button", "data-toggle": "modal", "data-target": "#deleteModal", className: "btn btn-danger", value: "Delete Observation"}) : null
+          
+        )
       )
     )
 
+  }
+}
+
+class DeleteModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleDeleteObservationButton = this.handleDeleteObservationButton.bind(this);
+
+    this.state = {
+      observation: this.props.observation
+    }
+  }
+  handleDeleteObservationButton(e) {
+    //alert("Are you sure?");
+    //delete instance of this model
+    var modelToDelete = this.props.observation;
+    modelToDelete.destroy();
+    this.setState({observation: this.state.observation})
+    //console.log(this.props.observation);
+
+    //navigate back to gallery after delete
+    Backbone.history.navigate('observation/gallery/', {trigger: true});
+
+  }
+  render() {
+    return (
+      React.createElement("div", {className: "modal fade", id: "deleteModal", tabIndex: "-1", role: "dialog"}, 
+        React.createElement("div", {className: "modal-dialog", role: "document"}, 
+          React.createElement("div", {className: "modal-content"}, 
+            React.createElement("div", {className: "modal-header"}, 
+              React.createElement("button", {type: "button", className: "close", "data-dismiss": "modal", "aria-label": "Close"}, React.createElement("span", {"aria-hidden": "true"}, "×")), 
+              React.createElement("h4", {className: "modal-title"}, "Delete Your Observation?")
+            ), 
+            React.createElement("div", {className: "modal-body"}, 
+              React.createElement("p", null, "This change will be permanent and can not be undone, are you sure?")
+            ), 
+            React.createElement("div", {className: "modal-footer"}, 
+              React.createElement("button", {type: "button", className: "btn btn-warning", "data-dismiss": "modal"}, "Cancel"), 
+              React.createElement("button", {onClick: this.handleDeleteObservationButton, type: "button", "data-dismiss": "modal", className: "btn btn-danger"}, "Delete")
+            )
+          )
+        )
+      )
+    )
   }
 }
 
@@ -647,7 +871,9 @@ module.exports = {
   ObservationsAddEditContainer
 };
 
-},{"../models/observations.js":13,"../models/organism.js":14,"../models/user.js":15,"../parse.js":17,"./layouts/baselayout.jsx":1,"backbone":20,"exif-js":22,"jquery":51,"react":227}],7:[function(require,module,exports){
+//
+
+},{"../models/observations.js":15,"../models/organism.js":16,"../models/user.js":17,"../parse.js":19,"./layouts/baselayout.jsx":1,"backbone":22,"exif-js":39,"jquery":71,"moment":77,"react":264}],7:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -661,8 +887,10 @@ var Moment = require('moment');
 //call in base layout
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var ObservationCollection = require('../models/observations.js').ObservationCollection;
-var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
+var UserCollection = require('../models/user.js').UserCollection;
 var GoogleMapContainer = require('./map.jsx').GoogleMapContainer;
+var EnhancedObservationCollection = require('../models/observations.js').EnhancedObservationCollection;
+var User = require('../models/user.js').User;
 
 //********************************
 //Observation Dashboard - Main App Screen
@@ -670,33 +898,54 @@ var GoogleMapContainer = require('./map.jsx').GoogleMapContainer;
 class ObservationDashContainer extends React.Component {
   constructor(props) {
     super(props);
-
+    var userCollection = new UserCollection();
     var observationCollection = new ObservationCollection();
+    var enhancedObservationCollection = new EnhancedObservationCollection();
 
-    observationCollection.fetch().then(()=> {
-      this.setState({observationCollection: observationCollection});
-      console.log(observationCollection);
+
+
+    console.log("here is NAME", User.current().get("realOrNickName"));
+    userCollection.fetch().then(() => {
+      console.log('upc', userCollection);
+      this.setState({userCollection: userCollection});
+    });
+    //then(() => {
+    enhancedObservationCollection.fetch().then(()=> {
+      this.setState({observationCollection: enhancedObservationCollection, userCollection: userCollection});
+      // console.log(observationCollection);
       this.forceUpdate();
     });
+    //});
+
+
 
     this.state = {
-      observationCollection
+      observationCollection,
+      userCollection
     }
   }
   render() {
     var location = {
-      lat: 38.974873,
-      lng: -98.368122
+      lat: 39.124233,
+      lng: -96.919273
     };
+
     var markers =
      this.state.observationCollection.map((obsLocations) => {
-
+       var tree = obsLocations.get('taxonTree');
+       var kingdom = tree.substr(0, tree.indexOf(" "));
+       var taxons = tree.split(" --> ");
+       //console.log('taxons', taxons);
+       var classOfAnimal = taxons[2];
+       console.log('classOfAnimal', classOfAnimal );
        return (
          {
            location: {
               lat: obsLocations.get('lat'),
               lng: obsLocations.get('lon')
-            }
+            },
+            kingdom: kingdom,
+            classOfAnimal: classOfAnimal
          }
        )
 
@@ -706,75 +955,51 @@ class ObservationDashContainer extends React.Component {
       React.createElement(BaseLayout, null, 
         React.createElement("div", {className: "container"}, 
           React.createElement("div", {className: "row"}, 
+            React.createElement("h3", null, "Welcome Back ", User.current().get("realOrNickName")), 
             React.createElement(ObservationListings, {observationCollection: this.state.observationCollection}), 
 
-            React.createElement("div", {className: "col-sm-7", style: {height:400, background:'gray'}}, 
+            React.createElement("div", {className: "col-sm-7", style: {height:600, background:'gray'}}, 
 
             React.createElement(GoogleMapContainer, {center: location, markers: markers})
 
             ), 
 
-            React.createElement("div", {className: "col-sm-2"}, 
-              React.createElement("div", {className: "row"}, 
-                React.createElement("button", {className: "btn btn-primary col-sm-12", type: "button"}, "UserName ", React.createElement("span", {className: "badge"}, "4")
-                )
-              ), 
-              React.createElement("br", null), 
-              React.createElement("div", {className: "row"}, 
-                React.createElement("button", {className: "btn btn-primary col-sm-12", type: "button"}, "UserName ", React.createElement("span", {className: "badge"}, "4")
-                )
-              ), 
-              React.createElement("br", null), 
-              React.createElement("div", {className: "row"}, 
-                React.createElement("button", {className: "btn btn-primary col-sm-12", type: "button"}, "UserName ", React.createElement("span", {className: "badge"}, "4")
-                )
-              ), 
-              React.createElement("br", null), 
-              React.createElement("div", {className: "row"}, 
-                React.createElement("button", {className: "btn btn-primary col-sm-12", type: "button"}, "UserName ", React.createElement("span", {className: "badge"}, "4")
-                )
-              ), 
-              React.createElement("br", null), 
-              React.createElement("div", {className: "row"}, 
-                React.createElement("button", {className: "btn btn-primary col-sm-12", type: "button"}, "UserName ", React.createElement("span", {className: "badge"}, "4")
-                )
-              ), 
-              React.createElement("br", null), 
-              React.createElement("div", {className: "row"}, 
-                React.createElement("button", {className: "btn btn-primary col-sm-12", type: "button"}, "UserName ", React.createElement("span", {className: "badge"}, "4")
-                )
-              )
+            React.createElement(UserListings, {userCollection: this.state.userCollection})
+
 
             )
           )
-        )
       )
     )
   }
 }
 
-// class ObservationMapListing extends React.Component {
-//   constructor(props){
-//     super(props);
-//
-//     // this.state = {
-//     //   zoom: 10,
-//     //
-//     // }
-//   }
-//   render() {
-//     return(
-//       <div
-//         defaultCenter={this.props.center}
-//         defaultZoom={this.props.zoom}>
-//
-//         <img src="https://www.codeproject.com/KB/web-image/Google_map/sampleMap.JPG"/>
-//
-//       </div>
-//
-//     )
-//   }
-// }
+class UserListings extends React.Component {
+  constructor(props) {
+    super(props);
+
+
+
+  }
+  render() {
+    //console.log('tpup', this.props.userCollection);
+    var users = this.props.userCollection.map((user) => {
+      //console.log('here', user);
+      return (
+        React.createElement("div", {key: user.get("objectId"), className: "row"}, 
+          React.createElement("a", {type: "button", className: "btn btn-primary col-sm-12", type: "button"}, user.get("realOrNickName"), " ", React.createElement("span", {className: "badge"}, "4")
+          )
+        )
+
+      );
+    });
+    return(
+      React.createElement("div", {className: "col-sm-2 obs-users-dash"}, 
+         users
+      )
+    )
+  }
+}
 
 class ObservationListings extends React.Component {
   constructor(props) {
@@ -783,17 +1008,17 @@ class ObservationListings extends React.Component {
   }
   render() {
     var obsListing = this.props.observationCollection.map((obsListItem)=> {
-
+      // obsListItem.getUserProfile(obsListItem.get('objectId'))
       return (
-        React.createElement("a", {key: obsListItem.get("objectId"), href: "#observation/", className: "list-group-item"}, 
+        React.createElement("a", {key: obsListItem.get("objectId"), href: "#observation/" + obsListItem.get('objectId') + '/', className: "list-group-item"}, 
           React.createElement("h4", {className: "list-group-item-heading"}, obsListItem.get("commonName")), 
-          React.createElement("p", {className: "list-group-item-text"}, "usernamehere"), 
+          React.createElement("p", {className: "list-group-item-text"}, obsListItem.get("observer").realOrNickName), 
           React.createElement("p", {className: "list-group-item-text"}, Moment(obsListItem.get("observationDate").iso).format('LL'))
         )
       )
     });
     return (
-      React.createElement("div", {className: "col-sm-3"}, 
+      React.createElement("div", {className: "col-sm-3 obs-list-dash"}, 
         React.createElement("div", {className: "list-group"}, 
           obsListing
         )
@@ -806,20 +1031,204 @@ module.exports = {
   ObservationDashContainer
 };
 
-},{"../models/observations.js":13,"../models/userProfile.js":16,"./layouts/baselayout.jsx":1,"./map.jsx":4,"moment":52,"react":227}],8:[function(require,module,exports){
+},{"../models/observations.js":15,"../models/user.js":17,"./layouts/baselayout.jsx":1,"./map.jsx":4,"moment":77,"react":264}],8:[function(require,module,exports){
 "use strict";
+// //********************************
+// //Third Party Libraries
+// //********************************
+//
+// var React = require('react');
+// var $ = require('jquery');
+// var Backbone = require('backbone');
+//
+// //********************************
+// //Models, Utilities, Layouts
+// //********************************
+//
+// var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
+// var ObservationCollection = require('../models/observations.js').ObservationCollection;
+// var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
+// var UserCollection = require('../models/user.js').UserCollection;
+//
+// //********************************
+// //Observation Gallery (Photos Gallery)
+// //********************************
+//
+// class ObservationGalleryContainer extends React.Component {
+//   constructor(props) {
+//     super(props);
+//
+//     var observationCollection = new ObservationCollection();
+//
+//     this.state = {
+//       props: this.props.id,
+//       observationCollection
+//     }
+//
+//     if(props.id) {
+//       observationCollection.parseWhere('observer', '_User', props.id).parseInclude('observer').fetch().then(()=> {
+//       this.setState({ observationCollection });
+//     });
+//     } else {
+//       observationCollection.parseInclude('observer').fetch().done(() => {
+//         this.setState({ observationCollection })
+//       });
+//
+//     }
+//
+//   }
+//
+//   componentWillReceiveProps(nextProps) {
+//     var observationCollection = new ObservationCollection();
+//
+//     if(nextProps.id) {
+//       this.setState({ props: nextProps.id });
+//       observationCollection.parseWhere('observer', '_User', nextProps.id).parseInclude('observer').fetch().then(()=> {
+//       this.setState({ observationCollection });
+//     });
+//     } else {
+//       this.setState( { props: null });
+//       observationCollection.parseInclude('observer').fetch().done(() => {
+//         this.setState({ observationCollection })
+//       });
+//     }
+//   }
+//
+//   render() {
+//     return (
+//       <BaseLayout>
+//         { this.state.props ? <UserListings observationCollection={this.state.observationCollection} /> : <GalleryListings observationCollection={this.state.observationCollection} /> }
+//       </BaseLayout>
+//     )
+//   }
+// }
+//
+// //********************************
+// //Observation Gallery Listing (Photos Gallery)
+// //********************************
+//
+// class GalleryListings extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.renderUserList = this.renderUserList.bind(this);
+//   }
+//
+//   renderUserList(e) {
+//     var url = "/observation/gallery/" + e.target.value + "/";
+//     Backbone.history.navigate(url, {trigger: true});
+//   }
+//
+//   render() {
+//     var obsGallery = this.props.observationCollection.map((obsPics)=> {
+//       return (
+//           <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
+//             <div className="thumbnail">
+//               <img src={obsPics.get("pic").url} alt="..."/>
+//               <div className="caption">
+//                 <h4>{obsPics.get("commonName")}</h4>
+//                 <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
+//                 <p><button onClick={this.renderUserList} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button">Observation Details</a></p>
+//               </div>
+//             </div>
+//           </div>
+//       )
+//     });
+//
+//     return(
+//       <div className="container">
+//         <div className="row">
+//           {obsGallery}
+//         </div>
+//       </div>
+//     )
+//   }
+// }
+//
+// //********************************
+// //User Gallery Listing (Photos Gallery)
+// //********************************
+//
+// class UserListings extends React.Component{
+//   constructor(props){
+//     super(props);
+//     var userCollection = new UserCollection();
+//     var userObservations = new ObservationCollection();
+//
+//     this.handleBackToGallery = this.handleBackToGallery.bind(this);
+//
+//   }
+//
+//   handleBackToGallery(e) {
+//     Backbone.history.navigate('observation/gallery/', {trigger: true});
+//   }
+//
+//   render() {
+//     var obsGallery;
+//     if( this.props.observationCollection) {
+//       obsGallery = this.props.observationCollection.map((obsPics)=> {
+//         console.log('obsPics', obsPics);
+//         return (
+//           <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
+//             <div className="thumbnail">
+//               <img src={obsPics.get("pic").url} alt="..."/>
+//               <div className="caption">
+//                 <h4>{obsPics.get("commonName")}</h4>
+//                 <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
+//                 <p><button onClick={this.handleBackToGallery} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">Back to Gallery</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button">Observation Details</a></p>
+//               </div>
+//             </div>
+//           </div>
+//         )
+//       });
+//     }
+//
+//     return(
+//       <div className="container">
+//         <div className="row">
+//           {obsGallery}
+//         </div>
+//       </div>
+//     )
+//   }
+// }
+// //********************************
+// //Exports
+// //********************************
+// module.exports = {
+//   ObservationGalleryContainer
+// };
+
+
+
+
+/*****************************************************
+
+        John's WORK BELOW
+
+****************************************************/
+
+
+
+
+
 //********************************
 //Third Party Libraries
 //********************************
 var React = require('react');
+var $ = require('jquery');
+var Backbone = require('backbone');
+var LazyLoad = require('react-lazyload').LazyLoad;
+
 
 //********************************
 //Models, Utilities, Layouts
 //********************************
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var ObservationCollection = require('../models/observations.js').ObservationCollection;
-//var User = require('../models/user.js').User;
+var EnhancedObservationCollection = require('../models/observations.js').EnhancedObservationCollection;
 var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
+var UserCollection = require('../models/user.js').UserCollection;
+
 //********************************
 //Observation Gallery (Photos Gallery)
 //********************************
@@ -827,58 +1236,115 @@ class ObservationGalleryContainer extends React.Component {
   constructor(props) {
     super(props);
     var observationCollection = new ObservationCollection();
-    var userProfileCollection = new UserProfileCollection();
+    var enhancedObservationCollection = new EnhancedObservationCollection();
+    var userObservations = new ObservationCollection();
 
-    userProfileCollection.fetch().then(() => {
-      this.setState({userProfileCollection: userProfileCollection});
-    });
-    //currentCollection.set('objectId', props.id);
-    observationCollection.fetch().then(()=> {
-      this.setState({observationCollection: observationCollection});
-      console.log(observationCollection);
-      this.forceUpdate();
+    this.toggleGallery = this.toggleGallery.bind(this);
+    this.handleNewCollection = this.handleNewCollection.bind(this);
+    console.log('propsid', this.props.id);
+
+   enhancedObservationCollection.urlSetter('observer');
+    enhancedObservationCollection.fetch().then(() => {
+      console.log('response', enhancedObservationCollection);
+
+      this.setState({observationCollection: enhancedObservationCollection});
     });
 
     this.state = {
       observationCollection,
-      userProfileCollection
+      userObservations,
+      showGallery: true,
+      userName: ''
+
     }
+  }
+  handleNewCollection(dataId, dataName) {
+    var clickedUser = dataId;
+    console.log('clickedUser', clickedUser);
+    var clickedUsersName = dataName;
+    this.setState({userName: clickedUsersName});
+    console.log('clickedUsersName', clickedUsersName);
+    var userObservations = new ObservationCollection();
+
+    //fetch data related to user here
+
+    /************************************
+    Need a parseInclude to also fetch the user's profile
+    for display purpose on the user's collections in UserListings
+    component
+    *********************************/
+    userObservations.parseWhere('observer', '_User', clickedUser).fetch().then((data)=> {
+
+      this.setState({userObservations});
+
+      console.log('data', data);
+    });
+  }
+  toggleGallery() {
+    var state = !this.state.showGallery;
+    this.setState({ showGallery: state });
   }
   render() {
     return (
       React.createElement(BaseLayout, null, 
-        React.createElement(GalleryListings, {observationCollection: this.state.observationCollection, 
-        userProfileCollection: this.state.userProfileCollection})
+        this.state.showGallery ? React.createElement(GalleryListings, {toggleGallery: this.toggleGallery, 
+        userName: this.state.userName, 
+        observationCollection: this.state.observationCollection, 
+        action: this.handleNewCollection}) : React.createElement(UserListings, {toggleGallery: this.toggleGallery, userId: this.props.id, 
+        userName: this.state.userName, 
+        userObservations: this.state.userObservations}
+         )
       )
     )
   }
 }
 
+//********************************
+//Observation Gallery Listing (Photos Gallery)
+//********************************
 class GalleryListings extends React.Component {
   constructor(props) {
     super(props);
+    this.handleUserList = this.handleUserList.bind(this);
+  }
+  handleUserList(e) {
+    var etarg = e.target.value;
+    var userId = etarg.substr(0, etarg.indexOf(' '));
+    var userName = etarg.substr(etarg.indexOf(' ')+1);
+    //var userName = etargArray[1];
 
+    this.setState({userName: userName});
+
+    console.log('etarg', etarg, 'userId', userId, 'userName', userName);
+    var url = "/observation/gallery/" + userId + "/";
+    this.props.action(userId, userName);
+    Backbone.history.navigate(url, {trigger: true});
+    this.props.toggleGallery();
   }
   render() {
-    //console.log('tpoc', this.props.observationCollection);
     var obsGallery = this.props.observationCollection.map((obsPics)=> {
-      console.log('obs', obsPics);
-      console.log('obs', obsPics.get('observer').objectId);
-      var observerId = obsPics.get('observer').objectId;
 
-      console.log('upc', obsPics);
+      //console.log("runner", obsPics.get("observer").realOrNickName);
+      if(!obsPics.get("observer").realOrNickName) {
+        console.log("id here", obsPics.get("objectId"));
+      }
 
-
-
+      //console.log("observer",  obsPics.get("observer").objectId);
+        //console.log(this.props.userName);
       return (
 
           React.createElement("div", {key: obsPics.get("objectId"), className: "col-sm-6 col-md-4"}, 
             React.createElement("div", {className: "thumbnail"}, 
               React.createElement("img", {src: obsPics.get("pic").url, alt: "..."}), 
               React.createElement("div", {className: "caption"}, 
-                React.createElement("h3", null, obsPics.get("commonName")), 
-                React.createElement("p", null, "Observed By by: John B"), 
-                React.createElement("p", null, React.createElement("a", {href: "", className: "btn btn-primary", role: "button"}, "See John's Other List"), " ", React.createElement("a", {href: "#", className: "btn btn-default", role: "button"}, "Observation Details"))
+                React.createElement("h4", null, obsPics.get("commonName")), 
+                React.createElement("p", null, React.createElement("b", null, "Observation & Photo by:"), " ", obsPics.get("observer").realOrNickName), 
+                React.createElement("p", null, 
+                  React.createElement("button", {onClick: this.handleUserList, value: obsPics.get("observer").objectId + " " + obsPics.get("observer").realOrNickName, className: "btn btn-primary gal-button", role: "button"}, (obsPics.get("observer").realOrNickName) + "'s Other Lists"), 
+                  React.createElement("a", {href: "#observation/" + obsPics.get('objectId') + "/", role: "button", className: "btn btn-default gal-button"}, 
+                    "Observation Details"
+                  )
+                )
               )
             )
           )
@@ -889,8 +1355,12 @@ class GalleryListings extends React.Component {
 
     return(
       React.createElement("div", {className: "container"}, 
+
         React.createElement("div", {className: "row"}, 
-          obsGallery
+
+            obsGallery
+
+
         )
       )
     )
@@ -899,13 +1369,343 @@ class GalleryListings extends React.Component {
 }
 
 //********************************
+//User Gallery Listing (Photos Gallery)
+//********************************
+class UserListings extends React.Component{
+  constructor(props){
+    super(props);
+    var userCollection = new UserCollection();
+    var userObservations = new ObservationCollection();
+
+    this.handleBackToGallery = this.handleBackToGallery.bind(this);
+
+  }
+  handleBackToGallery(e) {
+    Backbone.history.navigate('observation/gallery/', {trigger: true});
+    this.props.toggleGallery();
+  }
+  render() {
+    /************************************
+    Need to get User Info from pointer with include
+    so that the following will display user names
+    *********************************/
+    var obsGallery = this.props.userObservations.map((obsPics)=> {
+      console.log('propsName', this.props.userName);
+      return (
+
+        React.createElement("div", {key: obsPics.get("objectId"), className: "col-sm-6 col-md-4"}, 
+          React.createElement("div", {className: "thumbnail"}, 
+            React.createElement("img", {src: obsPics.get("pic").url, alt: "..."}), 
+            React.createElement("div", {className: "caption"}, 
+              React.createElement("h4", null, obsPics.get("commonName")), 
+              React.createElement("p", null, React.createElement("b", null, "Observation & Photo by:"), " ", this.props.userName), 
+              React.createElement("p", null, React.createElement("button", {onClick: this.handleBackToGallery, value:  obsPics.get("observer").objectId, className: "btn btn-primary gal-button", role: "button"}, "Back to Gallery"), " ", React.createElement("a", {href: "#observation/" + obsPics.get('objectId') + '/', className: "btn btn-default gal-button", role: "button"}, "Observation Details"))
+            )
+          )
+        )
+
+
+      )
+
+    });
+    return(
+      React.createElement("div", {className: "container"}, 
+        React.createElement("h3", null, (this.props.userName)+"'s"+" "+"Observations"), 
+        React.createElement("div", {className: "row"}, 
+          obsGallery
+        )
+      )
+    )
+    }
+
+    }
+
+//********************************
 //Exports
 //********************************
 module.exports = {
   ObservationGalleryContainer
 };
 
-},{"../models/observations.js":13,"../models/userProfile.js":16,"./layouts/baselayout.jsx":1,"react":227}],9:[function(require,module,exports){
+
+
+
+
+/*****************************************************
+
+        MADY's WORK BELOW
+
+****************************************************/
+
+
+// //********************************
+// //Third Party Libraries
+// //********************************
+// var React = require('react');
+// var $ = require('jquery');
+// var Backbone = require('backbone');
+//
+// //********************************
+// //Models, Utilities, Layouts
+// //********************************
+// var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
+// var ObservationCollection = require('../models/observations.js').ObservationCollection;
+// var EnhancedObservationCollection = require('../models/observations.js').EnhancedObservationCollection;
+// var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
+// var UserCollection = require('../models/user.js').UserCollection;
+//
+// //********************************
+// //Observation Gallery (Photos Gallery)
+// //********************************
+// class ObservationGalleryContainer extends React.Component {
+//   constructor(props) {
+//     super(props);
+//
+//     var observationCollection = new ObservationCollection();
+//
+//     this.state = {
+//       props: this.props.id,
+//       observationCollection
+//     }
+//
+//     if(props.id) {
+//       observationCollection.parseWhere('observer', '_User', props.id).fetch().then(()=> {
+//       this.setState({ observationCollection });
+//     });
+//     } else {
+//       observationCollection.fetch().done(() => {
+//         this.setState({ observationCollection })
+//       });
+//     }
+//   }
+//
+//   componentWillReceiveProps(nextProps) {
+//     var observationCollection = this.state.observationCollection;
+//
+//     if(nextProps.id) {
+//       this.setState({ props: nextProps.id });
+//       observationCollection.parseWhere('observer', '_User', nextProps.id).fetch().then(()=> {
+//       this.setState({ observationCollection });
+//     });
+//     } else {
+//       this.setState( { props: null });
+//       observationCollection.fetch().done(() => {
+//         this.setState({ observationCollection })
+//       });
+//     }
+//   }
+//
+//   render() {
+//     return (
+//       <BaseLayout>
+//        { this.state.props ? <UserListings observationCollection={this.state.observationCollection} /> : <GalleryListings observationCollection={this.state.observationCollection} /> }
+//      </BaseLayout>
+//     )
+//   }
+// }
+//
+// //********************************
+// //Observation Gallery Listing (Photos Gallery)
+// //********************************
+// class GalleryListings extends React.Component {
+//   constructor(props) {
+//     super(props);
+//
+//     this.renderUserList = this.renderUserList.bind(this);
+//   }
+//
+//   renderUserList(e) {
+//     var url = "/observation/gallery/" + e.target.value + "/";
+//     Backbone.history.navigate(url, {trigger: true});
+//   }
+//
+//   render() {
+//     var obsGallery = this.props.observationCollection.map((obsPics)=> {
+//       return (
+//           <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
+//             <div className="thumbnail">
+//               <img src={obsPics.get("pic").url} alt="..."/>
+//               <div className="caption">
+//                 <h4>{obsPics.get("commonName")}</h4>
+//                 <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
+//                 <p><button onClick={this.renderUserList} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button">Observation Details</a></p>
+//               </div>
+//             </div>
+//           </div>
+//       )
+//     });
+//
+//     return(
+//       <div className="container">
+//         <div className="row">
+//           {obsGallery}
+//         </div>
+//       </div>
+//     )
+//   }
+// }
+//
+// //********************************
+// //User Gallery Listing (Photos Gallery)
+// //********************************
+// class UserListings extends React.Component{
+//   constructor(props){
+//     super(props);
+//     var userCollection = new UserCollection();
+//     var userObservations = new ObservationCollection();
+//
+//     this.handleBackToGallery = this.handleBackToGallery.bind(this);
+//
+//   }
+//   handleBackToGallery(e) {
+//     Backbone.history.navigate('observation/gallery/', {trigger: true});
+//     //this.props.toggleGallery();
+//   }
+//
+//   componentWillReceiveProps(nextProps) {
+//     console.log('nextProps', nextProps);
+//   }
+//
+//   render() {
+//     /************************************
+//     Need to get User Info from pointer with include
+//     so that the following will display user names
+//     *********************************/
+//     var obsGallery;
+//     if( this.props.observationCollection) {
+//       obsGallery = this.props.observationCollection.map((obsPics)=> {
+//
+//         return (
+//
+//           <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
+//             <div className="thumbnail">
+//               <img src={obsPics.get("pic").url} alt="..."/>
+//               <div className="caption">
+//                 <h4>{obsPics.get("commonName")}</h4>
+//                 <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
+//                 <p><button onClick={this.handleBackToGallery} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">Back to Gallery</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button">Observation Details</a></p>
+//               </div>
+//             </div>
+//           </div>
+//
+//
+//         )
+//
+//       });
+//     }
+//
+//     return(
+//       <div className="container">
+//         <div className="row">
+//           {obsGallery}
+//         </div>
+//       </div>
+//     )
+//     }
+//
+//     }
+// //********************************
+// //Exports
+// //********************************
+// module.exports = {
+//   ObservationGalleryContainer
+// };
+
+},{"../models/observations.js":15,"../models/user.js":17,"../models/userProfile.js":18,"./layouts/baselayout.jsx":1,"backbone":22,"jquery":71,"react":264,"react-lazyload":130}],9:[function(require,module,exports){
+"use strict";
+//********************************
+//Third Party Libraries
+//********************************
+var React = require('react');
+var Masonry = require('react-masonry-component');
+var LazyLoad = require('react-lazyload');
+
+//********************************
+//Models, Utilities, Layouts
+//********************************
+var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
+var ObservationCollection = require('../models/observations.js').ObservationCollection;
+var EnhancedObservationCollection = require('../models/observations.js').EnhancedObservationCollection;
+var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
+var masonryOptions = {
+transitionDuration: 0,
+columnWidth: 200,
+
+};
+
+//********************************
+//Observation LightBox (True Photo Gallery)
+//********************************
+
+class ObservationLightboxContainer extends React.Component {
+  constructor(props){
+    super(props);
+    var observationCollection = new ObservationCollection();
+    var enhancedObservationCollection = new EnhancedObservationCollection();
+
+    enhancedObservationCollection.urlSetter('observer');
+    enhancedObservationCollection.fetch().then(() => {
+      //console.log('response', enhancedObservationCollection);
+
+      this.setState({observationCollection: enhancedObservationCollection });
+    });
+
+    this.state = {
+      observationCollection
+    }
+  }
+
+  render() {
+    var observationImagesArray = [];
+    var childElements = this.state.observationCollection.map((image) => {
+
+      return (
+        //console.log('image', image.get("pic").url)
+        //observationImagesArray.push({src: image.get("pic").url})
+        React.createElement("div", {className: "image-element-class"}, 
+
+          React.createElement("img", {className: "masonry-img", src: image.get("pic").url})
+        
+        )
+      )
+    });
+
+    return (
+
+      React.createElement(BaseLayout, null, 
+        React.createElement("div", {className: "container"}, 
+          React.createElement(Masonry, {
+            className: 'my-gallery-class', 
+            elementType: 'div', 
+            options: masonryOptions, 
+            disableImagesLoaded: false, 
+            updateOnEachImageLoad: false}, 
+                childElements
+          )
+        )
+      )
+    )
+  }
+}
+
+// class LightboxComponent extends React.Component {
+//   constructor(props){
+//     super(props);
+// onClose={this.closeLightbox}
+//
+//   }
+//   render() {
+//     return(
+//       <Lightbox
+//     )
+//   }
+// }
+
+module.exports = {
+  ObservationLightboxContainer
+}
+
+},{"../models/observations.js":15,"../models/userProfile.js":18,"./layouts/baselayout.jsx":1,"react":264,"react-lazyload":130,"react-masonry-component":135}],10:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1053,7 +1853,163 @@ module.exports = {
   ObservationSpeciesSearchContainer
 };
 
-},{"../models/organism.js":14,"../utilities.js":19,"./layouts/baselayout.jsx":1,"react":227,"underscore":228}],10:[function(require,module,exports){
+},{"../models/organism.js":16,"../utilities.js":21,"./layouts/baselayout.jsx":1,"react":264,"underscore":265}],11:[function(require,module,exports){
+"use strict";
+//********************************
+//Third Party Libraries
+//********************************
+var React = require('react');
+var $ = require('jquery');
+//var Parse = require('parse');
+
+//********************************
+//Models, Utilities, Layouts
+//********************************
+var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
+var ObservationCollection = require('../models/observations.js').ObservationCollection;
+var EnhancedObservationCollection = require('../models/observations.js').EnhancedObservationCollection;
+var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
+var UserCollection = require('../models/user.js').UserCollection;
+
+//********************************
+//Observation Gallery (Photos Gallery)
+//********************************
+class ObservationListContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    var observationCollection = new ObservationCollection();
+    var userProfileCollection = new UserProfileCollection();
+    var enhancedObservationCollection = new EnhancedObservationCollection();
+    var userCollection = new UserCollection();
+
+    userCollection.fetch().then((response)=> {
+      console.log('resp ', response);
+      this.setState({userCollection: userCollection});
+    })
+
+    if(this.props.id) {
+      //if true, set objectId
+      console.log('tpid', this.props.id);
+      userProfileCollection.set('objectId', this.props.id);
+
+    } else {
+
+      enhancedObservationCollection.urlSetter('observer');
+      enhancedObservationCollection.fetch().then(() => {
+        console.log('response', enhancedObservationCollection);
+
+        this.setState({observationCollection: enhancedObservationCollection});
+      });
+
+    }
+
+    this.state = {
+      observationCollection,
+      userCollection
+    }
+  }
+  render() {
+    return (
+      React.createElement(BaseLayout, null, 
+
+        React.createElement(UserNameList, {userCollection: this.state.userCollection})
+
+      )
+    )
+  }
+}
+
+// <UserListings observationCollection={this.state.observationCollection}/>
+class UserListings extends React.Component {
+  constructor(props) {
+    super(props);
+
+  }
+
+  render() {
+
+    var obsList = this.props.observationCollection.map((obsPics)=> {
+
+      return (
+        React.createElement("a", {href: "#", className: "list-group-item"}, 
+          React.createElement("img", {className: "media-object", src: obsPics.get("pic").url, alt: "..."})
+        )
+
+      )
+
+    });
+
+    return(
+      React.createElement("div", {className: "container"}, 
+        React.createElement("div", {className: "list-group"}, 
+          obsList, 
+          React.createElement("div", null, "hello, i work")
+        )
+      )
+    )
+  }
+
+}
+
+class UserNameList extends React.Component {
+  constructor(props) {
+    super(props);
+
+  }
+  render() {
+    var users = this.props.userCollection.map((user)=>{
+
+      return (
+        React.createElement("tr", {key: user.cid}, 
+          React.createElement("td", null, user.get("realOrNickName")), 
+          React.createElement("td", null, "Arbitrary Number right now"), 
+          React.createElement("td", null, React.createElement("button", null, "Click To See User's List"))
+        )
+      )
+
+
+    })
+
+    return (
+      React.createElement("div", {className: "container"}, 
+        React.createElement("div", {className: "col-sm-6 col-sm-offset-3"}, 
+          React.createElement("table", {className: "table table-hover"}, 
+            React.createElement("thead", null, 
+              React.createElement("tr", null, 
+                React.createElement("th", null, "User Name"), 
+                React.createElement("th", null, "# of Observations"), 
+                React.createElement("th", null, "Check Out Collection")
+              )
+            ), 
+            React.createElement("tbody", null, 
+              users
+            )
+          )
+        )
+      )
+    )
+  }
+}
+
+// <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
+//   <div className="thumbnail">
+//     <img src={obsPics.get("pic").url} alt="..."/>
+//     <div className="caption">
+//       <h4>{obsPics.get("commonName")}</h4>
+//       <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
+//       <p><a href={"#observation/gallery/" + (obsPics.get("observer").objectId) + "/"} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</a> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button">Observation Details</a></p>
+//     </div>
+//   </div>
+// </div>
+
+//********************************
+//Exports
+//********************************
+module.exports = {
+  ObservationListContainer
+};
+
+},{"../models/observations.js":15,"../models/user.js":17,"../models/userProfile.js":18,"./layouts/baselayout.jsx":1,"jquery":71,"react":264}],12:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1080,8 +2036,10 @@ class SignupContainer extends React.Component {
     this.createUserAccount = this.createUserAccount.bind(this);
   }
   createUserAccount(creds) {
-    var user = User.signup(creds);
-    Backbone.history.navigate('userinfo/', {trigger: true});
+    var user = User.signup(creds, function(){
+      Backbone.history.navigate('userinfo/', {trigger: true});
+    });
+
   }
   render() {
     return (
@@ -1164,7 +2122,7 @@ module.exports = {
   SignupContainer
 };
 
-},{"../models/user":15,"./layouts/marketauth.jsx":2,"backbone":20,"react":227}],11:[function(require,module,exports){
+},{"../models/user":17,"./layouts/marketauth.jsx":2,"backbone":22,"react":264}],13:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1180,6 +2138,7 @@ var ParseFile = require('../parse.js').ParseFile;
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var UserProfile = require('../models/userProfile.js').UserProfile;
 var User = require('../models/user.js').User;
+var UserCollection = require('../models/user.js').UserCollection;
 
 //********************************
 //User Profile Add / Edit / View
@@ -1188,10 +2147,21 @@ class UserInfoContainer extends React.Component {
   constructor(props) {
     super(props);
     var userProfile = new UserProfile();
+    var userCollection = new UserCollection();
     var currentUser = User.current();
+    var userId = this.props.id;
 
     this.createUserProfile = this.createUserProfile.bind(this);
+    console.log('propsId', this.props.id);
 
+    if(userId != null) {
+      console.log("theres a user");
+      userProfile.set('objectId', this.props.id);
+      userProfile.fetch().then((response) => {
+        this.setState({userProfile: response});
+      })
+
+    }
     this.state = {
       userProfile: userProfile,
       currentUser: currentUser
@@ -1203,9 +2173,9 @@ class UserInfoContainer extends React.Component {
     var userId = User.editUser();
     userProfile.set('objectId', userId)
     userProfile.set(data);
-    //userProfile.setPointer("_User", "_User", User.current().get("objectId"));
-    //************************
+
    userProfile.save().then(function(){
+     //User.store(userProfile);
      Backbone.history.navigate('observation/', {trigger: true});
 
     });
@@ -1218,8 +2188,8 @@ class UserInfoContainer extends React.Component {
       React.createElement("div", {className: "container"}, 
         React.createElement("div", {className: "row"}, 
           React.createElement("div", {className: "col-sm-8 col-sm-offset-2 well"}, 
-            React.createElement("h2", null, "Thanks for signing up, ", this.state.currentUser.get("username"), " !"), 
-            React.createElement("p", null, "Feel free to add to your profile below, or click \"No Thanks\" to come back later and do it.")
+            React.createElement("h2", null, " ", (this.state.currentUser.get("realOrNickName"))? ("Edit Your Profile, " + this.state.currentUser.get("realOrNickName") + "?"): ("Thanks for signing up, " + this.state.currentUser.get("username")+ "!"), " "), 
+            React.createElement("p", null, "Feel free to add to or edit your profile below, or click \"No Thanks\" to come back later and do it.")
           )
         ), 
           React.createElement("div", {className: "row"}, 
@@ -1303,12 +2273,13 @@ class UserProfileForm extends React.Component {
     });
   }
   render() {
+    console.log('thpropup', this.props.userProfile);
     return(
       React.createElement("form", {onSubmit: this.handleSubmit}, 
         React.createElement("div", {className: "form-group col-sm-6"}, 
           React.createElement("div", {className: "media-right"}, 
             React.createElement("div", {className: "sizer"}, 
-              React.createElement("img", {className: "media-object", src: this.state.preview}), 
+              React.createElement("img", {className: "media-object", src: this.state.preview ? this.state.preview : null}), 
               React.createElement("p", {className: "help-block"}, "Image preview")
             )
           ), 
@@ -1317,24 +2288,24 @@ class UserProfileForm extends React.Component {
         ), 
         React.createElement("div", {className: "form-group col-sm-6"}, 
           React.createElement("label", {htmlFor: "userName"}, "Your Nickname or Real Name"), 
-          React.createElement("input", {onChange: this.handleUserNameChange, type: "text", className: "form-control", id: "userName", placeholder: "Your Name Here"})
+          React.createElement("input", {onChange: this.handleUserNameChange, type: "text", className: "form-control", id: "userName", placeholder: "Your Name Here", value: this.props.userProfile.realOrNickName})
         ), 
         React.createElement("div", {className: "row"}, 
 
           React.createElement("div", {className: "form-group col-sm-6 col-sm-offset-6"}, 
             React.createElement("label", {htmlFor: "birthday"}, "Your Birthday (optional)"), 
-            React.createElement("input", {onChange: this.handleBirthdayChange, type: "date", className: "form-control", id: "birthday"})
+            React.createElement("input", {onChange: this.handleBirthdayChange, type: "date", className: "form-control", id: "birthday", value: this.props.userProfile.birthday})
           )
         ), 
 
           React.createElement("div", {className: "form-group col-sm-12"}, 
             React.createElement("label", {htmlFor: "personalBio"}, "Your Bio Information (optional)"), 
-            React.createElement("textarea", {onChange: this.handleUserBioInfo, id: "personalBio", className: "form-control", placeholder: "Your Personal Bio", rows: "3"})
+            React.createElement("textarea", {onChange: this.handleUserBioInfo, id: "personalBio", className: "form-control", placeholder: "Your Personal Bio", rows: "3", value: this.props.userProfile.bioInfo})
           ), 
 
         React.createElement("div", {className: "form-group col-sm-12"}, 
           React.createElement("label", {htmlFor: "personalInterests"}, "What kind of organisms do you like to find?"), 
-          React.createElement("textarea", {onChange: this.handleUserSpeciesInterests, id: "personalInterests", className: "form-control", placeholder: "Your Interests", rows: "3"}), 
+          React.createElement("textarea", {onChange: this.handleUserSpeciesInterests, id: "personalInterests", className: "form-control", placeholder: "Your Interests", rows: "3", value: this.props.userProfile.speciesInterests}), 
           React.createElement("p", {className: "help-block"}, "(Example: \"Mammals, Reptiles, and Fish\"... or something more specific such as \"I like to observe hummingbird migrations\")")
         ), 
         React.createElement("button", {type: "submit", className: "btn btn-success"}, "Submit User Info"), 
@@ -1352,7 +2323,7 @@ module.exports = {
   UserInfoContainer
 };
 
-},{"../models/user.js":15,"../models/userProfile.js":16,"../parse.js":17,"./layouts/baselayout.jsx":1,"backbone":20,"jquery":51,"react":227}],12:[function(require,module,exports){
+},{"../models/user.js":17,"../models/userProfile.js":18,"../parse.js":19,"./layouts/baselayout.jsx":1,"backbone":22,"jquery":71,"react":264}],14:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1369,7 +2340,7 @@ $(function(){
 
 });
 
-},{"./router":18,"backbone":20,"jquery":51}],13:[function(require,module,exports){
+},{"./router":20,"backbone":22,"jquery":71}],15:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1392,7 +2363,7 @@ var Observation = parse.ParseModel.extend({
         commonName: '',
         scientificName: '',
         originalDiscoveryInfo: '',
-        observationDate: new Date(),
+        //observationDate: new Date(),
         locationOfObservation: '',
         taxonTree: '',
         observationNotes: '',
@@ -1401,16 +2372,6 @@ var Observation = parse.ParseModel.extend({
     )
   },
   urlRoot: 'https://jb3-serve.herokuapp.com/classes/Observations/',
-  getUserProfile: function(objectId) {
-    var url = 'https://jb3-serve.herokuapp.com/users/' + objectId;
-    parse.parse.initialize();
-    
-    $.get(url).then(() => {
-
-
-    });
-
-  }
 
 });
 
@@ -1419,15 +2380,107 @@ var ObservationCollection = parse.ParseCollection.extend({
   baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/'
 });
 
+var EnhancedObservationCollection = parse.ParseCollection.extend({
+  model: Observation,
+  baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/',
+  urlSetter: function(field) {
+    //allows for dynamic search of pointer fields
+    //field gets passed in on Component
+    this.baseUrl = 'https://jb3-serve.herokuapp.com/classes/Observations/?include=' + field;
+  }
+});
+
 //********************************
 //Exports
 //********************************
 module.exports = {
   Observation,
-  ObservationCollection
-}
+  ObservationCollection,
+  EnhancedObservationCollection
+};
 
-},{"../parse":17,"backbone":20,"jquery":51}],14:[function(require,module,exports){
+
+
+/*****************************************************
+
+        John's WORK BELOW
+
+****************************************************/
+
+
+// //********************************
+// //Third Party Libraries
+// //********************************
+// var Backbone = require('backbone');
+// var $ = require('jquery');
+//
+// //********************************
+// // Utilities
+// //********************************
+// var parse = require('../parse');
+//
+// //********************************
+// //Models & Collections
+// //********************************
+// var Observation = parse.ParseModel.extend({
+//   defaults: function() {
+//     return (
+//       {
+//         commonName: '',
+//         scientificName: '',
+//         originalDiscoveryInfo: '',
+//         //observationDate: new Date(),
+//         locationOfObservation: '',
+//         taxonTree: '',
+//         observationNotes: '',
+//         publicList: true
+//       }
+//     )
+//   },
+//   urlRoot: 'https://jb3-serve.herokuapp.com/classes/Observations/',
+//
+// });
+// // var ObservationCollection = parse.ParseCollection.extend({
+// //  model: Observation,
+// //  baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/',
+// //  renderUserObservations: function(field) {
+// //    this.baseUrl = 'https://jb3-serve.herokuapp.com/classes/Observations/?include=' + field;
+// //    return this.fetch();
+// //  }
+// // });
+// var ObservationCollection = parse.ParseCollection.extend({
+//   model: Observation,
+//   baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/',
+//   parseWhereIncludeSetter: function(){
+//
+//   },
+// });
+//
+// var EnhancedObservationCollection = parse.ParseCollection.extend({
+//   model: Observation,
+//   baseUrl: 'https://jb3-serve.herokuapp.com/classes/Observations/',
+//   urlSetter: function(field) {
+//     //allows for dynamic search of pointer fields
+//     //field gets passed in on Component
+//     this.baseUrl = 'https://jb3-serve.herokuapp.com/classes/Observations/?include=' + field;
+//   },
+//   urlReset: function() {
+//
+//     this.baseUrl = 'https://jb3-serve.herokuapp.com/classes/Observations/';
+//
+//   }
+// })
+//
+// //********************************
+// //Exports
+// //********************************
+// module.exports = {
+//   Observation,
+//   ObservationCollection,
+//   EnhancedObservationCollection
+// }
+
+},{"../parse":19,"backbone":22,"jquery":71}],16:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1445,11 +2498,6 @@ var Organism = Backbone.Model.extend({
     //console.log('VN', this.get('vernacularNames'));
     return _.pluck(vernacularNames, 'vernacularName').join(", ");
   },
-  // getSpeciesDescription: function () {
-  //   var description = _.where(this.get('descriptions'), {language: "eng"});
-  //
-  //   return _.pluck(descriptions)
-  // },
   urlRoot: 'https://api.gbif.org/v1/species/',
   getTaxonTree() {
     var kingdom = this.get('kingdom');
@@ -1492,7 +2540,7 @@ module.exports = {
   OrganismCollection
 };
 
-},{"backbone":20,"underscore":228}],15:[function(require,module,exports){
+},{"backbone":22,"underscore":265}],17:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1524,13 +2572,14 @@ var User = parse.ParseModel.extend({
       User.store(newUser);
       callback(newUser);
     });
-  //  parse.parse.deinitialize();
+    parse.parse.deinitialize();
   },
   //signup method for existing users
-  signup: function(credentials){
+  signup: function(credentials, callback){
     var newUser = new User(credentials);
     newUser.save().then(() => {
       User.store(newUser);
+      callback();
     });
     return newUser;
   },
@@ -1593,14 +2642,23 @@ var User = parse.ParseModel.extend({
   }
 });
 
+var UserCollection = parse.ParseCollection.extend({
+  model: User,
+  baseUrl: 'https://jb3-serve.herokuapp.com/users',
+  parse: function(data) {
+    return data.results;
+  }
+});
+
 //********************************
 //Exports
 //********************************
 module.exports = {
-  User
+  User,
+  UserCollection
 };
 
-},{"../parse":17,"backbone":20,"jquery":51}],16:[function(require,module,exports){
+},{"../parse":19,"backbone":22,"jquery":71}],18:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1646,8 +2704,173 @@ module.exports = {
   UserProfileCollection
 };
 
-},{"../parse":17,"backbone":20}],17:[function(require,module,exports){
+},{"../parse":19,"backbone":22}],19:[function(require,module,exports){
 "use strict";
+// //********************************
+// //Third Party Libraries
+// //********************************
+// var $ = require('jquery');
+// var Backbone = require('backbone');
+//
+// var parse = {
+//   serverURL: '',
+//   initialize: function(config){
+//     config = config || {};
+//
+//     if(config.serverURL){
+//       this.serverURL = config.serverURL;
+//     }
+//
+//     $.ajaxSetup({
+//       beforeSend: function(xhr){
+//         xhr.setRequestHeader("X-Parse-Application-Id", "tiygvl2017");
+//         xhr.setRequestHeader("X-Parse-REST-API-Key", "sleeper");
+//
+//         if(config.sessionId){
+//           xhr.setRequestHeader("X-Parse-Session-Token", config.sessionId);
+//         }
+//       }
+//     });
+//   },
+//   deinitialize: function(){
+//     $.ajaxSetup({
+//       beforeSend: function(xhr){
+//         xhr.setRequestHeader("X-Parse-Application-Id", null);
+//         xhr.setRequestHeader("X-Parse-REST-API-Key", null);
+//         xhr.setRequestHeader("X-Parse-Session-Token", null);
+//       }
+//     });
+//   }
+// }
+//
+// var ParseModel = Backbone.Model.extend({
+//   idAttribute: 'objectId',
+//   sync: function(){
+//     var User = require('./models/user').User;
+//     var user = User.current();
+//
+//     if(user){
+//       parse.initialize({sessionId: user.get('sessionToken')});
+//     }else{
+//       parse.initialize();
+//     }
+//
+//     var xhr = Backbone.Model.prototype.sync.apply(this, arguments);
+//
+//     parse.deinitialize();
+//
+//     return xhr;
+//   },
+//   save: function(key, val, options){
+//     delete this.attributes.createdAt;
+//     delete this.attributes.updatedAt;
+//
+//     return Backbone.Model.prototype.save.apply(this, arguments);
+//   },
+//   setPointer: function(field, parseClass, objectId){
+//     var pointerObject = {
+//       "__type": "Pointer",
+//       "className": parseClass,
+//       "objectId": objectId
+//     };
+//
+//     this.set(field, pointerObject);
+//
+//     return this;
+//   }
+// });
+//
+// var ParseCollection = Backbone.Collection.extend({
+//   whereClause: {}, includeClause: 0,
+//   parseWhere: function(field, value, objectId){
+//     // If an objectId is passed in then we are building a pointer where
+//     if(objectId){
+//       value = {
+//         field: field,
+//         className: value,
+//         objectId: objectId,
+//         '__type': 'Pointer'
+//       };
+//     }
+//
+//     this.whereClause[field] = value;
+//
+//     return this;
+//   },
+//
+//   parseInclude: function(string) {
+//     this.includeClause = string;
+//     return this;
+//   },
+//
+//   url: function(){
+//     var url = this.baseUrl;
+//
+//     if(Object.keys(this.whereClause).length > 0 && this.includeClause.length > 0) {
+//       url += '?where=' + JSON.stringify(this.whereClause) + '&include=' + this.includeClause;
+//       this.whereClause = {};
+//       this.includeClause = 0;
+//     } else if (Object.keys(this.whereClause).length > 0) {
+//       url += '?where=' + JSON.stringify(this.whereClause);
+//       this.whereClause = {};
+//     } else if (this.includeClause.length > 0) {
+//       url += '?include=' + this.includeClause;
+//       this.includeClause = null;
+//     }
+//
+//     return url;
+//   },
+//   parse: function(data){
+//     return data.results;
+//   },
+//   sync: function(){
+//     var User = require('./models/user').User;
+//     var user = User.current();
+//
+//     if(user){
+//       parse.initialize({sessionId: user.get('sessionToken')});
+//     }else{
+//       parse.initialize();
+//     }
+//
+//     var xhr = Backbone.Collection.prototype.sync.apply(this, arguments);
+//
+//     parse.deinitialize();
+//
+//     return xhr;
+//   },
+// });
+//
+// var ParseFile = ParseModel.extend({
+//   urlRoot: function(){
+//     return 'https://jb3-serve.herokuapp.com/files/' + this.get('name');
+//   }
+// });
+//
+// //********************************
+// //Exports
+// //********************************
+// module.exports = {
+//   parse,
+//   ParseModel,
+//   ParseCollection,
+//   ParseFile
+// };
+//
+//
+//
+
+
+
+/*****************************************************
+
+        John's WORK BELOW
+
+****************************************************/
+
+
+
+
 //********************************
 //Third Party Libraries
 //********************************
@@ -1724,31 +2947,58 @@ var ParseModel = Backbone.Model.extend({
 
 var ParseCollection = Backbone.Collection.extend({
   whereClause: {},
+  includeClause: {},
   parseWhere: function(field, value, objectId){
     // If an objectId is passed in then we are building a pointer where
     if(objectId){
       value = {
-        field: field,
+        '__type': 'Pointer',
         className: value,
         objectId: objectId,
-        '__type': 'Pointer'
+
       };
     }
 
     this.whereClause[field] = value;
-
+    console.log('parseWhere', this.whereClause);
     return this;
   },
-  url: function(){
-    var url = this.baseUrl;
+  parseInclude: function(field, value, objectId) {
+    if(objectId) {
+      value = {
+        '__type': 'Pointer',
+        className: value,
+        objectId: objectId,
 
-    if(Object.keys(this.whereClause).length > 0){
-      url += '?where=' + JSON.stringify(this.whereClause);
-      this.whereClause = {};
-    }
-
-    return url;
+      };
+   }
+   this.includeClause[field] = value;
+   return this;
   },
+  parseWhereInclude: function() {
+
+  },
+  url: function(){
+   var url = this.baseUrl;
+
+   if(Object.keys(this.whereClause).length > 0 && Object.keys(this.includeClause).length > 0){
+     url +=  '?include=' + JSON.stringify(this.includeClause) + '&where=' + JSON.stringify(this.whereClause);
+     this.whereClause = {};
+     this.includeClause = {};
+     console.log('fireme1', url);
+   } else if(Object.keys(this.whereClause).length > 0) {
+       url += '?where=' + JSON.stringify(this.whereClause);
+       this.whereClause = {};
+       console.log('fireme2', url);
+   } else if(Object.keys(this.whereClause).length == 0 && Object.keys(this.includeClause).length > 0) {
+     url += '?include=' + JSON.stringify(this.includeClause);
+     this.includeClause = {};
+     console.log('fireme3', url);
+   }
+
+   return url;
+  },
+
   parse: function(data){
     return data.results;
   },
@@ -1768,6 +3018,7 @@ var ParseCollection = Backbone.Collection.extend({
 
     return xhr;
   },
+
 });
 
 var ParseFile = ParseModel.extend({
@@ -1786,7 +3037,7 @@ module.exports = {
   ParseFile
 };
 
-},{"./models/user":15,"backbone":20,"jquery":51}],18:[function(require,module,exports){
+},{"./models/user":17,"backbone":22,"jquery":71}],20:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1811,7 +3062,8 @@ var ObservationDashContainer = require('./components/observation-dash-container.
 var ObservationsAddEditContainer = require('./components/observation-add-edit-container.jsx').ObservationsAddEditContainer;
 var ObservationGalleryContainer = require('./components/observation-gallery.jsx').ObservationGalleryContainer;
 var ObservationSpeciesSearchContainer = require('./components/observation-search.jsx').ObservationSpeciesSearchContainer;
-
+var ObservationLightboxContainer = require('./components/observation-lightbox.jsx').ObservationLightboxContainer;
+var ObservationListContainer = require('./components/observation-user-listing.jsx').ObservationListContainer;
 //********************************
 //Models and Utilities
 //********************************
@@ -1840,7 +3092,9 @@ var AppRouter = Backbone.Router.extend({
     //edit existing user observation (if user)
     'observation/:id/edit/' : 'observationsAddEdit',
     //view all of a single user's observations
-    'observation/:id/list/' : 'observationList',
+    'observation/listings/:id' : 'observationListing',
+
+    'observation/gallery/:id/' : 'observationGallery',
     //add new user observation
     'observation/add/(:speciesKey/)' : 'observationsAddWithSpeciesKey',
     //search for exact species before creating observation
@@ -1848,7 +3102,17 @@ var AppRouter = Backbone.Router.extend({
     //view all observation photos
     'observation/gallery/' : 'observationGallery',
     //view all rankings in filterable fashion
-    'observation/rankings/' : 'observationRankings'
+    'observation/rankings/' : 'observationRankings',
+    //display lightbox gallery
+    'observation/lightbox/' : 'observationLightbox',
+    //edit observation if
+
+
+    'observation/listings/' : 'observationListing',
+
+    'observation/:id/' : 'observationsAddEdit',
+
+
 },
 initialize: function(){
 
@@ -1901,9 +3165,9 @@ signUp: function() {
     document.getElementById('app')
   )
 },
-userInfoAddViewEdit: function() {
+userInfoAddViewEdit: function(id) {
   ReactDOM.render(
-    React.createElement(UserInfoContainer),
+    React.createElement(UserInfoContainer, {id : id}),
     document.getElementById('app')
   )
 },
@@ -1928,12 +3192,24 @@ observationsAddEdit: function(id, speciesKey) {
 observationsAddWithSpeciesKey: function(speciesKey){
   this.observationsAddEdit(null, speciesKey);
 },
-observationGallery: function() {
+observationGallery: function(id) {
   ReactDOM.render(
-    React.createElement(ObservationGalleryContainer),
+    React.createElement(ObservationGalleryContainer, {id: id}),
     document.getElementById('app')
   )
 },
+observationLightbox: function() {
+  ReactDOM.render(
+    React.createElement(ObservationLightboxContainer),
+    document.getElementById('app')
+  )
+},
+observationListing: function(id) {
+  ReactDOM.render(
+    React.createElement(ObservationListContainer, {id:id}),
+    document.getElementById('app')
+  )
+}
 
 });
 
@@ -1948,7 +3224,7 @@ module.exports = {
   appRouter
 };
 
-},{"./components/login-container.jsx":3,"./components/marketing-container.jsx":5,"./components/observation-add-edit-container.jsx":6,"./components/observation-dash-container.jsx":7,"./components/observation-gallery.jsx":8,"./components/observation-search.jsx":9,"./components/signup-container.jsx":10,"./components/user-info-container.jsx":11,"./models/user":15,"./parse":17,"backbone":20,"react":227,"react-dom":54}],19:[function(require,module,exports){
+},{"./components/login-container.jsx":3,"./components/marketing-container.jsx":5,"./components/observation-add-edit-container.jsx":6,"./components/observation-dash-container.jsx":7,"./components/observation-gallery.jsx":8,"./components/observation-lightbox.jsx":9,"./components/observation-search.jsx":10,"./components/observation-user-listing.jsx":11,"./components/signup-container.jsx":12,"./components/user-info-container.jsx":13,"./models/user":17,"./parse":19,"backbone":22,"react":264,"react-dom":81}],21:[function(require,module,exports){
 "use strict";
 //********************************
 //Third Party Libraries
@@ -1956,6 +3232,7 @@ module.exports = {
 var $ = require('jquery');
 var React = require('react');
 var Backbone = require('backbone');
+var EXIF = require('exif-js');
 
 //********************************
 //Utility Functions
@@ -1972,16 +3249,59 @@ function activeClass(url) {
   return isActive(url) ? 'active' : '';
 }
 
+function imageOrientationFix(file) {
+  EXIF.getData(file,function() {
+  var orientation = EXIF.getTag(this,"Orientation");
+  var can = document.createElement("canvas");
+  var ctx = can.getContext('2d');
+  var thisImage = new Image;
+  thisImage.onload = function() {
+    can.width  = thisImage.width;
+    can.height = thisImage.height;
+    ctx.save();
+    var width  = can.width;  var styleWidth  = can.style.width;
+    var height = can.height; var styleHeight = can.style.height;
+    if (orientation) {
+      if (orientation > 4) {
+        can.width  = height; can.style.width  = styleHeight;
+        can.height = width;  can.style.height = styleWidth;
+      }
+      switch (orientation) {
+      case 2: ctx.translate(width, 0);     ctx.scale(-1,1); break;
+      case 3: ctx.translate(width,height); ctx.rotate(Math.PI); break;
+      case 4: ctx.translate(0,height);     ctx.scale(1,-1); break;
+      case 5: ctx.rotate(0.5 * Math.PI);   ctx.scale(1,-1); break;
+      case 6: ctx.rotate(0.5 * Math.PI);   ctx.translate(0,-height); break;
+      case 7: ctx.rotate(0.5 * Math.PI);   ctx.translate(width,-height); ctx.scale(-1,1); break;
+      case 8: ctx.rotate(-0.5 * Math.PI);  ctx.translate(-width,0); break;
+      }
+    }
+
+    ctx.drawImage(thisImage,0,0);
+    ctx.restore();
+    var dataURL = can.toDataURL();
+
+    // at this point you can save the image away to your back-end using 'dataURL'
+  }
+  console.log('I ran this');
+  // now trigger the onload function by setting the src to your HTML5 file object (called 'file' here)
+  return thisImage.src = URL.createObjectURL(file);
+
+});
+
+}
 
 //********************************
 //Exports
 //********************************
 module.exports = {
   isActive,
-  activeClass
+  activeClass,
+  imageOrientationFix,
+
 }
 
-},{"backbone":20,"jquery":51,"react":227}],20:[function(require,module,exports){
+},{"backbone":22,"exif-js":39,"jquery":71,"react":264}],22:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.3.3
 
@@ -3905,7 +5225,164 @@ module.exports = {
 });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":51,"underscore":228}],21:[function(require,module,exports){
+},{"jquery":71,"underscore":265}],23:[function(require,module,exports){
+"use strict";
+
+var utils = require("./utils");
+
+module.exports = function batchProcessorMaker(options) {
+    options             = options || {};
+    var reporter        = options.reporter;
+    var asyncProcess    = utils.getOption(options, "async", true);
+    var autoProcess     = utils.getOption(options, "auto", true);
+
+    if(autoProcess && !asyncProcess) {
+        reporter && reporter.warn("Invalid options combination. auto=true and async=false is invalid. Setting async=true.");
+        asyncProcess = true;
+    }
+
+    var batch = Batch();
+    var asyncFrameHandler;
+    var isProcessing = false;
+
+    function addFunction(level, fn) {
+        if(!isProcessing && autoProcess && asyncProcess && batch.size() === 0) {
+            // Since this is async, it is guaranteed to be executed after that the fn is added to the batch.
+            // This needs to be done before, since we're checking the size of the batch to be 0.
+            processBatchAsync();
+        }
+
+        batch.add(level, fn);
+    }
+
+    function processBatch() {
+        // Save the current batch, and create a new batch so that incoming functions are not added into the currently processing batch.
+        // Continue processing until the top-level batch is empty (functions may be added to the new batch while processing, and so on).
+        isProcessing = true;
+        while (batch.size()) {
+            var processingBatch = batch;
+            batch = Batch();
+            processingBatch.process();
+        }
+        isProcessing = false;
+    }
+
+    function forceProcessBatch(localAsyncProcess) {
+        if (isProcessing) {
+            return;
+        }
+
+        if(localAsyncProcess === undefined) {
+            localAsyncProcess = asyncProcess;
+        }
+
+        if(asyncFrameHandler) {
+            cancelFrame(asyncFrameHandler);
+            asyncFrameHandler = null;
+        }
+
+        if(localAsyncProcess) {
+            processBatchAsync();
+        } else {
+            processBatch();
+        }
+    }
+
+    function processBatchAsync() {
+        asyncFrameHandler = requestFrame(processBatch);
+    }
+
+    function clearBatch() {
+        batch           = {};
+        batchSize       = 0;
+        topLevel        = 0;
+        bottomLevel     = 0;
+    }
+
+    function cancelFrame(listener) {
+        // var cancel = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || window.clearTimeout;
+        var cancel = clearTimeout;
+        return cancel(listener);
+    }
+
+    function requestFrame(callback) {
+        // var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || function(fn) { return window.setTimeout(fn, 20); };
+        var raf = function(fn) { return setTimeout(fn, 0); };
+        return raf(callback);
+    }
+
+    return {
+        add: addFunction,
+        force: forceProcessBatch
+    };
+};
+
+function Batch() {
+    var batch       = {};
+    var size        = 0;
+    var topLevel    = 0;
+    var bottomLevel = 0;
+
+    function add(level, fn) {
+        if(!fn) {
+            fn = level;
+            level = 0;
+        }
+
+        if(level > topLevel) {
+            topLevel = level;
+        } else if(level < bottomLevel) {
+            bottomLevel = level;
+        }
+
+        if(!batch[level]) {
+            batch[level] = [];
+        }
+
+        batch[level].push(fn);
+        size++;
+    }
+
+    function process() {
+        for(var level = bottomLevel; level <= topLevel; level++) {
+            var fns = batch[level];
+
+            for(var i = 0; i < fns.length; i++) {
+                var fn = fns[i];
+                fn();
+            }
+        }
+    }
+
+    function getSize() {
+        return size;
+    }
+
+    return {
+        add: add,
+        process: process,
+        size: getSize
+    };
+}
+
+},{"./utils":24}],24:[function(require,module,exports){
+"use strict";
+
+var utils = module.exports = {};
+
+utils.getOption = getOption;
+
+function getOption(options, name, defaultValue) {
+    var value = options[name];
+
+    if((value === undefined || value === null) && defaultValue !== undefined) {
+        return defaultValue;
+    }
+
+    return value;
+}
+
+},{}],25:[function(require,module,exports){
 var canUseDOM = !!(
   typeof window !== 'undefined' &&
   window.document &&
@@ -3913,7 +5390,1665 @@ var canUseDOM = !!(
 );
 
 module.exports = canUseDOM;
-},{}],22:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
+/**
+ * matchesSelector v2.0.2
+ * matchesSelector( element, '.selector' )
+ * MIT license
+ */
+
+/*jshint browser: true, strict: true, undef: true, unused: true */
+
+( function( window, factory ) {
+  /*global define: false, module: false */
+  'use strict';
+  // universal module definition
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD
+    define( factory );
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory();
+  } else {
+    // browser global
+    window.matchesSelector = factory();
+  }
+
+}( window, function factory() {
+  'use strict';
+
+  var matchesMethod = ( function() {
+    var ElemProto = window.Element.prototype;
+    // check for the standard method name first
+    if ( ElemProto.matches ) {
+      return 'matches';
+    }
+    // check un-prefixed
+    if ( ElemProto.matchesSelector ) {
+      return 'matchesSelector';
+    }
+    // check vendor prefixes
+    var prefixes = [ 'webkit', 'moz', 'ms', 'o' ];
+
+    for ( var i=0; i < prefixes.length; i++ ) {
+      var prefix = prefixes[i];
+      var method = prefix + 'MatchesSelector';
+      if ( ElemProto[ method ] ) {
+        return method;
+      }
+    }
+  })();
+
+  return function matchesSelector( elem, selector ) {
+    return elem[ matchesMethod ]( selector );
+  };
+
+}));
+
+},{}],27:[function(require,module,exports){
+"use strict";
+
+var detector = module.exports = {};
+
+detector.isIE = function(version) {
+    function isAnyIeVersion() {
+        var agent = navigator.userAgent.toLowerCase();
+        return agent.indexOf("msie") !== -1 || agent.indexOf("trident") !== -1 || agent.indexOf(" edge/") !== -1;
+    }
+
+    if(!isAnyIeVersion()) {
+        return false;
+    }
+
+    if(!version) {
+        return true;
+    }
+
+    //Shamelessly stolen from https://gist.github.com/padolsey/527683
+    var ieVersion = (function(){
+        var undef,
+            v = 3,
+            div = document.createElement("div"),
+            all = div.getElementsByTagName("i");
+
+        do {
+            div.innerHTML = "<!--[if gt IE " + (++v) + "]><i></i><![endif]-->";
+        }
+        while (all[0]);
+
+        return v > 4 ? v : undef;
+    }());
+
+    return version === ieVersion;
+};
+
+detector.isLegacyOpera = function() {
+    return !!window.opera;
+};
+
+},{}],28:[function(require,module,exports){
+"use strict";
+
+var utils = module.exports = {};
+
+/**
+ * Loops through the collection and calls the callback for each element. if the callback returns truthy, the loop is broken and returns the same value.
+ * @public
+ * @param {*} collection The collection to loop through. Needs to have a length property set and have indices set from 0 to length - 1.
+ * @param {function} callback The callback to be called for each element. The element will be given as a parameter to the callback. If this callback returns truthy, the loop is broken and the same value is returned.
+ * @returns {*} The value that a callback has returned (if truthy). Otherwise nothing.
+ */
+utils.forEach = function(collection, callback) {
+    for(var i = 0; i < collection.length; i++) {
+        var result = callback(collection[i]);
+        if(result) {
+            return result;
+        }
+    }
+};
+
+},{}],29:[function(require,module,exports){
+/**
+ * Resize detection strategy that injects objects to elements in order to detect resize events.
+ * Heavily inspired by: http://www.backalleycoder.com/2013/03/18/cross-browser-event-based-element-resize-detection/
+ */
+
+"use strict";
+
+var browserDetector = require("../browser-detector");
+
+module.exports = function(options) {
+    options             = options || {};
+    var reporter        = options.reporter;
+    var batchProcessor  = options.batchProcessor;
+    var getState        = options.stateHandler.getState;
+
+    if(!reporter) {
+        throw new Error("Missing required dependency: reporter.");
+    }
+
+    /**
+     * Adds a resize event listener to the element.
+     * @public
+     * @param {element} element The element that should have the listener added.
+     * @param {function} listener The listener callback to be called for each resize event of the element. The element will be given as a parameter to the listener callback.
+     */
+    function addListener(element, listener) {
+        if(!getObject(element)) {
+            throw new Error("Element is not detectable by this strategy.");
+        }
+
+        function listenerProxy() {
+            listener(element);
+        }
+
+        if(browserDetector.isIE(8)) {
+            //IE 8 does not support object, but supports the resize event directly on elements.
+            getState(element).object = {
+                proxy: listenerProxy
+            };
+            element.attachEvent("onresize", listenerProxy);
+        } else {
+            var object = getObject(element);
+            object.contentDocument.defaultView.addEventListener("resize", listenerProxy);
+        }
+    }
+
+    /**
+     * Makes an element detectable and ready to be listened for resize events. Will call the callback when the element is ready to be listened for resize changes.
+     * @private
+     * @param {object} options Optional options object.
+     * @param {element} element The element to make detectable
+     * @param {function} callback The callback to be called when the element is ready to be listened for resize changes. Will be called with the element as first parameter.
+     */
+    function makeDetectable(options, element, callback) {
+        if (!callback) {
+            callback = element;
+            element = options;
+            options = null;
+        }
+
+        options = options || {};
+        var debug = options.debug;
+
+        function injectObject(element, callback) {
+            var OBJECT_STYLE = "display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; padding: 0; margin: 0; opacity: 0; z-index: -1000; pointer-events: none;";
+
+            //The target element needs to be positioned (everything except static) so the absolute positioned object will be positioned relative to the target element.
+
+            // Position altering may be performed directly or on object load, depending on if style resolution is possible directly or not.
+            var positionCheckPerformed = false;
+
+            // The element may not yet be attached to the DOM, and therefore the style object may be empty in some browsers.
+            // Since the style object is a reference, it will be updated as soon as the element is attached to the DOM.
+            var style = window.getComputedStyle(element);
+            var width = element.offsetWidth;
+            var height = element.offsetHeight;
+
+            getState(element).startSize = {
+                width: width,
+                height: height
+            };
+
+            function mutateDom() {
+                function alterPositionStyles() {
+                    if(style.position === "static") {
+                        element.style.position = "relative";
+
+                        var removeRelativeStyles = function(reporter, element, style, property) {
+                            function getNumericalValue(value) {
+                                return value.replace(/[^-\d\.]/g, "");
+                            }
+
+                            var value = style[property];
+
+                            if(value !== "auto" && getNumericalValue(value) !== "0") {
+                                reporter.warn("An element that is positioned static has style." + property + "=" + value + " which is ignored due to the static positioning. The element will need to be positioned relative, so the style." + property + " will be set to 0. Element: ", element);
+                                element.style[property] = 0;
+                            }
+                        };
+
+                        //Check so that there are no accidental styles that will make the element styled differently now that is is relative.
+                        //If there are any, set them to 0 (this should be okay with the user since the style properties did nothing before [since the element was positioned static] anyway).
+                        removeRelativeStyles(reporter, element, style, "top");
+                        removeRelativeStyles(reporter, element, style, "right");
+                        removeRelativeStyles(reporter, element, style, "bottom");
+                        removeRelativeStyles(reporter, element, style, "left");
+                    }
+                }
+
+                function onObjectLoad() {
+                    // The object has been loaded, which means that the element now is guaranteed to be attached to the DOM.
+                    if (!positionCheckPerformed) {
+                        alterPositionStyles();
+                    }
+
+                    /*jshint validthis: true */
+
+                    function getDocument(element, callback) {
+                        //Opera 12 seem to call the object.onload before the actual document has been created.
+                        //So if it is not present, poll it with an timeout until it is present.
+                        //TODO: Could maybe be handled better with object.onreadystatechange or similar.
+                        if(!element.contentDocument) {
+                            setTimeout(function checkForObjectDocument() {
+                                getDocument(element, callback);
+                            }, 100);
+
+                            return;
+                        }
+
+                        callback(element.contentDocument);
+                    }
+
+                    //Mutating the object element here seems to fire another load event.
+                    //Mutating the inner document of the object element is fine though.
+                    var objectElement = this;
+
+                    //Create the style element to be added to the object.
+                    getDocument(objectElement, function onObjectDocumentReady(objectDocument) {
+                        //Notify that the element is ready to be listened to.
+                        callback(element);
+                    });
+                }
+
+                // The element may be detached from the DOM, and some browsers does not support style resolving of detached elements.
+                // The alterPositionStyles needs to be delayed until we know the element has been attached to the DOM (which we are sure of when the onObjectLoad has been fired), if style resolution is not possible.
+                if (style.position !== "") {
+                    alterPositionStyles(style);
+                    positionCheckPerformed = true;
+                }
+
+                //Add an object element as a child to the target element that will be listened to for resize events.
+                var object = document.createElement("object");
+                object.style.cssText = OBJECT_STYLE;
+                object.tabIndex = -1;
+                object.type = "text/html";
+                object.onload = onObjectLoad;
+
+                //Safari: This must occur before adding the object to the DOM.
+                //IE: Does not like that this happens before, even if it is also added after.
+                if(!browserDetector.isIE()) {
+                    object.data = "about:blank";
+                }
+
+                element.appendChild(object);
+                getState(element).object = object;
+
+                //IE: This must occur after adding the object to the DOM.
+                if(browserDetector.isIE()) {
+                    object.data = "about:blank";
+                }
+            }
+
+            if(batchProcessor) {
+                batchProcessor.add(mutateDom);
+            } else {
+                mutateDom();
+            }
+        }
+
+        if(browserDetector.isIE(8)) {
+            //IE 8 does not support objects properly. Luckily they do support the resize event.
+            //So do not inject the object and notify that the element is already ready to be listened to.
+            //The event handler for the resize event is attached in the utils.addListener instead.
+            callback(element);
+        } else {
+            injectObject(element, callback);
+        }
+    }
+
+    /**
+     * Returns the child object of the target element.
+     * @private
+     * @param {element} element The target element.
+     * @returns The object element of the target.
+     */
+    function getObject(element) {
+        return getState(element).object;
+    }
+
+    function uninstall(element) {
+        if(browserDetector.isIE(8)) {
+            element.detachEvent("onresize", getState(element).object.proxy);
+        } else {
+            element.removeChild(getObject(element));
+        }
+        delete getState(element).object;
+    }
+
+    return {
+        makeDetectable: makeDetectable,
+        addListener: addListener,
+        uninstall: uninstall
+    };
+};
+
+},{"../browser-detector":27}],30:[function(require,module,exports){
+/**
+ * Resize detection strategy that injects divs to elements in order to detect resize events on scroll events.
+ * Heavily inspired by: https://github.com/marcj/css-element-queries/blob/master/src/ResizeSensor.js
+ */
+
+"use strict";
+
+var forEach = require("../collection-utils").forEach;
+
+module.exports = function(options) {
+    options             = options || {};
+    var reporter        = options.reporter;
+    var batchProcessor  = options.batchProcessor;
+    var getState        = options.stateHandler.getState;
+    var hasState        = options.stateHandler.hasState;
+    var idHandler       = options.idHandler;
+
+    if (!batchProcessor) {
+        throw new Error("Missing required dependency: batchProcessor");
+    }
+
+    if (!reporter) {
+        throw new Error("Missing required dependency: reporter.");
+    }
+
+    //TODO: Could this perhaps be done at installation time?
+    var scrollbarSizes = getScrollbarSizes();
+
+    // Inject the scrollbar styling that prevents them from appearing sometimes in Chrome.
+    // The injected container needs to have a class, so that it may be styled with CSS (pseudo elements).
+    var styleId = "erd_scroll_detection_scrollbar_style";
+    var detectionContainerClass = "erd_scroll_detection_container";
+    injectScrollStyle(styleId, detectionContainerClass);
+
+    function getScrollbarSizes() {
+        var width = 500;
+        var height = 500;
+
+        var child = document.createElement("div");
+        child.style.cssText = "position: absolute; width: " + width*2 + "px; height: " + height*2 + "px; visibility: hidden; margin: 0; padding: 0;";
+
+        var container = document.createElement("div");
+        container.style.cssText = "position: absolute; width: " + width + "px; height: " + height + "px; overflow: scroll; visibility: none; top: " + -width*3 + "px; left: " + -height*3 + "px; visibility: hidden; margin: 0; padding: 0;";
+
+        container.appendChild(child);
+
+        document.body.insertBefore(container, document.body.firstChild);
+
+        var widthSize = width - container.clientWidth;
+        var heightSize = height - container.clientHeight;
+
+        document.body.removeChild(container);
+
+        return {
+            width: widthSize,
+            height: heightSize
+        };
+    }
+
+    function injectScrollStyle(styleId, containerClass) {
+        function injectStyle(style, method) {
+            method = method || function (element) {
+                document.head.appendChild(element);
+            };
+
+            var styleElement = document.createElement("style");
+            styleElement.innerHTML = style;
+            styleElement.id = styleId;
+            method(styleElement);
+            return styleElement;
+        }
+
+        if (!document.getElementById(styleId)) {
+            var containerAnimationClass = containerClass + "_animation";
+            var containerAnimationActiveClass = containerClass + "_animation_active";
+            var style = "/* Created by the element-resize-detector library. */\n";
+            style += "." + containerClass + " > div::-webkit-scrollbar { display: none; }\n\n";
+            style += "." + containerAnimationActiveClass + " { -webkit-animation-duration: 0.1s; animation-duration: 0.1s; -webkit-animation-name: " + containerAnimationClass + "; animation-name: " + containerAnimationClass + "; }\n";
+            style += "@-webkit-keyframes " + containerAnimationClass +  " { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }\n";
+            style += "@keyframes " + containerAnimationClass +          " { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }";
+            injectStyle(style);
+        }
+    }
+
+    function addAnimationClass(element) {
+        element.className += " " + detectionContainerClass + "_animation_active";
+    }
+
+    function addEvent(el, name, cb) {
+        if (el.addEventListener) {
+            el.addEventListener(name, cb);
+        } else if(el.attachEvent) {
+            el.attachEvent("on" + name, cb);
+        } else {
+            return reporter.error("[scroll] Don't know how to add event listeners.");
+        }
+    }
+
+    function removeEvent(el, name, cb) {
+        if (el.removeEventListener) {
+            el.removeEventListener(name, cb);
+        } else if(el.detachEvent) {
+            el.detachEvent("on" + name, cb);
+        } else {
+            return reporter.error("[scroll] Don't know how to remove event listeners.");
+        }
+    }
+
+    function getExpandElement(element) {
+        return getState(element).container.childNodes[0].childNodes[0].childNodes[0];
+    }
+
+    function getShrinkElement(element) {
+        return getState(element).container.childNodes[0].childNodes[0].childNodes[1];
+    }
+
+    /**
+     * Adds a resize event listener to the element.
+     * @public
+     * @param {element} element The element that should have the listener added.
+     * @param {function} listener The listener callback to be called for each resize event of the element. The element will be given as a parameter to the listener callback.
+     */
+    function addListener(element, listener) {
+        var listeners = getState(element).listeners;
+
+        if (!listeners.push) {
+            throw new Error("Cannot add listener to an element that is not detectable.");
+        }
+
+        getState(element).listeners.push(listener);
+    }
+
+    /**
+     * Makes an element detectable and ready to be listened for resize events. Will call the callback when the element is ready to be listened for resize changes.
+     * @private
+     * @param {object} options Optional options object.
+     * @param {element} element The element to make detectable
+     * @param {function} callback The callback to be called when the element is ready to be listened for resize changes. Will be called with the element as first parameter.
+     */
+    function makeDetectable(options, element, callback) {
+        if (!callback) {
+            callback = element;
+            element = options;
+            options = null;
+        }
+
+        options = options || {};
+
+        function debug() {
+            if (options.debug) {
+                var args = Array.prototype.slice.call(arguments);
+                args.unshift(idHandler.get(element), "Scroll: ");
+                if (reporter.log.apply) {
+                    reporter.log.apply(null, args);
+                } else {
+                    for (var i = 0; i < args.length; i++) {
+                        reporter.log(args[i]);
+                    }
+                }
+            }
+        }
+
+        function isDetached(element) {
+            function isInDocument(element) {
+                return element === element.ownerDocument.body || element.ownerDocument.body.contains(element);
+            }
+            return !isInDocument(element);
+        }
+
+        function isUnrendered(element) {
+            // Check the absolute positioned container since the top level container is display: inline.
+            var container = getState(element).container.childNodes[0];
+            return getComputedStyle(container).width.indexOf("px") === -1; //Can only compute pixel value when rendered.
+        }
+
+        function getStyle() {
+            // Some browsers only force layouts when actually reading the style properties of the style object, so make sure that they are all read here,
+            // so that the user of the function can be sure that it will perform the layout here, instead of later (important for batching).
+            var elementStyle            = getComputedStyle(element);
+            var style                   = {};
+            style.position              = elementStyle.position;
+            style.width                 = element.offsetWidth;
+            style.height                = element.offsetHeight;
+            style.top                   = elementStyle.top;
+            style.right                 = elementStyle.right;
+            style.bottom                = elementStyle.bottom;
+            style.left                  = elementStyle.left;
+            style.widthCSS              = elementStyle.width;
+            style.heightCSS             = elementStyle.height;
+            return style;
+        }
+
+        function storeStartSize() {
+            var style = getStyle();
+            getState(element).startSize = {
+                width: style.width,
+                height: style.height
+            };
+            debug("Element start size", getState(element).startSize);
+        }
+
+        function initListeners() {
+            getState(element).listeners = [];
+        }
+
+        function storeStyle() {
+            debug("storeStyle invoked.");
+            if (!getState(element)) {
+                debug("Aborting because element has been uninstalled");
+                return;
+            }
+
+            var style = getStyle();
+            getState(element).style = style;
+        }
+
+        function storeCurrentSize(element, width, height) {
+            getState(element).lastWidth = width;
+            getState(element).lastHeight  = height;
+        }
+
+        function getExpandChildElement(element) {
+            return getExpandElement(element).childNodes[0];
+        }
+
+        function getWidthOffset() {
+            return 2 * scrollbarSizes.width + 1;
+        }
+
+        function getHeightOffset() {
+            return 2 * scrollbarSizes.height + 1;
+        }
+
+        function getExpandWidth(width) {
+            return width + 10 + getWidthOffset();
+        }
+
+        function getExpandHeight(height) {
+            return height + 10 + getHeightOffset();
+        }
+
+        function getShrinkWidth(width) {
+            return width * 2 + getWidthOffset();
+        }
+
+        function getShrinkHeight(height) {
+            return height * 2 + getHeightOffset();
+        }
+
+        function positionScrollbars(element, width, height) {
+            var expand          = getExpandElement(element);
+            var shrink          = getShrinkElement(element);
+            var expandWidth     = getExpandWidth(width);
+            var expandHeight    = getExpandHeight(height);
+            var shrinkWidth     = getShrinkWidth(width);
+            var shrinkHeight    = getShrinkHeight(height);
+            expand.scrollLeft   = expandWidth;
+            expand.scrollTop    = expandHeight;
+            shrink.scrollLeft   = shrinkWidth;
+            shrink.scrollTop    = shrinkHeight;
+        }
+
+        function injectContainerElement() {
+            var container = getState(element).container;
+
+            if (!container) {
+                container                   = document.createElement("div");
+                container.className         = detectionContainerClass;
+                container.style.cssText     = "visibility: hidden; display: inline; width: 0px; height: 0px; z-index: -1; overflow: hidden; margin: 0; padding: 0;";
+                getState(element).container = container;
+                addAnimationClass(container);
+                element.appendChild(container);
+
+                var onAnimationStart = function () {
+                    getState(element).onRendered && getState(element).onRendered();
+                };
+
+                addEvent(container, "animationstart", onAnimationStart);
+
+                // Store the event handler here so that they may be removed when uninstall is called.
+                // See uninstall function for an explanation why it is needed.
+                getState(element).onAnimationStart = onAnimationStart;
+            }
+
+            return container;
+        }
+
+        function injectScrollElements() {
+            function alterPositionStyles() {
+                var style = getState(element).style;
+
+                if(style.position === "static") {
+                    element.style.position = "relative";
+
+                    var removeRelativeStyles = function(reporter, element, style, property) {
+                        function getNumericalValue(value) {
+                            return value.replace(/[^-\d\.]/g, "");
+                        }
+
+                        var value = style[property];
+
+                        if(value !== "auto" && getNumericalValue(value) !== "0") {
+                            reporter.warn("An element that is positioned static has style." + property + "=" + value + " which is ignored due to the static positioning. The element will need to be positioned relative, so the style." + property + " will be set to 0. Element: ", element);
+                            element.style[property] = 0;
+                        }
+                    };
+
+                    //Check so that there are no accidental styles that will make the element styled differently now that is is relative.
+                    //If there are any, set them to 0 (this should be okay with the user since the style properties did nothing before [since the element was positioned static] anyway).
+                    removeRelativeStyles(reporter, element, style, "top");
+                    removeRelativeStyles(reporter, element, style, "right");
+                    removeRelativeStyles(reporter, element, style, "bottom");
+                    removeRelativeStyles(reporter, element, style, "left");
+                }
+            }
+
+            function getLeftTopBottomRightCssText(left, top, bottom, right) {
+                left = (!left ? "0" : (left + "px"));
+                top = (!top ? "0" : (top + "px"));
+                bottom = (!bottom ? "0" : (bottom + "px"));
+                right = (!right ? "0" : (right + "px"));
+
+                return "left: " + left + "; top: " + top + "; right: " + right + "; bottom: " + bottom + ";";
+            }
+
+            debug("Injecting elements");
+
+            if (!getState(element)) {
+                debug("Aborting because element has been uninstalled");
+                return;
+            }
+
+            alterPositionStyles();
+
+            var rootContainer = getState(element).container;
+
+            if (!rootContainer) {
+                rootContainer = injectContainerElement();
+            }
+
+            // Due to this WebKit bug https://bugs.webkit.org/show_bug.cgi?id=80808 (currently fixed in Blink, but still present in WebKit browsers such as Safari),
+            // we need to inject two containers, one that is width/height 100% and another that is left/top -1px so that the final container always is 1x1 pixels bigger than
+            // the targeted element.
+            // When the bug is resolved, "containerContainer" may be removed.
+
+            // The outer container can occasionally be less wide than the targeted when inside inline elements element in WebKit (see https://bugs.webkit.org/show_bug.cgi?id=152980).
+            // This should be no problem since the inner container either way makes sure the injected scroll elements are at least 1x1 px.
+
+            var scrollbarWidth          = scrollbarSizes.width;
+            var scrollbarHeight         = scrollbarSizes.height;
+            var containerContainerStyle = "position: absolute; flex: none; overflow: hidden; z-index: -1; visibility: hidden; width: 100%; height: 100%; left: 0px; top: 0px;";
+            var containerStyle          = "position: absolute; flex: none; overflow: hidden; z-index: -1; visibility: hidden; " + getLeftTopBottomRightCssText(-(1 + scrollbarWidth), -(1 + scrollbarHeight), -scrollbarHeight, -scrollbarWidth);
+            var expandStyle             = "position: absolute; flex: none; overflow: scroll; z-index: -1; visibility: hidden; width: 100%; height: 100%;";
+            var shrinkStyle             = "position: absolute; flex: none; overflow: scroll; z-index: -1; visibility: hidden; width: 100%; height: 100%;";
+            var expandChildStyle        = "position: absolute; left: 0; top: 0;";
+            var shrinkChildStyle        = "position: absolute; width: 200%; height: 200%;";
+
+            var containerContainer      = document.createElement("div");
+            var container               = document.createElement("div");
+            var expand                  = document.createElement("div");
+            var expandChild             = document.createElement("div");
+            var shrink                  = document.createElement("div");
+            var shrinkChild             = document.createElement("div");
+
+            // Some browsers choke on the resize system being rtl, so force it to ltr. https://github.com/wnr/element-resize-detector/issues/56
+            // However, dir should not be set on the top level container as it alters the dimensions of the target element in some browsers.
+            containerContainer.dir              = "ltr";
+
+            containerContainer.style.cssText    = containerContainerStyle;
+            containerContainer.className        = detectionContainerClass;
+            container.className                 = detectionContainerClass;
+            container.style.cssText             = containerStyle;
+            expand.style.cssText                = expandStyle;
+            expandChild.style.cssText           = expandChildStyle;
+            shrink.style.cssText                = shrinkStyle;
+            shrinkChild.style.cssText           = shrinkChildStyle;
+
+            expand.appendChild(expandChild);
+            shrink.appendChild(shrinkChild);
+            container.appendChild(expand);
+            container.appendChild(shrink);
+            containerContainer.appendChild(container);
+            rootContainer.appendChild(containerContainer);
+
+            function onExpandScroll() {
+                getState(element).onExpand && getState(element).onExpand();
+            }
+
+            function onShrinkScroll() {
+                getState(element).onShrink && getState(element).onShrink();
+            }
+
+            addEvent(expand, "scroll", onExpandScroll);
+            addEvent(shrink, "scroll", onShrinkScroll);
+
+            // Store the event handlers here so that they may be removed when uninstall is called.
+            // See uninstall function for an explanation why it is needed.
+            getState(element).onExpandScroll = onExpandScroll;
+            getState(element).onShrinkScroll = onShrinkScroll;
+        }
+
+        function registerListenersAndPositionElements() {
+            function updateChildSizes(element, width, height) {
+                var expandChild             = getExpandChildElement(element);
+                var expandWidth             = getExpandWidth(width);
+                var expandHeight            = getExpandHeight(height);
+                expandChild.style.width     = expandWidth + "px";
+                expandChild.style.height    = expandHeight + "px";
+            }
+
+            function updateDetectorElements(done) {
+                var width           = element.offsetWidth;
+                var height          = element.offsetHeight;
+
+                debug("Storing current size", width, height);
+
+                // Store the size of the element sync here, so that multiple scroll events may be ignored in the event listeners.
+                // Otherwise the if-check in handleScroll is useless.
+                storeCurrentSize(element, width, height);
+
+                // Since we delay the processing of the batch, there is a risk that uninstall has been called before the batch gets to execute.
+                // Since there is no way to cancel the fn executions, we need to add an uninstall guard to all fns of the batch.
+
+                batchProcessor.add(0, function performUpdateChildSizes() {
+                    if (!getState(element)) {
+                        debug("Aborting because element has been uninstalled");
+                        return;
+                    }
+
+                    if (!areElementsInjected()) {
+                        debug("Aborting because element container has not been initialized");
+                        return;
+                    }
+
+                    if (options.debug) {
+                        var w = element.offsetWidth;
+                        var h = element.offsetHeight;
+
+                        if (w !== width || h !== height) {
+                            reporter.warn(idHandler.get(element), "Scroll: Size changed before updating detector elements.");
+                        }
+                    }
+
+                    updateChildSizes(element, width, height);
+                });
+
+                batchProcessor.add(1, function updateScrollbars() {
+                    if (!getState(element)) {
+                        debug("Aborting because element has been uninstalled");
+                        return;
+                    }
+
+                    if (!areElementsInjected()) {
+                        debug("Aborting because element container has not been initialized");
+                        return;
+                    }
+
+                    positionScrollbars(element, width, height);
+                });
+
+                if (done) {
+                    batchProcessor.add(2, function () {
+                        if (!getState(element)) {
+                            debug("Aborting because element has been uninstalled");
+                            return;
+                        }
+
+                        if (!areElementsInjected()) {
+                          debug("Aborting because element container has not been initialized");
+                          return;
+                        }
+
+                        done();
+                    });
+                }
+            }
+
+            function areElementsInjected() {
+                return !!getState(element).container;
+            }
+
+            function notifyListenersIfNeeded() {
+                function isFirstNotify() {
+                    return getState(element).lastNotifiedWidth === undefined;
+                }
+
+                debug("notifyListenersIfNeeded invoked");
+
+                var state = getState(element);
+
+                // Don't notify the if the current size is the start size, and this is the first notification.
+                if (isFirstNotify() && state.lastWidth === state.startSize.width && state.lastHeight === state.startSize.height) {
+                    return debug("Not notifying: Size is the same as the start size, and there has been no notification yet.");
+                }
+
+                // Don't notify if the size already has been notified.
+                if (state.lastWidth === state.lastNotifiedWidth && state.lastHeight === state.lastNotifiedHeight) {
+                    return debug("Not notifying: Size already notified");
+                }
+
+
+                debug("Current size not notified, notifying...");
+                state.lastNotifiedWidth = state.lastWidth;
+                state.lastNotifiedHeight = state.lastHeight;
+                forEach(getState(element).listeners, function (listener) {
+                    listener(element);
+                });
+            }
+
+            function handleRender() {
+                debug("startanimation triggered.");
+
+                if (isUnrendered(element)) {
+                    debug("Ignoring since element is still unrendered...");
+                    return;
+                }
+
+                debug("Element rendered.");
+                var expand = getExpandElement(element);
+                var shrink = getShrinkElement(element);
+                if (expand.scrollLeft === 0 || expand.scrollTop === 0 || shrink.scrollLeft === 0 || shrink.scrollTop === 0) {
+                    debug("Scrollbars out of sync. Updating detector elements...");
+                    updateDetectorElements(notifyListenersIfNeeded);
+                }
+            }
+
+            function handleScroll() {
+                debug("Scroll detected.");
+
+                if (isUnrendered(element)) {
+                    // Element is still unrendered. Skip this scroll event.
+                    debug("Scroll event fired while unrendered. Ignoring...");
+                    return;
+                }
+
+                var width = element.offsetWidth;
+                var height = element.offsetHeight;
+
+                if (width !== element.lastWidth || height !== element.lastHeight) {
+                    debug("Element size changed.");
+                    updateDetectorElements(notifyListenersIfNeeded);
+                } else {
+                    debug("Element size has not changed (" + width + "x" + height + ").");
+                }
+            }
+
+            debug("registerListenersAndPositionElements invoked.");
+
+            if (!getState(element)) {
+                debug("Aborting because element has been uninstalled");
+                return;
+            }
+
+            getState(element).onRendered = handleRender;
+            getState(element).onExpand = handleScroll;
+            getState(element).onShrink = handleScroll;
+
+            var style = getState(element).style;
+            updateChildSizes(element, style.width, style.height);
+        }
+
+        function finalizeDomMutation() {
+            debug("finalizeDomMutation invoked.");
+
+            if (!getState(element)) {
+                debug("Aborting because element has been uninstalled");
+                return;
+            }
+
+            var style = getState(element).style;
+            storeCurrentSize(element, style.width, style.height);
+            positionScrollbars(element, style.width, style.height);
+        }
+
+        function ready() {
+            callback(element);
+        }
+
+        function install() {
+            debug("Installing...");
+            initListeners();
+            storeStartSize();
+
+            batchProcessor.add(0, storeStyle);
+            batchProcessor.add(1, injectScrollElements);
+            batchProcessor.add(2, registerListenersAndPositionElements);
+            batchProcessor.add(3, finalizeDomMutation);
+            batchProcessor.add(4, ready);
+        }
+
+        debug("Making detectable...");
+
+        if (isDetached(element)) {
+            debug("Element is detached");
+
+            injectContainerElement();
+
+            debug("Waiting until element is attached...");
+
+            getState(element).onRendered = function () {
+                debug("Element is now attached");
+                install();
+            };
+        } else {
+            install();
+        }
+    }
+
+    function uninstall(element) {
+        var state = getState(element);
+
+        if (!state) {
+            // Uninstall has been called on a non-erd element.
+            return;
+        }
+
+        // Uninstall may have been called in the following scenarios:
+        // (1) Right between the sync code and async batch (here state.busy = true, but nothing have been registered or injected).
+        // (2) In the ready callback of the last level of the batch by another element (here, state.busy = true, but all the stuff has been injected).
+        // (3) After the installation process (here, state.busy = false and all the stuff has been injected).
+        // So to be on the safe side, let's check for each thing before removing.
+
+        // We need to remove the event listeners, because otherwise the event might fire on an uninstall element which results in an error when trying to get the state of the element.
+        state.onExpandScroll && removeEvent(getExpandElement(element), "scroll", state.onExpandScroll);
+        state.onShrinkScroll && removeEvent(getShrinkElement(element), "scroll", state.onShrinkScroll);
+        state.onAnimationStart && removeEvent(state.container, "animationstart", state.onAnimationStart);
+
+        state.container && element.removeChild(state.container);
+    }
+
+    return {
+        makeDetectable: makeDetectable,
+        addListener: addListener,
+        uninstall: uninstall
+    };
+};
+
+},{"../collection-utils":28}],31:[function(require,module,exports){
+"use strict";
+
+var forEach                 = require("./collection-utils").forEach;
+var elementUtilsMaker       = require("./element-utils");
+var listenerHandlerMaker    = require("./listener-handler");
+var idGeneratorMaker        = require("./id-generator");
+var idHandlerMaker          = require("./id-handler");
+var reporterMaker           = require("./reporter");
+var browserDetector         = require("./browser-detector");
+var batchProcessorMaker     = require("batch-processor");
+var stateHandler            = require("./state-handler");
+
+//Detection strategies.
+var objectStrategyMaker     = require("./detection-strategy/object.js");
+var scrollStrategyMaker     = require("./detection-strategy/scroll.js");
+
+function isCollection(obj) {
+    return Array.isArray(obj) || obj.length !== undefined;
+}
+
+function toArray(collection) {
+    if (!Array.isArray(collection)) {
+        var array = [];
+        forEach(collection, function (obj) {
+            array.push(obj);
+        });
+        return array;
+    } else {
+        return collection;
+    }
+}
+
+function isElement(obj) {
+    return obj && obj.nodeType === 1;
+}
+
+/**
+ * @typedef idHandler
+ * @type {object}
+ * @property {function} get Gets the resize detector id of the element.
+ * @property {function} set Generate and sets the resize detector id of the element.
+ */
+
+/**
+ * @typedef Options
+ * @type {object}
+ * @property {boolean} callOnAdd    Determines if listeners should be called when they are getting added.
+                                    Default is true. If true, the listener is guaranteed to be called when it has been added.
+                                    If false, the listener will not be guarenteed to be called when it has been added (does not prevent it from being called).
+ * @property {idHandler} idHandler  A custom id handler that is responsible for generating, setting and retrieving id's for elements.
+                                    If not provided, a default id handler will be used.
+ * @property {reporter} reporter    A custom reporter that handles reporting logs, warnings and errors.
+                                    If not provided, a default id handler will be used.
+                                    If set to false, then nothing will be reported.
+ * @property {boolean} debug        If set to true, the the system will report debug messages as default for the listenTo method.
+ */
+
+/**
+ * Creates an element resize detector instance.
+ * @public
+ * @param {Options?} options Optional global options object that will decide how this instance will work.
+ */
+module.exports = function(options) {
+    options = options || {};
+
+    //idHandler is currently not an option to the listenTo function, so it should not be added to globalOptions.
+    var idHandler;
+
+    if (options.idHandler) {
+        // To maintain compatability with idHandler.get(element, readonly), make sure to wrap the given idHandler
+        // so that readonly flag always is true when it's used here. This may be removed next major version bump.
+        idHandler = {
+            get: function (element) { return options.idHandler.get(element, true); },
+            set: options.idHandler.set
+        };
+    } else {
+        var idGenerator = idGeneratorMaker();
+        var defaultIdHandler = idHandlerMaker({
+            idGenerator: idGenerator,
+            stateHandler: stateHandler
+        });
+        idHandler = defaultIdHandler;
+    }
+
+    //reporter is currently not an option to the listenTo function, so it should not be added to globalOptions.
+    var reporter = options.reporter;
+
+    if(!reporter) {
+        //If options.reporter is false, then the reporter should be quiet.
+        var quiet = reporter === false;
+        reporter = reporterMaker(quiet);
+    }
+
+    //batchProcessor is currently not an option to the listenTo function, so it should not be added to globalOptions.
+    var batchProcessor = getOption(options, "batchProcessor", batchProcessorMaker({ reporter: reporter }));
+
+    //Options to be used as default for the listenTo function.
+    var globalOptions = {};
+    globalOptions.callOnAdd     = !!getOption(options, "callOnAdd", true);
+    globalOptions.debug         = !!getOption(options, "debug", false);
+
+    var eventListenerHandler    = listenerHandlerMaker(idHandler);
+    var elementUtils            = elementUtilsMaker({
+        stateHandler: stateHandler
+    });
+
+    //The detection strategy to be used.
+    var detectionStrategy;
+    var desiredStrategy = getOption(options, "strategy", "object");
+    var strategyOptions = {
+        reporter: reporter,
+        batchProcessor: batchProcessor,
+        stateHandler: stateHandler,
+        idHandler: idHandler
+    };
+
+    if(desiredStrategy === "scroll") {
+        if (browserDetector.isLegacyOpera()) {
+            reporter.warn("Scroll strategy is not supported on legacy Opera. Changing to object strategy.");
+            desiredStrategy = "object";
+        } else if (browserDetector.isIE(9)) {
+            reporter.warn("Scroll strategy is not supported on IE9. Changing to object strategy.");
+            desiredStrategy = "object";
+        }
+    }
+
+    if(desiredStrategy === "scroll") {
+        detectionStrategy = scrollStrategyMaker(strategyOptions);
+    } else if(desiredStrategy === "object") {
+        detectionStrategy = objectStrategyMaker(strategyOptions);
+    } else {
+        throw new Error("Invalid strategy name: " + desiredStrategy);
+    }
+
+    //Calls can be made to listenTo with elements that are still being installed.
+    //Also, same elements can occur in the elements list in the listenTo function.
+    //With this map, the ready callbacks can be synchronized between the calls
+    //so that the ready callback can always be called when an element is ready - even if
+    //it wasn't installed from the function itself.
+    var onReadyCallbacks = {};
+
+    /**
+     * Makes the given elements resize-detectable and starts listening to resize events on the elements. Calls the event callback for each event for each element.
+     * @public
+     * @param {Options?} options Optional options object. These options will override the global options. Some options may not be overriden, such as idHandler.
+     * @param {element[]|element} elements The given array of elements to detect resize events of. Single element is also valid.
+     * @param {function} listener The callback to be executed for each resize event for each element.
+     */
+    function listenTo(options, elements, listener) {
+        function onResizeCallback(element) {
+            var listeners = eventListenerHandler.get(element);
+            forEach(listeners, function callListenerProxy(listener) {
+                listener(element);
+            });
+        }
+
+        function addListener(callOnAdd, element, listener) {
+            eventListenerHandler.add(element, listener);
+
+            if(callOnAdd) {
+                listener(element);
+            }
+        }
+
+        //Options object may be omitted.
+        if(!listener) {
+            listener = elements;
+            elements = options;
+            options = {};
+        }
+
+        if(!elements) {
+            throw new Error("At least one element required.");
+        }
+
+        if(!listener) {
+            throw new Error("Listener required.");
+        }
+
+        if (isElement(elements)) {
+            // A single element has been passed in.
+            elements = [elements];
+        } else if (isCollection(elements)) {
+            // Convert collection to array for plugins.
+            // TODO: May want to check so that all the elements in the collection are valid elements.
+            elements = toArray(elements);
+        } else {
+            return reporter.error("Invalid arguments. Must be a DOM element or a collection of DOM elements.");
+        }
+
+        var elementsReady = 0;
+
+        var callOnAdd = getOption(options, "callOnAdd", globalOptions.callOnAdd);
+        var onReadyCallback = getOption(options, "onReady", function noop() {});
+        var debug = getOption(options, "debug", globalOptions.debug);
+
+        forEach(elements, function attachListenerToElement(element) {
+            if (!stateHandler.getState(element)) {
+                stateHandler.initState(element);
+                idHandler.set(element);
+            }
+
+            var id = idHandler.get(element);
+
+            debug && reporter.log("Attaching listener to element", id, element);
+
+            if(!elementUtils.isDetectable(element)) {
+                debug && reporter.log(id, "Not detectable.");
+                if(elementUtils.isBusy(element)) {
+                    debug && reporter.log(id, "System busy making it detectable");
+
+                    //The element is being prepared to be detectable. Do not make it detectable.
+                    //Just add the listener, because the element will soon be detectable.
+                    addListener(callOnAdd, element, listener);
+                    onReadyCallbacks[id] = onReadyCallbacks[id] || [];
+                    onReadyCallbacks[id].push(function onReady() {
+                        elementsReady++;
+
+                        if(elementsReady === elements.length) {
+                            onReadyCallback();
+                        }
+                    });
+                    return;
+                }
+
+                debug && reporter.log(id, "Making detectable...");
+                //The element is not prepared to be detectable, so do prepare it and add a listener to it.
+                elementUtils.markBusy(element, true);
+                return detectionStrategy.makeDetectable({ debug: debug }, element, function onElementDetectable(element) {
+                    debug && reporter.log(id, "onElementDetectable");
+
+                    if (stateHandler.getState(element)) {
+                        elementUtils.markAsDetectable(element);
+                        elementUtils.markBusy(element, false);
+                        detectionStrategy.addListener(element, onResizeCallback);
+                        addListener(callOnAdd, element, listener);
+
+                        // Since the element size might have changed since the call to "listenTo", we need to check for this change,
+                        // so that a resize event may be emitted.
+                        // Having the startSize object is optional (since it does not make sense in some cases such as unrendered elements), so check for its existance before.
+                        // Also, check the state existance before since the element may have been uninstalled in the installation process.
+                        var state = stateHandler.getState(element);
+                        if (state && state.startSize) {
+                            var width = element.offsetWidth;
+                            var height = element.offsetHeight;
+                            if (state.startSize.width !== width || state.startSize.height !== height) {
+                                onResizeCallback(element);
+                            }
+                        }
+
+                        if(onReadyCallbacks[id]) {
+                            forEach(onReadyCallbacks[id], function(callback) {
+                                callback();
+                            });
+                        }
+                    } else {
+                        // The element has been unisntalled before being detectable.
+                        debug && reporter.log(id, "Element uninstalled before being detectable.");
+                    }
+
+                    delete onReadyCallbacks[id];
+
+                    elementsReady++;
+                    if(elementsReady === elements.length) {
+                        onReadyCallback();
+                    }
+                });
+            }
+
+            debug && reporter.log(id, "Already detecable, adding listener.");
+
+            //The element has been prepared to be detectable and is ready to be listened to.
+            addListener(callOnAdd, element, listener);
+            elementsReady++;
+        });
+
+        if(elementsReady === elements.length) {
+            onReadyCallback();
+        }
+    }
+
+    function uninstall(elements) {
+        if(!elements) {
+            return reporter.error("At least one element is required.");
+        }
+
+        if (isElement(elements)) {
+            // A single element has been passed in.
+            elements = [elements];
+        } else if (isCollection(elements)) {
+            // Convert collection to array for plugins.
+            // TODO: May want to check so that all the elements in the collection are valid elements.
+            elements = toArray(elements);
+        } else {
+            return reporter.error("Invalid arguments. Must be a DOM element or a collection of DOM elements.");
+        }
+
+        forEach(elements, function (element) {
+            eventListenerHandler.removeAllListeners(element);
+            detectionStrategy.uninstall(element);
+            stateHandler.cleanState(element);
+        });
+    }
+
+    return {
+        listenTo: listenTo,
+        removeListener: eventListenerHandler.removeListener,
+        removeAllListeners: eventListenerHandler.removeAllListeners,
+        uninstall: uninstall
+    };
+};
+
+function getOption(options, name, defaultValue) {
+    var value = options[name];
+
+    if((value === undefined || value === null) && defaultValue !== undefined) {
+        return defaultValue;
+    }
+
+    return value;
+}
+
+},{"./browser-detector":27,"./collection-utils":28,"./detection-strategy/object.js":29,"./detection-strategy/scroll.js":30,"./element-utils":32,"./id-generator":33,"./id-handler":34,"./listener-handler":35,"./reporter":36,"./state-handler":37,"batch-processor":23}],32:[function(require,module,exports){
+"use strict";
+
+module.exports = function(options) {
+    var getState = options.stateHandler.getState;
+
+    /**
+     * Tells if the element has been made detectable and ready to be listened for resize events.
+     * @public
+     * @param {element} The element to check.
+     * @returns {boolean} True or false depending on if the element is detectable or not.
+     */
+    function isDetectable(element) {
+        var state = getState(element);
+        return state && !!state.isDetectable;
+    }
+
+    /**
+     * Marks the element that it has been made detectable and ready to be listened for resize events.
+     * @public
+     * @param {element} The element to mark.
+     */
+    function markAsDetectable(element) {
+        getState(element).isDetectable = true;
+    }
+
+    /**
+     * Tells if the element is busy or not.
+     * @public
+     * @param {element} The element to check.
+     * @returns {boolean} True or false depending on if the element is busy or not.
+     */
+    function isBusy(element) {
+        return !!getState(element).busy;
+    }
+
+    /**
+     * Marks the object is busy and should not be made detectable.
+     * @public
+     * @param {element} element The element to mark.
+     * @param {boolean} busy If the element is busy or not.
+     */
+    function markBusy(element, busy) {
+        getState(element).busy = !!busy;
+    }
+
+    return {
+        isDetectable: isDetectable,
+        markAsDetectable: markAsDetectable,
+        isBusy: isBusy,
+        markBusy: markBusy
+    };
+};
+
+},{}],33:[function(require,module,exports){
+"use strict";
+
+module.exports = function() {
+    var idCount = 1;
+
+    /**
+     * Generates a new unique id in the context.
+     * @public
+     * @returns {number} A unique id in the context.
+     */
+    function generate() {
+        return idCount++;
+    }
+
+    return {
+        generate: generate
+    };
+};
+
+},{}],34:[function(require,module,exports){
+"use strict";
+
+module.exports = function(options) {
+    var idGenerator     = options.idGenerator;
+    var getState        = options.stateHandler.getState;
+
+    /**
+     * Gets the resize detector id of the element.
+     * @public
+     * @param {element} element The target element to get the id of.
+     * @returns {string|number|null} The id of the element. Null if it has no id.
+     */
+    function getId(element) {
+        var state = getState(element);
+
+        if (state && state.id !== undefined) {
+            return state.id;
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets the resize detector id of the element. Requires the element to have a resize detector state initialized.
+     * @public
+     * @param {element} element The target element to set the id of.
+     * @returns {string|number|null} The id of the element.
+     */
+    function setId(element) {
+        var state = getState(element);
+
+        if (!state) {
+            throw new Error("setId required the element to have a resize detection state.");
+        }
+
+        var id = idGenerator.generate();
+
+        state.id = id;
+
+        return id;
+    }
+
+    return {
+        get: getId,
+        set: setId
+    };
+};
+
+},{}],35:[function(require,module,exports){
+"use strict";
+
+module.exports = function(idHandler) {
+    var eventListeners = {};
+
+    /**
+     * Gets all listeners for the given element.
+     * @public
+     * @param {element} element The element to get all listeners for.
+     * @returns All listeners for the given element.
+     */
+    function getListeners(element) {
+        var id = idHandler.get(element);
+
+        if (id === undefined) {
+            return [];
+        }
+
+        return eventListeners[id] || [];
+    }
+
+    /**
+     * Stores the given listener for the given element. Will not actually add the listener to the element.
+     * @public
+     * @param {element} element The element that should have the listener added.
+     * @param {function} listener The callback that the element has added.
+     */
+    function addListener(element, listener) {
+        var id = idHandler.get(element);
+
+        if(!eventListeners[id]) {
+            eventListeners[id] = [];
+        }
+
+        eventListeners[id].push(listener);
+    }
+
+    function removeListener(element, listener) {
+        var listeners = getListeners(element);
+        for (var i = 0, len = listeners.length; i < len; ++i) {
+            if (listeners[i] === listener) {
+              listeners.splice(i, 1);
+              break;
+            }
+        }
+    }
+
+    function removeAllListeners(element) {
+      var listeners = getListeners(element);
+      if (!listeners) { return; }
+      listeners.length = 0;
+    }
+
+    return {
+        get: getListeners,
+        add: addListener,
+        removeListener: removeListener,
+        removeAllListeners: removeAllListeners
+    };
+};
+
+},{}],36:[function(require,module,exports){
+"use strict";
+
+/* global console: false */
+
+/**
+ * Reporter that handles the reporting of logs, warnings and errors.
+ * @public
+ * @param {boolean} quiet Tells if the reporter should be quiet or not.
+ */
+module.exports = function(quiet) {
+    function noop() {
+        //Does nothing.
+    }
+
+    var reporter = {
+        log: noop,
+        warn: noop,
+        error: noop
+    };
+
+    if(!quiet && window.console) {
+        var attachFunction = function(reporter, name) {
+            //The proxy is needed to be able to call the method with the console context,
+            //since we cannot use bind.
+            reporter[name] = function reporterProxy() {
+                var f = console[name];
+                if (f.apply) { //IE9 does not support console.log.apply :)
+                    f.apply(console, arguments);
+                } else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        f(arguments[i]);
+                    }
+                }
+            };
+        };
+
+        attachFunction(reporter, "log");
+        attachFunction(reporter, "warn");
+        attachFunction(reporter, "error");
+    }
+
+    return reporter;
+};
+},{}],37:[function(require,module,exports){
+"use strict";
+
+var prop = "_erd";
+
+function initState(element) {
+    element[prop] = {};
+    return getState(element);
+}
+
+function getState(element) {
+    return element[prop];
+}
+
+function cleanState(element) {
+    delete element[prop];
+}
+
+module.exports = {
+    initState: initState,
+    getState: getState,
+    cleanState: cleanState
+};
+
+},{}],38:[function(require,module,exports){
+/**
+ * EvEmitter v1.0.3
+ * Lil' event emitter
+ * MIT License
+ */
+
+/* jshint unused: true, undef: true, strict: true */
+
+( function( global, factory ) {
+  // universal module definition
+  /* jshint strict: false */ /* globals define, module, window */
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD - RequireJS
+    define( factory );
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS - Browserify, Webpack
+    module.exports = factory();
+  } else {
+    // Browser globals
+    global.EvEmitter = factory();
+  }
+
+}( typeof window != 'undefined' ? window : this, function() {
+
+"use strict";
+
+function EvEmitter() {}
+
+var proto = EvEmitter.prototype;
+
+proto.on = function( eventName, listener ) {
+  if ( !eventName || !listener ) {
+    return;
+  }
+  // set events hash
+  var events = this._events = this._events || {};
+  // set listeners array
+  var listeners = events[ eventName ] = events[ eventName ] || [];
+  // only add once
+  if ( listeners.indexOf( listener ) == -1 ) {
+    listeners.push( listener );
+  }
+
+  return this;
+};
+
+proto.once = function( eventName, listener ) {
+  if ( !eventName || !listener ) {
+    return;
+  }
+  // add event
+  this.on( eventName, listener );
+  // set once flag
+  // set onceEvents hash
+  var onceEvents = this._onceEvents = this._onceEvents || {};
+  // set onceListeners object
+  var onceListeners = onceEvents[ eventName ] = onceEvents[ eventName ] || {};
+  // set flag
+  onceListeners[ listener ] = true;
+
+  return this;
+};
+
+proto.off = function( eventName, listener ) {
+  var listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) {
+    return;
+  }
+  var index = listeners.indexOf( listener );
+  if ( index != -1 ) {
+    listeners.splice( index, 1 );
+  }
+
+  return this;
+};
+
+proto.emitEvent = function( eventName, args ) {
+  var listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) {
+    return;
+  }
+  var i = 0;
+  var listener = listeners[i];
+  args = args || [];
+  // once stuff
+  var onceListeners = this._onceEvents && this._onceEvents[ eventName ];
+
+  while ( listener ) {
+    var isOnce = onceListeners && onceListeners[ listener ];
+    if ( isOnce ) {
+      // remove listener
+      // remove before trigger to prevent recursion
+      this.off( eventName, listener );
+      // unset once flag
+      delete onceListeners[ listener ];
+    }
+    // trigger listener
+    listener.apply( this, args );
+    // get next listener
+    i += isOnce ? 0 : 1;
+    listener = listeners[i];
+  }
+
+  return this;
+};
+
+return EvEmitter;
+
+}));
+
+},{}],39:[function(require,module,exports){
 (function() {
 
     var debug = false;
@@ -4720,7 +7855,7 @@ module.exports = canUseDOM;
 }.call(this));
 
 
-},{}],23:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -4807,7 +7942,7 @@ var EventListener = {
 
 module.exports = EventListener;
 }).call(this,require('_process'))
-},{"./emptyFunction":30,"_process":53}],24:[function(require,module,exports){
+},{"./emptyFunction":47,"_process":80}],41:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4844,7 +7979,7 @@ var ExecutionEnvironment = {
 };
 
 module.exports = ExecutionEnvironment;
-},{}],25:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4877,7 +8012,7 @@ function camelize(string) {
 }
 
 module.exports = camelize;
-},{}],26:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4918,7 +8053,7 @@ function camelizeStyleName(string) {
 }
 
 module.exports = camelizeStyleName;
-},{"./camelize":25}],27:[function(require,module,exports){
+},{"./camelize":42}],44:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4974,7 +8109,7 @@ function containsNode(_x, _x2) {
 }
 
 module.exports = containsNode;
-},{"./isTextNode":40}],28:[function(require,module,exports){
+},{"./isTextNode":57}],45:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5060,7 +8195,7 @@ function createArrayFromMixed(obj) {
 }
 
 module.exports = createArrayFromMixed;
-},{"./toArray":48}],29:[function(require,module,exports){
+},{"./toArray":65}],46:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5147,7 +8282,7 @@ function createNodesFromMarkup(markup, handleScript) {
 
 module.exports = createNodesFromMarkup;
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":24,"./createArrayFromMixed":28,"./getMarkupWrap":34,"./invariant":38,"_process":53}],30:[function(require,module,exports){
+},{"./ExecutionEnvironment":41,"./createArrayFromMixed":45,"./getMarkupWrap":51,"./invariant":55,"_process":80}],47:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5186,7 +8321,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
-},{}],31:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5209,7 +8344,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = emptyObject;
 }).call(this,require('_process'))
-},{"_process":53}],32:[function(require,module,exports){
+},{"_process":80}],49:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5236,7 +8371,7 @@ function focusNode(node) {
 }
 
 module.exports = focusNode;
-},{}],33:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5272,7 +8407,7 @@ function getActiveElement() /*?DOMElement*/{
 }
 
 module.exports = getActiveElement;
-},{}],34:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5370,7 +8505,7 @@ function getMarkupWrap(nodeName) {
 
 module.exports = getMarkupWrap;
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":24,"./invariant":38,"_process":53}],35:[function(require,module,exports){
+},{"./ExecutionEnvironment":41,"./invariant":55,"_process":80}],52:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5409,7 +8544,7 @@ function getUnboundedScrollPosition(scrollable) {
 }
 
 module.exports = getUnboundedScrollPosition;
-},{}],36:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5443,7 +8578,7 @@ function hyphenate(string) {
 }
 
 module.exports = hyphenate;
-},{}],37:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5483,7 +8618,7 @@ function hyphenateStyleName(string) {
 }
 
 module.exports = hyphenateStyleName;
-},{"./hyphenate":36}],38:[function(require,module,exports){
+},{"./hyphenate":53}],55:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5536,7 +8671,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 }).call(this,require('_process'))
-},{"_process":53}],39:[function(require,module,exports){
+},{"_process":80}],56:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5560,7 +8695,7 @@ function isNode(object) {
 }
 
 module.exports = isNode;
-},{}],40:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5586,7 +8721,7 @@ function isTextNode(object) {
 }
 
 module.exports = isTextNode;
-},{"./isNode":39}],41:[function(require,module,exports){
+},{"./isNode":56}],58:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5637,7 +8772,7 @@ var keyMirror = function (obj) {
 
 module.exports = keyMirror;
 }).call(this,require('_process'))
-},{"./invariant":38,"_process":53}],42:[function(require,module,exports){
+},{"./invariant":55,"_process":80}],59:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5673,7 +8808,7 @@ var keyOf = function (oneKeyObj) {
 };
 
 module.exports = keyOf;
-},{}],43:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5725,7 +8860,7 @@ function mapObject(object, callback, context) {
 }
 
 module.exports = mapObject;
-},{}],44:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5757,7 +8892,7 @@ function memoizeStringOnly(callback) {
 }
 
 module.exports = memoizeStringOnly;
-},{}],45:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5781,7 +8916,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = performance || {};
-},{"./ExecutionEnvironment":24}],46:[function(require,module,exports){
+},{"./ExecutionEnvironment":41}],63:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5816,7 +8951,7 @@ if (performance.now) {
 }
 
 module.exports = performanceNow;
-},{"./performance":45}],47:[function(require,module,exports){
+},{"./performance":62}],64:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5867,7 +9002,7 @@ function shallowEqual(objA, objB) {
 }
 
 module.exports = shallowEqual;
-},{}],48:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5927,7 +9062,7 @@ function toArray(obj) {
 
 module.exports = toArray;
 }).call(this,require('_process'))
-},{"./invariant":38,"_process":53}],49:[function(require,module,exports){
+},{"./invariant":55,"_process":80}],66:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -5987,7 +9122,830 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 }).call(this,require('_process'))
-},{"./emptyFunction":30,"_process":53}],50:[function(require,module,exports){
+},{"./emptyFunction":47,"_process":80}],67:[function(require,module,exports){
+/**
+ * Fizzy UI utils v2.0.4
+ * MIT license
+ */
+
+/*jshint browser: true, undef: true, unused: true, strict: true */
+
+( function( window, factory ) {
+  // universal module definition
+  /*jshint strict: false */ /*globals define, module, require */
+
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD
+    define( [
+      'desandro-matches-selector/matches-selector'
+    ], function( matchesSelector ) {
+      return factory( window, matchesSelector );
+    });
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+      window,
+      require('desandro-matches-selector')
+    );
+  } else {
+    // browser global
+    window.fizzyUIUtils = factory(
+      window,
+      window.matchesSelector
+    );
+  }
+
+}( window, function factory( window, matchesSelector ) {
+
+'use strict';
+
+var utils = {};
+
+// ----- extend ----- //
+
+// extends objects
+utils.extend = function( a, b ) {
+  for ( var prop in b ) {
+    a[ prop ] = b[ prop ];
+  }
+  return a;
+};
+
+// ----- modulo ----- //
+
+utils.modulo = function( num, div ) {
+  return ( ( num % div ) + div ) % div;
+};
+
+// ----- makeArray ----- //
+
+// turn element or nodeList into an array
+utils.makeArray = function( obj ) {
+  var ary = [];
+  if ( Array.isArray( obj ) ) {
+    // use object if already an array
+    ary = obj;
+  } else if ( obj && typeof obj == 'object' &&
+    typeof obj.length == 'number' ) {
+    // convert nodeList to array
+    for ( var i=0; i < obj.length; i++ ) {
+      ary.push( obj[i] );
+    }
+  } else {
+    // array of single index
+    ary.push( obj );
+  }
+  return ary;
+};
+
+// ----- removeFrom ----- //
+
+utils.removeFrom = function( ary, obj ) {
+  var index = ary.indexOf( obj );
+  if ( index != -1 ) {
+    ary.splice( index, 1 );
+  }
+};
+
+// ----- getParent ----- //
+
+utils.getParent = function( elem, selector ) {
+  while ( elem != document.body ) {
+    elem = elem.parentNode;
+    if ( matchesSelector( elem, selector ) ) {
+      return elem;
+    }
+  }
+};
+
+// ----- getQueryElement ----- //
+
+// use element as selector string
+utils.getQueryElement = function( elem ) {
+  if ( typeof elem == 'string' ) {
+    return document.querySelector( elem );
+  }
+  return elem;
+};
+
+// ----- handleEvent ----- //
+
+// enable .ontype to trigger from .addEventListener( elem, 'type' )
+utils.handleEvent = function( event ) {
+  var method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+// ----- filterFindElements ----- //
+
+utils.filterFindElements = function( elems, selector ) {
+  // make array of elems
+  elems = utils.makeArray( elems );
+  var ffElems = [];
+
+  elems.forEach( function( elem ) {
+    // check that elem is an actual element
+    if ( !( elem instanceof HTMLElement ) ) {
+      return;
+    }
+    // add elem if no selector
+    if ( !selector ) {
+      ffElems.push( elem );
+      return;
+    }
+    // filter & find items if we have a selector
+    // filter
+    if ( matchesSelector( elem, selector ) ) {
+      ffElems.push( elem );
+    }
+    // find children
+    var childElems = elem.querySelectorAll( selector );
+    // concat childElems to filterFound array
+    for ( var i=0; i < childElems.length; i++ ) {
+      ffElems.push( childElems[i] );
+    }
+  });
+
+  return ffElems;
+};
+
+// ----- debounceMethod ----- //
+
+utils.debounceMethod = function( _class, methodName, threshold ) {
+  // original method
+  var method = _class.prototype[ methodName ];
+  var timeoutName = methodName + 'Timeout';
+
+  _class.prototype[ methodName ] = function() {
+    var timeout = this[ timeoutName ];
+    if ( timeout ) {
+      clearTimeout( timeout );
+    }
+    var args = arguments;
+
+    var _this = this;
+    this[ timeoutName ] = setTimeout( function() {
+      method.apply( _this, args );
+      delete _this[ timeoutName ];
+    }, threshold || 100 );
+  };
+};
+
+// ----- docReady ----- //
+
+utils.docReady = function( callback ) {
+  var readyState = document.readyState;
+  if ( readyState == 'complete' || readyState == 'interactive' ) {
+    // do async to allow for other scripts to run. metafizzy/flickity#441
+    setTimeout( callback );
+  } else {
+    document.addEventListener( 'DOMContentLoaded', callback );
+  }
+};
+
+// ----- htmlInit ----- //
+
+// http://jamesroberts.name/blog/2010/02/22/string-functions-for-javascript-trim-to-camel-case-to-dashed-and-to-underscore/
+utils.toDashed = function( str ) {
+  return str.replace( /(.)([A-Z])/g, function( match, $1, $2 ) {
+    return $1 + '-' + $2;
+  }).toLowerCase();
+};
+
+var console = window.console;
+/**
+ * allow user to initialize classes via [data-namespace] or .js-namespace class
+ * htmlInit( Widget, 'widgetName' )
+ * options are parsed from data-namespace-options
+ */
+utils.htmlInit = function( WidgetClass, namespace ) {
+  utils.docReady( function() {
+    var dashedNamespace = utils.toDashed( namespace );
+    var dataAttr = 'data-' + dashedNamespace;
+    var dataAttrElems = document.querySelectorAll( '[' + dataAttr + ']' );
+    var jsDashElems = document.querySelectorAll( '.js-' + dashedNamespace );
+    var elems = utils.makeArray( dataAttrElems )
+      .concat( utils.makeArray( jsDashElems ) );
+    var dataOptionsAttr = dataAttr + '-options';
+    var jQuery = window.jQuery;
+
+    elems.forEach( function( elem ) {
+      var attr = elem.getAttribute( dataAttr ) ||
+        elem.getAttribute( dataOptionsAttr );
+      var options;
+      try {
+        options = attr && JSON.parse( attr );
+      } catch ( error ) {
+        // log error, do not initialize
+        if ( console ) {
+          console.error( 'Error parsing ' + dataAttr + ' on ' + elem.className +
+          ': ' + error );
+        }
+        return;
+      }
+      // initialize
+      var instance = new WidgetClass( elem, options );
+      // make available via $().data('namespace')
+      if ( jQuery ) {
+        jQuery.data( elem, namespace, instance );
+      }
+    });
+
+  });
+};
+
+// -----  ----- //
+
+return utils;
+
+}));
+
+},{"desandro-matches-selector":26}],68:[function(require,module,exports){
+/*!
+ * getSize v2.0.2
+ * measure size of elements
+ * MIT license
+ */
+
+/*jshint browser: true, strict: true, undef: true, unused: true */
+/*global define: false, module: false, console: false */
+
+( function( window, factory ) {
+  'use strict';
+
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD
+    define( function() {
+      return factory();
+    });
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory();
+  } else {
+    // browser global
+    window.getSize = factory();
+  }
+
+})( window, function factory() {
+'use strict';
+
+// -------------------------- helpers -------------------------- //
+
+// get a number from a string, not a percentage
+function getStyleSize( value ) {
+  var num = parseFloat( value );
+  // not a percent like '100%', and a number
+  var isValid = value.indexOf('%') == -1 && !isNaN( num );
+  return isValid && num;
+}
+
+function noop() {}
+
+var logError = typeof console == 'undefined' ? noop :
+  function( message ) {
+    console.error( message );
+  };
+
+// -------------------------- measurements -------------------------- //
+
+var measurements = [
+  'paddingLeft',
+  'paddingRight',
+  'paddingTop',
+  'paddingBottom',
+  'marginLeft',
+  'marginRight',
+  'marginTop',
+  'marginBottom',
+  'borderLeftWidth',
+  'borderRightWidth',
+  'borderTopWidth',
+  'borderBottomWidth'
+];
+
+var measurementsLength = measurements.length;
+
+function getZeroSize() {
+  var size = {
+    width: 0,
+    height: 0,
+    innerWidth: 0,
+    innerHeight: 0,
+    outerWidth: 0,
+    outerHeight: 0
+  };
+  for ( var i=0; i < measurementsLength; i++ ) {
+    var measurement = measurements[i];
+    size[ measurement ] = 0;
+  }
+  return size;
+}
+
+// -------------------------- getStyle -------------------------- //
+
+/**
+ * getStyle, get style of element, check for Firefox bug
+ * https://bugzilla.mozilla.org/show_bug.cgi?id=548397
+ */
+function getStyle( elem ) {
+  var style = getComputedStyle( elem );
+  if ( !style ) {
+    logError( 'Style returned ' + style +
+      '. Are you running this code in a hidden iframe on Firefox? ' +
+      'See http://bit.ly/getsizebug1' );
+  }
+  return style;
+}
+
+// -------------------------- setup -------------------------- //
+
+var isSetup = false;
+
+var isBoxSizeOuter;
+
+/**
+ * setup
+ * check isBoxSizerOuter
+ * do on first getSize() rather than on page load for Firefox bug
+ */
+function setup() {
+  // setup once
+  if ( isSetup ) {
+    return;
+  }
+  isSetup = true;
+
+  // -------------------------- box sizing -------------------------- //
+
+  /**
+   * WebKit measures the outer-width on style.width on border-box elems
+   * IE & Firefox<29 measures the inner-width
+   */
+  var div = document.createElement('div');
+  div.style.width = '200px';
+  div.style.padding = '1px 2px 3px 4px';
+  div.style.borderStyle = 'solid';
+  div.style.borderWidth = '1px 2px 3px 4px';
+  div.style.boxSizing = 'border-box';
+
+  var body = document.body || document.documentElement;
+  body.appendChild( div );
+  var style = getStyle( div );
+
+  getSize.isBoxSizeOuter = isBoxSizeOuter = getStyleSize( style.width ) == 200;
+  body.removeChild( div );
+
+}
+
+// -------------------------- getSize -------------------------- //
+
+function getSize( elem ) {
+  setup();
+
+  // use querySeletor if elem is string
+  if ( typeof elem == 'string' ) {
+    elem = document.querySelector( elem );
+  }
+
+  // do not proceed on non-objects
+  if ( !elem || typeof elem != 'object' || !elem.nodeType ) {
+    return;
+  }
+
+  var style = getStyle( elem );
+
+  // if hidden, everything is 0
+  if ( style.display == 'none' ) {
+    return getZeroSize();
+  }
+
+  var size = {};
+  size.width = elem.offsetWidth;
+  size.height = elem.offsetHeight;
+
+  var isBorderBox = size.isBorderBox = style.boxSizing == 'border-box';
+
+  // get all measurements
+  for ( var i=0; i < measurementsLength; i++ ) {
+    var measurement = measurements[i];
+    var value = style[ measurement ];
+    var num = parseFloat( value );
+    // any 'auto', 'medium' value will be 0
+    size[ measurement ] = !isNaN( num ) ? num : 0;
+  }
+
+  var paddingWidth = size.paddingLeft + size.paddingRight;
+  var paddingHeight = size.paddingTop + size.paddingBottom;
+  var marginWidth = size.marginLeft + size.marginRight;
+  var marginHeight = size.marginTop + size.marginBottom;
+  var borderWidth = size.borderLeftWidth + size.borderRightWidth;
+  var borderHeight = size.borderTopWidth + size.borderBottomWidth;
+
+  var isBorderBoxSizeOuter = isBorderBox && isBoxSizeOuter;
+
+  // overwrite width and height if we can get it from style
+  var styleWidth = getStyleSize( style.width );
+  if ( styleWidth !== false ) {
+    size.width = styleWidth +
+      // add padding and border unless it's already including it
+      ( isBorderBoxSizeOuter ? 0 : paddingWidth + borderWidth );
+  }
+
+  var styleHeight = getStyleSize( style.height );
+  if ( styleHeight !== false ) {
+    size.height = styleHeight +
+      // add padding and border unless it's already including it
+      ( isBorderBoxSizeOuter ? 0 : paddingHeight + borderHeight );
+  }
+
+  size.innerWidth = size.width - ( paddingWidth + borderWidth );
+  size.innerHeight = size.height - ( paddingHeight + borderHeight );
+
+  size.outerWidth = size.width + marginWidth;
+  size.outerHeight = size.height + marginHeight;
+
+  return size;
+}
+
+return getSize;
+
+});
+
+},{}],69:[function(require,module,exports){
+/*!
+ * imagesLoaded v4.1.1
+ * JavaScript is all like "You images are done yet or what?"
+ * MIT License
+ */
+
+( function( window, factory ) { 'use strict';
+  // universal module definition
+
+  /*global define: false, module: false, require: false */
+
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD
+    define( [
+      'ev-emitter/ev-emitter'
+    ], function( EvEmitter ) {
+      return factory( window, EvEmitter );
+    });
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+      window,
+      require('ev-emitter')
+    );
+  } else {
+    // browser global
+    window.imagesLoaded = factory(
+      window,
+      window.EvEmitter
+    );
+  }
+
+})( window,
+
+// --------------------------  factory -------------------------- //
+
+function factory( window, EvEmitter ) {
+
+'use strict';
+
+var $ = window.jQuery;
+var console = window.console;
+
+// -------------------------- helpers -------------------------- //
+
+// extend objects
+function extend( a, b ) {
+  for ( var prop in b ) {
+    a[ prop ] = b[ prop ];
+  }
+  return a;
+}
+
+// turn element or nodeList into an array
+function makeArray( obj ) {
+  var ary = [];
+  if ( Array.isArray( obj ) ) {
+    // use object if already an array
+    ary = obj;
+  } else if ( typeof obj.length == 'number' ) {
+    // convert nodeList to array
+    for ( var i=0; i < obj.length; i++ ) {
+      ary.push( obj[i] );
+    }
+  } else {
+    // array of single index
+    ary.push( obj );
+  }
+  return ary;
+}
+
+// -------------------------- imagesLoaded -------------------------- //
+
+/**
+ * @param {Array, Element, NodeList, String} elem
+ * @param {Object or Function} options - if function, use as callback
+ * @param {Function} onAlways - callback function
+ */
+function ImagesLoaded( elem, options, onAlways ) {
+  // coerce ImagesLoaded() without new, to be new ImagesLoaded()
+  if ( !( this instanceof ImagesLoaded ) ) {
+    return new ImagesLoaded( elem, options, onAlways );
+  }
+  // use elem as selector string
+  if ( typeof elem == 'string' ) {
+    elem = document.querySelectorAll( elem );
+  }
+
+  this.elements = makeArray( elem );
+  this.options = extend( {}, this.options );
+
+  if ( typeof options == 'function' ) {
+    onAlways = options;
+  } else {
+    extend( this.options, options );
+  }
+
+  if ( onAlways ) {
+    this.on( 'always', onAlways );
+  }
+
+  this.getImages();
+
+  if ( $ ) {
+    // add jQuery Deferred object
+    this.jqDeferred = new $.Deferred();
+  }
+
+  // HACK check async to allow time to bind listeners
+  setTimeout( function() {
+    this.check();
+  }.bind( this ));
+}
+
+ImagesLoaded.prototype = Object.create( EvEmitter.prototype );
+
+ImagesLoaded.prototype.options = {};
+
+ImagesLoaded.prototype.getImages = function() {
+  this.images = [];
+
+  // filter & find items if we have an item selector
+  this.elements.forEach( this.addElementImages, this );
+};
+
+/**
+ * @param {Node} element
+ */
+ImagesLoaded.prototype.addElementImages = function( elem ) {
+  // filter siblings
+  if ( elem.nodeName == 'IMG' ) {
+    this.addImage( elem );
+  }
+  // get background image on element
+  if ( this.options.background === true ) {
+    this.addElementBackgroundImages( elem );
+  }
+
+  // find children
+  // no non-element nodes, #143
+  var nodeType = elem.nodeType;
+  if ( !nodeType || !elementNodeTypes[ nodeType ] ) {
+    return;
+  }
+  var childImgs = elem.querySelectorAll('img');
+  // concat childElems to filterFound array
+  for ( var i=0; i < childImgs.length; i++ ) {
+    var img = childImgs[i];
+    this.addImage( img );
+  }
+
+  // get child background images
+  if ( typeof this.options.background == 'string' ) {
+    var children = elem.querySelectorAll( this.options.background );
+    for ( i=0; i < children.length; i++ ) {
+      var child = children[i];
+      this.addElementBackgroundImages( child );
+    }
+  }
+};
+
+var elementNodeTypes = {
+  1: true,
+  9: true,
+  11: true
+};
+
+ImagesLoaded.prototype.addElementBackgroundImages = function( elem ) {
+  var style = getComputedStyle( elem );
+  if ( !style ) {
+    // Firefox returns null if in a hidden iframe https://bugzil.la/548397
+    return;
+  }
+  // get url inside url("...")
+  var reURL = /url\((['"])?(.*?)\1\)/gi;
+  var matches = reURL.exec( style.backgroundImage );
+  while ( matches !== null ) {
+    var url = matches && matches[2];
+    if ( url ) {
+      this.addBackground( url, elem );
+    }
+    matches = reURL.exec( style.backgroundImage );
+  }
+};
+
+/**
+ * @param {Image} img
+ */
+ImagesLoaded.prototype.addImage = function( img ) {
+  var loadingImage = new LoadingImage( img );
+  this.images.push( loadingImage );
+};
+
+ImagesLoaded.prototype.addBackground = function( url, elem ) {
+  var background = new Background( url, elem );
+  this.images.push( background );
+};
+
+ImagesLoaded.prototype.check = function() {
+  var _this = this;
+  this.progressedCount = 0;
+  this.hasAnyBroken = false;
+  // complete if no images
+  if ( !this.images.length ) {
+    this.complete();
+    return;
+  }
+
+  function onProgress( image, elem, message ) {
+    // HACK - Chrome triggers event before object properties have changed. #83
+    setTimeout( function() {
+      _this.progress( image, elem, message );
+    });
+  }
+
+  this.images.forEach( function( loadingImage ) {
+    loadingImage.once( 'progress', onProgress );
+    loadingImage.check();
+  });
+};
+
+ImagesLoaded.prototype.progress = function( image, elem, message ) {
+  this.progressedCount++;
+  this.hasAnyBroken = this.hasAnyBroken || !image.isLoaded;
+  // progress event
+  this.emitEvent( 'progress', [ this, image, elem ] );
+  if ( this.jqDeferred && this.jqDeferred.notify ) {
+    this.jqDeferred.notify( this, image );
+  }
+  // check if completed
+  if ( this.progressedCount == this.images.length ) {
+    this.complete();
+  }
+
+  if ( this.options.debug && console ) {
+    console.log( 'progress: ' + message, image, elem );
+  }
+};
+
+ImagesLoaded.prototype.complete = function() {
+  var eventName = this.hasAnyBroken ? 'fail' : 'done';
+  this.isComplete = true;
+  this.emitEvent( eventName, [ this ] );
+  this.emitEvent( 'always', [ this ] );
+  if ( this.jqDeferred ) {
+    var jqMethod = this.hasAnyBroken ? 'reject' : 'resolve';
+    this.jqDeferred[ jqMethod ]( this );
+  }
+};
+
+// --------------------------  -------------------------- //
+
+function LoadingImage( img ) {
+  this.img = img;
+}
+
+LoadingImage.prototype = Object.create( EvEmitter.prototype );
+
+LoadingImage.prototype.check = function() {
+  // If complete is true and browser supports natural sizes,
+  // try to check for image status manually.
+  var isComplete = this.getIsImageComplete();
+  if ( isComplete ) {
+    // report based on naturalWidth
+    this.confirm( this.img.naturalWidth !== 0, 'naturalWidth' );
+    return;
+  }
+
+  // If none of the checks above matched, simulate loading on detached element.
+  this.proxyImage = new Image();
+  this.proxyImage.addEventListener( 'load', this );
+  this.proxyImage.addEventListener( 'error', this );
+  // bind to image as well for Firefox. #191
+  this.img.addEventListener( 'load', this );
+  this.img.addEventListener( 'error', this );
+  this.proxyImage.src = this.img.src;
+};
+
+LoadingImage.prototype.getIsImageComplete = function() {
+  return this.img.complete && this.img.naturalWidth !== undefined;
+};
+
+LoadingImage.prototype.confirm = function( isLoaded, message ) {
+  this.isLoaded = isLoaded;
+  this.emitEvent( 'progress', [ this, this.img, message ] );
+};
+
+// ----- events ----- //
+
+// trigger specified handler for event type
+LoadingImage.prototype.handleEvent = function( event ) {
+  var method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+LoadingImage.prototype.onload = function() {
+  this.confirm( true, 'onload' );
+  this.unbindEvents();
+};
+
+LoadingImage.prototype.onerror = function() {
+  this.confirm( false, 'onerror' );
+  this.unbindEvents();
+};
+
+LoadingImage.prototype.unbindEvents = function() {
+  this.proxyImage.removeEventListener( 'load', this );
+  this.proxyImage.removeEventListener( 'error', this );
+  this.img.removeEventListener( 'load', this );
+  this.img.removeEventListener( 'error', this );
+};
+
+// -------------------------- Background -------------------------- //
+
+function Background( url, element ) {
+  this.url = url;
+  this.element = element;
+  this.img = new Image();
+}
+
+// inherit LoadingImage prototype
+Background.prototype = Object.create( LoadingImage.prototype );
+
+Background.prototype.check = function() {
+  this.img.addEventListener( 'load', this );
+  this.img.addEventListener( 'error', this );
+  this.img.src = this.url;
+  // check if image is already complete
+  var isComplete = this.getIsImageComplete();
+  if ( isComplete ) {
+    this.confirm( this.img.naturalWidth !== 0, 'naturalWidth' );
+    this.unbindEvents();
+  }
+};
+
+Background.prototype.unbindEvents = function() {
+  this.img.removeEventListener( 'load', this );
+  this.img.removeEventListener( 'error', this );
+};
+
+Background.prototype.confirm = function( isLoaded, message ) {
+  this.isLoaded = isLoaded;
+  this.emitEvent( 'progress', [ this, this.element, message ] );
+};
+
+// -------------------------- jQuery -------------------------- //
+
+ImagesLoaded.makeJQueryPlugin = function( jQuery ) {
+  jQuery = jQuery || window.jQuery;
+  if ( !jQuery ) {
+    return;
+  }
+  // set local variable
+  $ = jQuery;
+  // $().imagesLoaded()
+  $.fn.imagesLoaded = function( options, callback ) {
+    var instance = new ImagesLoaded( this, options, callback );
+    return instance.jqDeferred.promise( $(this) );
+  };
+};
+// try making plugin
+ImagesLoaded.makeJQueryPlugin();
+
+// --------------------------  -------------------------- //
+
+return ImagesLoaded;
+
+});
+
+},{"ev-emitter":38}],70:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6042,7 +10000,7 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 module.exports = invariant;
 
 }).call(this,require('_process'))
-},{"_process":53}],51:[function(require,module,exports){
+},{"_process":80}],71:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -15858,7 +19816,4362 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],52:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
+/**
+ * lodash (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/** Used as references for various `Number` constants. */
+var MAX_SAFE_INTEGER = 9007199254740991;
+
+/** `Object#toString` result references. */
+var argsTag = '[object Arguments]',
+    funcTag = '[object Function]',
+    genTag = '[object GeneratorFunction]';
+
+/** Used to detect unsigned integer values. */
+var reIsUint = /^(?:0|[1-9]\d*)$/;
+
+/**
+ * A faster alternative to `Function#apply`, this function invokes `func`
+ * with the `this` binding of `thisArg` and the arguments of `args`.
+ *
+ * @private
+ * @param {Function} func The function to invoke.
+ * @param {*} thisArg The `this` binding of `func`.
+ * @param {Array} args The arguments to invoke `func` with.
+ * @returns {*} Returns the result of `func`.
+ */
+function apply(func, thisArg, args) {
+  switch (args.length) {
+    case 0: return func.call(thisArg);
+    case 1: return func.call(thisArg, args[0]);
+    case 2: return func.call(thisArg, args[0], args[1]);
+    case 3: return func.call(thisArg, args[0], args[1], args[2]);
+  }
+  return func.apply(thisArg, args);
+}
+
+/**
+ * The base implementation of `_.times` without support for iteratee shorthands
+ * or max array length checks.
+ *
+ * @private
+ * @param {number} n The number of times to invoke `iteratee`.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the array of results.
+ */
+function baseTimes(n, iteratee) {
+  var index = -1,
+      result = Array(n);
+
+  while (++index < n) {
+    result[index] = iteratee(index);
+  }
+  return result;
+}
+
+/**
+ * Creates a unary function that invokes `func` with its argument transformed.
+ *
+ * @private
+ * @param {Function} func The function to wrap.
+ * @param {Function} transform The argument transform.
+ * @returns {Function} Returns the new function.
+ */
+function overArg(func, transform) {
+  return function(arg) {
+    return func(transform(arg));
+  };
+}
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/** Built-in value references. */
+var propertyIsEnumerable = objectProto.propertyIsEnumerable;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeKeys = overArg(Object.keys, Object),
+    nativeMax = Math.max;
+
+/** Detect if properties shadowing those on `Object.prototype` are non-enumerable. */
+var nonEnumShadows = !propertyIsEnumerable.call({ 'valueOf': 1 }, 'valueOf');
+
+/**
+ * Creates an array of the enumerable property names of the array-like `value`.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @param {boolean} inherited Specify returning inherited property names.
+ * @returns {Array} Returns the array of property names.
+ */
+function arrayLikeKeys(value, inherited) {
+  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+  // Safari 9 makes `arguments.length` enumerable in strict mode.
+  var result = (isArray(value) || isArguments(value))
+    ? baseTimes(value.length, String)
+    : [];
+
+  var length = result.length,
+      skipIndexes = !!length;
+
+  for (var key in value) {
+    if ((inherited || hasOwnProperty.call(value, key)) &&
+        !(skipIndexes && (key == 'length' || isIndex(key, length)))) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/**
+ * Assigns `value` to `key` of `object` if the existing value is not equivalent
+ * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+ * for equality comparisons.
+ *
+ * @private
+ * @param {Object} object The object to modify.
+ * @param {string} key The key of the property to assign.
+ * @param {*} value The value to assign.
+ */
+function assignValue(object, key, value) {
+  var objValue = object[key];
+  if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) ||
+      (value === undefined && !(key in object))) {
+    object[key] = value;
+  }
+}
+
+/**
+ * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ */
+function baseKeys(object) {
+  if (!isPrototype(object)) {
+    return nativeKeys(object);
+  }
+  var result = [];
+  for (var key in Object(object)) {
+    if (hasOwnProperty.call(object, key) && key != 'constructor') {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.rest` which doesn't validate or coerce arguments.
+ *
+ * @private
+ * @param {Function} func The function to apply a rest parameter to.
+ * @param {number} [start=func.length-1] The start position of the rest parameter.
+ * @returns {Function} Returns the new function.
+ */
+function baseRest(func, start) {
+  start = nativeMax(start === undefined ? (func.length - 1) : start, 0);
+  return function() {
+    var args = arguments,
+        index = -1,
+        length = nativeMax(args.length - start, 0),
+        array = Array(length);
+
+    while (++index < length) {
+      array[index] = args[start + index];
+    }
+    index = -1;
+    var otherArgs = Array(start + 1);
+    while (++index < start) {
+      otherArgs[index] = args[index];
+    }
+    otherArgs[start] = array;
+    return apply(func, this, otherArgs);
+  };
+}
+
+/**
+ * Copies properties of `source` to `object`.
+ *
+ * @private
+ * @param {Object} source The object to copy properties from.
+ * @param {Array} props The property identifiers to copy.
+ * @param {Object} [object={}] The object to copy properties to.
+ * @param {Function} [customizer] The function to customize copied values.
+ * @returns {Object} Returns `object`.
+ */
+function copyObject(source, props, object, customizer) {
+  object || (object = {});
+
+  var index = -1,
+      length = props.length;
+
+  while (++index < length) {
+    var key = props[index];
+
+    var newValue = customizer
+      ? customizer(object[key], source[key], key, object, source)
+      : undefined;
+
+    assignValue(object, key, newValue === undefined ? source[key] : newValue);
+  }
+  return object;
+}
+
+/**
+ * Creates a function like `_.assign`.
+ *
+ * @private
+ * @param {Function} assigner The function to assign values.
+ * @returns {Function} Returns the new assigner function.
+ */
+function createAssigner(assigner) {
+  return baseRest(function(object, sources) {
+    var index = -1,
+        length = sources.length,
+        customizer = length > 1 ? sources[length - 1] : undefined,
+        guard = length > 2 ? sources[2] : undefined;
+
+    customizer = (assigner.length > 3 && typeof customizer == 'function')
+      ? (length--, customizer)
+      : undefined;
+
+    if (guard && isIterateeCall(sources[0], sources[1], guard)) {
+      customizer = length < 3 ? undefined : customizer;
+      length = 1;
+    }
+    object = Object(object);
+    while (++index < length) {
+      var source = sources[index];
+      if (source) {
+        assigner(object, source, index, customizer);
+      }
+    }
+    return object;
+  });
+}
+
+/**
+ * Checks if `value` is a valid array-like index.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+ * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
+ */
+function isIndex(value, length) {
+  length = length == null ? MAX_SAFE_INTEGER : length;
+  return !!length &&
+    (typeof value == 'number' || reIsUint.test(value)) &&
+    (value > -1 && value % 1 == 0 && value < length);
+}
+
+/**
+ * Checks if the given arguments are from an iteratee call.
+ *
+ * @private
+ * @param {*} value The potential iteratee value argument.
+ * @param {*} index The potential iteratee index or key argument.
+ * @param {*} object The potential iteratee object argument.
+ * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
+ *  else `false`.
+ */
+function isIterateeCall(value, index, object) {
+  if (!isObject(object)) {
+    return false;
+  }
+  var type = typeof index;
+  if (type == 'number'
+        ? (isArrayLike(object) && isIndex(index, object.length))
+        : (type == 'string' && index in object)
+      ) {
+    return eq(object[index], value);
+  }
+  return false;
+}
+
+/**
+ * Checks if `value` is likely a prototype object.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
+ */
+function isPrototype(value) {
+  var Ctor = value && value.constructor,
+      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto;
+
+  return value === proto;
+}
+
+/**
+ * Performs a
+ * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+ * comparison between two values to determine if they are equivalent.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to compare.
+ * @param {*} other The other value to compare.
+ * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+ * @example
+ *
+ * var object = { 'a': 1 };
+ * var other = { 'a': 1 };
+ *
+ * _.eq(object, object);
+ * // => true
+ *
+ * _.eq(object, other);
+ * // => false
+ *
+ * _.eq('a', 'a');
+ * // => true
+ *
+ * _.eq('a', Object('a'));
+ * // => false
+ *
+ * _.eq(NaN, NaN);
+ * // => true
+ */
+function eq(value, other) {
+  return value === other || (value !== value && other !== other);
+}
+
+/**
+ * Checks if `value` is likely an `arguments` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArguments(function() { return arguments; }());
+ * // => true
+ *
+ * _.isArguments([1, 2, 3]);
+ * // => false
+ */
+function isArguments(value) {
+  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+  return isArrayLikeObject(value) && hasOwnProperty.call(value, 'callee') &&
+    (!propertyIsEnumerable.call(value, 'callee') || objectToString.call(value) == argsTag);
+}
+
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+var isArray = Array.isArray;
+
+/**
+ * Checks if `value` is array-like. A value is considered array-like if it's
+ * not a function and has a `value.length` that's an integer greater than or
+ * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+ * @example
+ *
+ * _.isArrayLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLike(document.body.children);
+ * // => true
+ *
+ * _.isArrayLike('abc');
+ * // => true
+ *
+ * _.isArrayLike(_.noop);
+ * // => false
+ */
+function isArrayLike(value) {
+  return value != null && isLength(value.length) && !isFunction(value);
+}
+
+/**
+ * This method is like `_.isArrayLike` except that it also checks if `value`
+ * is an object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array-like object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArrayLikeObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLikeObject(document.body.children);
+ * // => true
+ *
+ * _.isArrayLikeObject('abc');
+ * // => false
+ *
+ * _.isArrayLikeObject(_.noop);
+ * // => false
+ */
+function isArrayLikeObject(value) {
+  return isObjectLike(value) && isArrayLike(value);
+}
+
+/**
+ * Checks if `value` is classified as a `Function` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a function, else `false`.
+ * @example
+ *
+ * _.isFunction(_);
+ * // => true
+ *
+ * _.isFunction(/abc/);
+ * // => false
+ */
+function isFunction(value) {
+  // The use of `Object#toString` avoids issues with the `typeof` operator
+  // in Safari 8-9 which returns 'object' for typed array and other constructors.
+  var tag = isObject(value) ? objectToString.call(value) : '';
+  return tag == funcTag || tag == genTag;
+}
+
+/**
+ * Checks if `value` is a valid array-like length.
+ *
+ * **Note:** This method is loosely based on
+ * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+ * @example
+ *
+ * _.isLength(3);
+ * // => true
+ *
+ * _.isLength(Number.MIN_VALUE);
+ * // => false
+ *
+ * _.isLength(Infinity);
+ * // => false
+ *
+ * _.isLength('3');
+ * // => false
+ */
+function isLength(value) {
+  return typeof value == 'number' &&
+    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+}
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return !!value && (type == 'object' || type == 'function');
+}
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+/**
+ * Assigns own enumerable string keyed properties of source objects to the
+ * destination object. Source objects are applied from left to right.
+ * Subsequent sources overwrite property assignments of previous sources.
+ *
+ * **Note:** This method mutates `object` and is loosely based on
+ * [`Object.assign`](https://mdn.io/Object/assign).
+ *
+ * @static
+ * @memberOf _
+ * @since 0.10.0
+ * @category Object
+ * @param {Object} object The destination object.
+ * @param {...Object} [sources] The source objects.
+ * @returns {Object} Returns `object`.
+ * @see _.assignIn
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ * }
+ *
+ * function Bar() {
+ *   this.c = 3;
+ * }
+ *
+ * Foo.prototype.b = 2;
+ * Bar.prototype.d = 4;
+ *
+ * _.assign({ 'a': 0 }, new Foo, new Bar);
+ * // => { 'a': 1, 'c': 3 }
+ */
+var assign = createAssigner(function(object, source) {
+  if (nonEnumShadows || isPrototype(source) || isArrayLike(source)) {
+    copyObject(source, keys(source), object);
+    return;
+  }
+  for (var key in source) {
+    if (hasOwnProperty.call(source, key)) {
+      assignValue(object, key, source[key]);
+    }
+  }
+});
+
+/**
+ * Creates an array of the own enumerable property names of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects. See the
+ * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+ * for more details.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.keys(new Foo);
+ * // => ['a', 'b'] (iteration order is not guaranteed)
+ *
+ * _.keys('hi');
+ * // => ['0', '1']
+ */
+function keys(object) {
+  return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+}
+
+module.exports = assign;
+
+},{}],73:[function(require,module,exports){
+(function (global){
+/**
+ * lodash (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/** Used as references for various `Number` constants. */
+var NAN = 0 / 0;
+
+/** `Object#toString` result references. */
+var symbolTag = '[object Symbol]';
+
+/** Used to match leading and trailing whitespace. */
+var reTrim = /^\s+|\s+$/g;
+
+/** Used to detect bad signed hexadecimal string values. */
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+
+/** Used to detect binary string values. */
+var reIsBinary = /^0b[01]+$/i;
+
+/** Used to detect octal string values. */
+var reIsOctal = /^0o[0-7]+$/i;
+
+/** Built-in method references without a dependency on `root`. */
+var freeParseInt = parseInt;
+
+/** Detect free variable `global` from Node.js. */
+var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
+
+/** Detect free variable `self`. */
+var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+/** Used as a reference to the global object. */
+var root = freeGlobal || freeSelf || Function('return this')();
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max,
+    nativeMin = Math.min;
+
+/**
+ * Gets the timestamp of the number of milliseconds that have elapsed since
+ * the Unix epoch (1 January 1970 00:00:00 UTC).
+ *
+ * @static
+ * @memberOf _
+ * @since 2.4.0
+ * @category Date
+ * @returns {number} Returns the timestamp.
+ * @example
+ *
+ * _.defer(function(stamp) {
+ *   console.log(_.now() - stamp);
+ * }, _.now());
+ * // => Logs the number of milliseconds it took for the deferred invocation.
+ */
+var now = function() {
+  return root.Date.now();
+};
+
+/**
+ * Creates a debounced function that delays invoking `func` until after `wait`
+ * milliseconds have elapsed since the last time the debounced function was
+ * invoked. The debounced function comes with a `cancel` method to cancel
+ * delayed `func` invocations and a `flush` method to immediately invoke them.
+ * Provide `options` to indicate whether `func` should be invoked on the
+ * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
+ * with the last arguments provided to the debounced function. Subsequent
+ * calls to the debounced function return the result of the last `func`
+ * invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is
+ * invoked on the trailing edge of the timeout only if the debounced function
+ * is invoked more than once during the `wait` timeout.
+ *
+ * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+ * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+ *
+ * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+ * for details over the differences between `_.debounce` and `_.throttle`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to debounce.
+ * @param {number} [wait=0] The number of milliseconds to delay.
+ * @param {Object} [options={}] The options object.
+ * @param {boolean} [options.leading=false]
+ *  Specify invoking on the leading edge of the timeout.
+ * @param {number} [options.maxWait]
+ *  The maximum time `func` is allowed to be delayed before it's invoked.
+ * @param {boolean} [options.trailing=true]
+ *  Specify invoking on the trailing edge of the timeout.
+ * @returns {Function} Returns the new debounced function.
+ * @example
+ *
+ * // Avoid costly calculations while the window size is in flux.
+ * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+ *
+ * // Invoke `sendMail` when clicked, debouncing subsequent calls.
+ * jQuery(element).on('click', _.debounce(sendMail, 300, {
+ *   'leading': true,
+ *   'trailing': false
+ * }));
+ *
+ * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
+ * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
+ * var source = new EventSource('/stream');
+ * jQuery(source).on('message', debounced);
+ *
+ * // Cancel the trailing debounced invocation.
+ * jQuery(window).on('popstate', debounced.cancel);
+ */
+function debounce(func, wait, options) {
+  var lastArgs,
+      lastThis,
+      maxWait,
+      result,
+      timerId,
+      lastCallTime,
+      lastInvokeTime = 0,
+      leading = false,
+      maxing = false,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  wait = toNumber(wait) || 0;
+  if (isObject(options)) {
+    leading = !!options.leading;
+    maxing = 'maxWait' in options;
+    maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+
+  function invokeFunc(time) {
+    var args = lastArgs,
+        thisArg = lastThis;
+
+    lastArgs = lastThis = undefined;
+    lastInvokeTime = time;
+    result = func.apply(thisArg, args);
+    return result;
+  }
+
+  function leadingEdge(time) {
+    // Reset any `maxWait` timer.
+    lastInvokeTime = time;
+    // Start the timer for the trailing edge.
+    timerId = setTimeout(timerExpired, wait);
+    // Invoke the leading edge.
+    return leading ? invokeFunc(time) : result;
+  }
+
+  function remainingWait(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime,
+        result = wait - timeSinceLastCall;
+
+    return maxing ? nativeMin(result, maxWait - timeSinceLastInvoke) : result;
+  }
+
+  function shouldInvoke(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime;
+
+    // Either this is the first call, activity has stopped and we're at the
+    // trailing edge, the system time has gone backwards and we're treating
+    // it as the trailing edge, or we've hit the `maxWait` limit.
+    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
+      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
+  }
+
+  function timerExpired() {
+    var time = now();
+    if (shouldInvoke(time)) {
+      return trailingEdge(time);
+    }
+    // Restart the timer.
+    timerId = setTimeout(timerExpired, remainingWait(time));
+  }
+
+  function trailingEdge(time) {
+    timerId = undefined;
+
+    // Only invoke if we have `lastArgs` which means `func` has been
+    // debounced at least once.
+    if (trailing && lastArgs) {
+      return invokeFunc(time);
+    }
+    lastArgs = lastThis = undefined;
+    return result;
+  }
+
+  function cancel() {
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+    }
+    lastInvokeTime = 0;
+    lastArgs = lastCallTime = lastThis = timerId = undefined;
+  }
+
+  function flush() {
+    return timerId === undefined ? result : trailingEdge(now());
+  }
+
+  function debounced() {
+    var time = now(),
+        isInvoking = shouldInvoke(time);
+
+    lastArgs = arguments;
+    lastThis = this;
+    lastCallTime = time;
+
+    if (isInvoking) {
+      if (timerId === undefined) {
+        return leadingEdge(lastCallTime);
+      }
+      if (maxing) {
+        // Handle invocations in a tight loop.
+        timerId = setTimeout(timerExpired, wait);
+        return invokeFunc(lastCallTime);
+      }
+    }
+    if (timerId === undefined) {
+      timerId = setTimeout(timerExpired, wait);
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  debounced.flush = flush;
+  return debounced;
+}
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return !!value && (type == 'object' || type == 'function');
+}
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && objectToString.call(value) == symbolTag);
+}
+
+/**
+ * Converts `value` to a number.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to process.
+ * @returns {number} Returns the number.
+ * @example
+ *
+ * _.toNumber(3.2);
+ * // => 3.2
+ *
+ * _.toNumber(Number.MIN_VALUE);
+ * // => 5e-324
+ *
+ * _.toNumber(Infinity);
+ * // => Infinity
+ *
+ * _.toNumber('3.2');
+ * // => 3.2
+ */
+function toNumber(value) {
+  if (typeof value == 'number') {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject(value)) {
+    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+    value = isObject(other) ? (other + '') : other;
+  }
+  if (typeof value != 'string') {
+    return value === 0 ? value : +value;
+  }
+  value = value.replace(reTrim, '');
+  var isBinary = reIsBinary.test(value);
+  return (isBinary || reIsOctal.test(value))
+    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
+    : (reIsBadHex.test(value) ? NAN : +value);
+}
+
+module.exports = debounce;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],74:[function(require,module,exports){
+(function (global){
+/**
+ * lodash (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/** Used as the size to enable large array optimizations. */
+var LARGE_ARRAY_SIZE = 200;
+
+/** Used to stand-in for `undefined` hash values. */
+var HASH_UNDEFINED = '__lodash_hash_undefined__';
+
+/** Used as references for various `Number` constants. */
+var INFINITY = 1 / 0,
+    MAX_SAFE_INTEGER = 9007199254740991;
+
+/** `Object#toString` result references. */
+var argsTag = '[object Arguments]',
+    funcTag = '[object Function]',
+    genTag = '[object GeneratorFunction]',
+    symbolTag = '[object Symbol]';
+
+/**
+ * Used to match `RegExp`
+ * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
+ */
+var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+
+/** Used to detect host constructors (Safari). */
+var reIsHostCtor = /^\[object .+?Constructor\]$/;
+
+/** Used to detect unsigned integer values. */
+var reIsUint = /^(?:0|[1-9]\d*)$/;
+
+/** Detect free variable `global` from Node.js. */
+var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
+
+/** Detect free variable `self`. */
+var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+/** Used as a reference to the global object. */
+var root = freeGlobal || freeSelf || Function('return this')();
+
+/**
+ * A faster alternative to `Function#apply`, this function invokes `func`
+ * with the `this` binding of `thisArg` and the arguments of `args`.
+ *
+ * @private
+ * @param {Function} func The function to invoke.
+ * @param {*} thisArg The `this` binding of `func`.
+ * @param {Array} args The arguments to invoke `func` with.
+ * @returns {*} Returns the result of `func`.
+ */
+function apply(func, thisArg, args) {
+  switch (args.length) {
+    case 0: return func.call(thisArg);
+    case 1: return func.call(thisArg, args[0]);
+    case 2: return func.call(thisArg, args[0], args[1]);
+    case 3: return func.call(thisArg, args[0], args[1], args[2]);
+  }
+  return func.apply(thisArg, args);
+}
+
+/**
+ * A specialized version of `_.includes` for arrays without support for
+ * specifying an index to search from.
+ *
+ * @private
+ * @param {Array} [array] The array to inspect.
+ * @param {*} target The value to search for.
+ * @returns {boolean} Returns `true` if `target` is found, else `false`.
+ */
+function arrayIncludes(array, value) {
+  var length = array ? array.length : 0;
+  return !!length && baseIndexOf(array, value, 0) > -1;
+}
+
+/**
+ * This function is like `arrayIncludes` except that it accepts a comparator.
+ *
+ * @private
+ * @param {Array} [array] The array to inspect.
+ * @param {*} target The value to search for.
+ * @param {Function} comparator The comparator invoked per element.
+ * @returns {boolean} Returns `true` if `target` is found, else `false`.
+ */
+function arrayIncludesWith(array, value, comparator) {
+  var index = -1,
+      length = array ? array.length : 0;
+
+  while (++index < length) {
+    if (comparator(value, array[index])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * A specialized version of `_.map` for arrays without support for iteratee
+ * shorthands.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the new mapped array.
+ */
+function arrayMap(array, iteratee) {
+  var index = -1,
+      length = array ? array.length : 0,
+      result = Array(length);
+
+  while (++index < length) {
+    result[index] = iteratee(array[index], index, array);
+  }
+  return result;
+}
+
+/**
+ * Appends the elements of `values` to `array`.
+ *
+ * @private
+ * @param {Array} array The array to modify.
+ * @param {Array} values The values to append.
+ * @returns {Array} Returns `array`.
+ */
+function arrayPush(array, values) {
+  var index = -1,
+      length = values.length,
+      offset = array.length;
+
+  while (++index < length) {
+    array[offset + index] = values[index];
+  }
+  return array;
+}
+
+/**
+ * The base implementation of `_.findIndex` and `_.findLastIndex` without
+ * support for iteratee shorthands.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {Function} predicate The function invoked per iteration.
+ * @param {number} fromIndex The index to search from.
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {number} Returns the index of the matched value, else `-1`.
+ */
+function baseFindIndex(array, predicate, fromIndex, fromRight) {
+  var length = array.length,
+      index = fromIndex + (fromRight ? 1 : -1);
+
+  while ((fromRight ? index-- : ++index < length)) {
+    if (predicate(array[index], index, array)) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+/**
+ * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {*} value The value to search for.
+ * @param {number} fromIndex The index to search from.
+ * @returns {number} Returns the index of the matched value, else `-1`.
+ */
+function baseIndexOf(array, value, fromIndex) {
+  if (value !== value) {
+    return baseFindIndex(array, baseIsNaN, fromIndex);
+  }
+  var index = fromIndex - 1,
+      length = array.length;
+
+  while (++index < length) {
+    if (array[index] === value) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+/**
+ * The base implementation of `_.isNaN` without support for number objects.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is `NaN`, else `false`.
+ */
+function baseIsNaN(value) {
+  return value !== value;
+}
+
+/**
+ * The base implementation of `_.times` without support for iteratee shorthands
+ * or max array length checks.
+ *
+ * @private
+ * @param {number} n The number of times to invoke `iteratee`.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the array of results.
+ */
+function baseTimes(n, iteratee) {
+  var index = -1,
+      result = Array(n);
+
+  while (++index < n) {
+    result[index] = iteratee(index);
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.unary` without support for storing metadata.
+ *
+ * @private
+ * @param {Function} func The function to cap arguments for.
+ * @returns {Function} Returns the new capped function.
+ */
+function baseUnary(func) {
+  return function(value) {
+    return func(value);
+  };
+}
+
+/**
+ * Checks if a cache value for `key` exists.
+ *
+ * @private
+ * @param {Object} cache The cache to query.
+ * @param {string} key The key of the entry to check.
+ * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+ */
+function cacheHas(cache, key) {
+  return cache.has(key);
+}
+
+/**
+ * Gets the value at `key` of `object`.
+ *
+ * @private
+ * @param {Object} [object] The object to query.
+ * @param {string} key The key of the property to get.
+ * @returns {*} Returns the property value.
+ */
+function getValue(object, key) {
+  return object == null ? undefined : object[key];
+}
+
+/**
+ * Checks if `value` is a host object in IE < 9.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a host object, else `false`.
+ */
+function isHostObject(value) {
+  // Many host objects are `Object` objects that can coerce to strings
+  // despite having improperly defined `toString` methods.
+  var result = false;
+  if (value != null && typeof value.toString != 'function') {
+    try {
+      result = !!(value + '');
+    } catch (e) {}
+  }
+  return result;
+}
+
+/**
+ * Creates a unary function that invokes `func` with its argument transformed.
+ *
+ * @private
+ * @param {Function} func The function to wrap.
+ * @param {Function} transform The argument transform.
+ * @returns {Function} Returns the new function.
+ */
+function overArg(func, transform) {
+  return function(arg) {
+    return func(transform(arg));
+  };
+}
+
+/** Used for built-in method references. */
+var arrayProto = Array.prototype,
+    funcProto = Function.prototype,
+    objectProto = Object.prototype;
+
+/** Used to detect overreaching core-js shims. */
+var coreJsData = root['__core-js_shared__'];
+
+/** Used to detect methods masquerading as native. */
+var maskSrcKey = (function() {
+  var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || '');
+  return uid ? ('Symbol(src)_1.' + uid) : '';
+}());
+
+/** Used to resolve the decompiled source of functions. */
+var funcToString = funcProto.toString;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/** Used to detect if a method is native. */
+var reIsNative = RegExp('^' +
+  funcToString.call(hasOwnProperty).replace(reRegExpChar, '\\$&')
+  .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
+);
+
+/** Built-in value references. */
+var Symbol = root.Symbol,
+    getPrototype = overArg(Object.getPrototypeOf, Object),
+    propertyIsEnumerable = objectProto.propertyIsEnumerable,
+    splice = arrayProto.splice,
+    spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : undefined;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeGetSymbols = Object.getOwnPropertySymbols,
+    nativeMax = Math.max;
+
+/* Built-in method references that are verified to be native. */
+var Map = getNative(root, 'Map'),
+    nativeCreate = getNative(Object, 'create');
+
+/**
+ * Creates a hash object.
+ *
+ * @private
+ * @constructor
+ * @param {Array} [entries] The key-value pairs to cache.
+ */
+function Hash(entries) {
+  var index = -1,
+      length = entries ? entries.length : 0;
+
+  this.clear();
+  while (++index < length) {
+    var entry = entries[index];
+    this.set(entry[0], entry[1]);
+  }
+}
+
+/**
+ * Removes all key-value entries from the hash.
+ *
+ * @private
+ * @name clear
+ * @memberOf Hash
+ */
+function hashClear() {
+  this.__data__ = nativeCreate ? nativeCreate(null) : {};
+}
+
+/**
+ * Removes `key` and its value from the hash.
+ *
+ * @private
+ * @name delete
+ * @memberOf Hash
+ * @param {Object} hash The hash to modify.
+ * @param {string} key The key of the value to remove.
+ * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+ */
+function hashDelete(key) {
+  return this.has(key) && delete this.__data__[key];
+}
+
+/**
+ * Gets the hash value for `key`.
+ *
+ * @private
+ * @name get
+ * @memberOf Hash
+ * @param {string} key The key of the value to get.
+ * @returns {*} Returns the entry value.
+ */
+function hashGet(key) {
+  var data = this.__data__;
+  if (nativeCreate) {
+    var result = data[key];
+    return result === HASH_UNDEFINED ? undefined : result;
+  }
+  return hasOwnProperty.call(data, key) ? data[key] : undefined;
+}
+
+/**
+ * Checks if a hash value for `key` exists.
+ *
+ * @private
+ * @name has
+ * @memberOf Hash
+ * @param {string} key The key of the entry to check.
+ * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+ */
+function hashHas(key) {
+  var data = this.__data__;
+  return nativeCreate ? data[key] !== undefined : hasOwnProperty.call(data, key);
+}
+
+/**
+ * Sets the hash `key` to `value`.
+ *
+ * @private
+ * @name set
+ * @memberOf Hash
+ * @param {string} key The key of the value to set.
+ * @param {*} value The value to set.
+ * @returns {Object} Returns the hash instance.
+ */
+function hashSet(key, value) {
+  var data = this.__data__;
+  data[key] = (nativeCreate && value === undefined) ? HASH_UNDEFINED : value;
+  return this;
+}
+
+// Add methods to `Hash`.
+Hash.prototype.clear = hashClear;
+Hash.prototype['delete'] = hashDelete;
+Hash.prototype.get = hashGet;
+Hash.prototype.has = hashHas;
+Hash.prototype.set = hashSet;
+
+/**
+ * Creates an list cache object.
+ *
+ * @private
+ * @constructor
+ * @param {Array} [entries] The key-value pairs to cache.
+ */
+function ListCache(entries) {
+  var index = -1,
+      length = entries ? entries.length : 0;
+
+  this.clear();
+  while (++index < length) {
+    var entry = entries[index];
+    this.set(entry[0], entry[1]);
+  }
+}
+
+/**
+ * Removes all key-value entries from the list cache.
+ *
+ * @private
+ * @name clear
+ * @memberOf ListCache
+ */
+function listCacheClear() {
+  this.__data__ = [];
+}
+
+/**
+ * Removes `key` and its value from the list cache.
+ *
+ * @private
+ * @name delete
+ * @memberOf ListCache
+ * @param {string} key The key of the value to remove.
+ * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+ */
+function listCacheDelete(key) {
+  var data = this.__data__,
+      index = assocIndexOf(data, key);
+
+  if (index < 0) {
+    return false;
+  }
+  var lastIndex = data.length - 1;
+  if (index == lastIndex) {
+    data.pop();
+  } else {
+    splice.call(data, index, 1);
+  }
+  return true;
+}
+
+/**
+ * Gets the list cache value for `key`.
+ *
+ * @private
+ * @name get
+ * @memberOf ListCache
+ * @param {string} key The key of the value to get.
+ * @returns {*} Returns the entry value.
+ */
+function listCacheGet(key) {
+  var data = this.__data__,
+      index = assocIndexOf(data, key);
+
+  return index < 0 ? undefined : data[index][1];
+}
+
+/**
+ * Checks if a list cache value for `key` exists.
+ *
+ * @private
+ * @name has
+ * @memberOf ListCache
+ * @param {string} key The key of the entry to check.
+ * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+ */
+function listCacheHas(key) {
+  return assocIndexOf(this.__data__, key) > -1;
+}
+
+/**
+ * Sets the list cache `key` to `value`.
+ *
+ * @private
+ * @name set
+ * @memberOf ListCache
+ * @param {string} key The key of the value to set.
+ * @param {*} value The value to set.
+ * @returns {Object} Returns the list cache instance.
+ */
+function listCacheSet(key, value) {
+  var data = this.__data__,
+      index = assocIndexOf(data, key);
+
+  if (index < 0) {
+    data.push([key, value]);
+  } else {
+    data[index][1] = value;
+  }
+  return this;
+}
+
+// Add methods to `ListCache`.
+ListCache.prototype.clear = listCacheClear;
+ListCache.prototype['delete'] = listCacheDelete;
+ListCache.prototype.get = listCacheGet;
+ListCache.prototype.has = listCacheHas;
+ListCache.prototype.set = listCacheSet;
+
+/**
+ * Creates a map cache object to store key-value pairs.
+ *
+ * @private
+ * @constructor
+ * @param {Array} [entries] The key-value pairs to cache.
+ */
+function MapCache(entries) {
+  var index = -1,
+      length = entries ? entries.length : 0;
+
+  this.clear();
+  while (++index < length) {
+    var entry = entries[index];
+    this.set(entry[0], entry[1]);
+  }
+}
+
+/**
+ * Removes all key-value entries from the map.
+ *
+ * @private
+ * @name clear
+ * @memberOf MapCache
+ */
+function mapCacheClear() {
+  this.__data__ = {
+    'hash': new Hash,
+    'map': new (Map || ListCache),
+    'string': new Hash
+  };
+}
+
+/**
+ * Removes `key` and its value from the map.
+ *
+ * @private
+ * @name delete
+ * @memberOf MapCache
+ * @param {string} key The key of the value to remove.
+ * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+ */
+function mapCacheDelete(key) {
+  return getMapData(this, key)['delete'](key);
+}
+
+/**
+ * Gets the map value for `key`.
+ *
+ * @private
+ * @name get
+ * @memberOf MapCache
+ * @param {string} key The key of the value to get.
+ * @returns {*} Returns the entry value.
+ */
+function mapCacheGet(key) {
+  return getMapData(this, key).get(key);
+}
+
+/**
+ * Checks if a map value for `key` exists.
+ *
+ * @private
+ * @name has
+ * @memberOf MapCache
+ * @param {string} key The key of the entry to check.
+ * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+ */
+function mapCacheHas(key) {
+  return getMapData(this, key).has(key);
+}
+
+/**
+ * Sets the map `key` to `value`.
+ *
+ * @private
+ * @name set
+ * @memberOf MapCache
+ * @param {string} key The key of the value to set.
+ * @param {*} value The value to set.
+ * @returns {Object} Returns the map cache instance.
+ */
+function mapCacheSet(key, value) {
+  getMapData(this, key).set(key, value);
+  return this;
+}
+
+// Add methods to `MapCache`.
+MapCache.prototype.clear = mapCacheClear;
+MapCache.prototype['delete'] = mapCacheDelete;
+MapCache.prototype.get = mapCacheGet;
+MapCache.prototype.has = mapCacheHas;
+MapCache.prototype.set = mapCacheSet;
+
+/**
+ *
+ * Creates an array cache object to store unique values.
+ *
+ * @private
+ * @constructor
+ * @param {Array} [values] The values to cache.
+ */
+function SetCache(values) {
+  var index = -1,
+      length = values ? values.length : 0;
+
+  this.__data__ = new MapCache;
+  while (++index < length) {
+    this.add(values[index]);
+  }
+}
+
+/**
+ * Adds `value` to the array cache.
+ *
+ * @private
+ * @name add
+ * @memberOf SetCache
+ * @alias push
+ * @param {*} value The value to cache.
+ * @returns {Object} Returns the cache instance.
+ */
+function setCacheAdd(value) {
+  this.__data__.set(value, HASH_UNDEFINED);
+  return this;
+}
+
+/**
+ * Checks if `value` is in the array cache.
+ *
+ * @private
+ * @name has
+ * @memberOf SetCache
+ * @param {*} value The value to search for.
+ * @returns {number} Returns `true` if `value` is found, else `false`.
+ */
+function setCacheHas(value) {
+  return this.__data__.has(value);
+}
+
+// Add methods to `SetCache`.
+SetCache.prototype.add = SetCache.prototype.push = setCacheAdd;
+SetCache.prototype.has = setCacheHas;
+
+/**
+ * Creates an array of the enumerable property names of the array-like `value`.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @param {boolean} inherited Specify returning inherited property names.
+ * @returns {Array} Returns the array of property names.
+ */
+function arrayLikeKeys(value, inherited) {
+  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+  // Safari 9 makes `arguments.length` enumerable in strict mode.
+  var result = (isArray(value) || isArguments(value))
+    ? baseTimes(value.length, String)
+    : [];
+
+  var length = result.length,
+      skipIndexes = !!length;
+
+  for (var key in value) {
+    if ((inherited || hasOwnProperty.call(value, key)) &&
+        !(skipIndexes && (key == 'length' || isIndex(key, length)))) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/**
+ * Gets the index at which the `key` is found in `array` of key-value pairs.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {*} key The key to search for.
+ * @returns {number} Returns the index of the matched value, else `-1`.
+ */
+function assocIndexOf(array, key) {
+  var length = array.length;
+  while (length--) {
+    if (eq(array[length][0], key)) {
+      return length;
+    }
+  }
+  return -1;
+}
+
+/**
+ * The base implementation of methods like `_.difference` without support
+ * for excluding multiple arrays or iteratee shorthands.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {Array} values The values to exclude.
+ * @param {Function} [iteratee] The iteratee invoked per element.
+ * @param {Function} [comparator] The comparator invoked per element.
+ * @returns {Array} Returns the new array of filtered values.
+ */
+function baseDifference(array, values, iteratee, comparator) {
+  var index = -1,
+      includes = arrayIncludes,
+      isCommon = true,
+      length = array.length,
+      result = [],
+      valuesLength = values.length;
+
+  if (!length) {
+    return result;
+  }
+  if (iteratee) {
+    values = arrayMap(values, baseUnary(iteratee));
+  }
+  if (comparator) {
+    includes = arrayIncludesWith;
+    isCommon = false;
+  }
+  else if (values.length >= LARGE_ARRAY_SIZE) {
+    includes = cacheHas;
+    isCommon = false;
+    values = new SetCache(values);
+  }
+  outer:
+  while (++index < length) {
+    var value = array[index],
+        computed = iteratee ? iteratee(value) : value;
+
+    value = (comparator || value !== 0) ? value : 0;
+    if (isCommon && computed === computed) {
+      var valuesIndex = valuesLength;
+      while (valuesIndex--) {
+        if (values[valuesIndex] === computed) {
+          continue outer;
+        }
+      }
+      result.push(value);
+    }
+    else if (!includes(values, computed, comparator)) {
+      result.push(value);
+    }
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.flatten` with support for restricting flattening.
+ *
+ * @private
+ * @param {Array} array The array to flatten.
+ * @param {number} depth The maximum recursion depth.
+ * @param {boolean} [predicate=isFlattenable] The function invoked per iteration.
+ * @param {boolean} [isStrict] Restrict to values that pass `predicate` checks.
+ * @param {Array} [result=[]] The initial result value.
+ * @returns {Array} Returns the new flattened array.
+ */
+function baseFlatten(array, depth, predicate, isStrict, result) {
+  var index = -1,
+      length = array.length;
+
+  predicate || (predicate = isFlattenable);
+  result || (result = []);
+
+  while (++index < length) {
+    var value = array[index];
+    if (depth > 0 && predicate(value)) {
+      if (depth > 1) {
+        // Recursively flatten arrays (susceptible to call stack limits).
+        baseFlatten(value, depth - 1, predicate, isStrict, result);
+      } else {
+        arrayPush(result, value);
+      }
+    } else if (!isStrict) {
+      result[result.length] = value;
+    }
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
+ * `keysFunc` and `symbolsFunc` to get the enumerable property names and
+ * symbols of `object`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {Function} keysFunc The function to get the keys of `object`.
+ * @param {Function} symbolsFunc The function to get the symbols of `object`.
+ * @returns {Array} Returns the array of property names and symbols.
+ */
+function baseGetAllKeys(object, keysFunc, symbolsFunc) {
+  var result = keysFunc(object);
+  return isArray(object) ? result : arrayPush(result, symbolsFunc(object));
+}
+
+/**
+ * The base implementation of `_.isNative` without bad shim checks.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a native function,
+ *  else `false`.
+ */
+function baseIsNative(value) {
+  if (!isObject(value) || isMasked(value)) {
+    return false;
+  }
+  var pattern = (isFunction(value) || isHostObject(value)) ? reIsNative : reIsHostCtor;
+  return pattern.test(toSource(value));
+}
+
+/**
+ * The base implementation of `_.keysIn` which doesn't treat sparse arrays as dense.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ */
+function baseKeysIn(object) {
+  if (!isObject(object)) {
+    return nativeKeysIn(object);
+  }
+  var isProto = isPrototype(object),
+      result = [];
+
+  for (var key in object) {
+    if (!(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.pick` without support for individual
+ * property identifiers.
+ *
+ * @private
+ * @param {Object} object The source object.
+ * @param {string[]} props The property identifiers to pick.
+ * @returns {Object} Returns the new object.
+ */
+function basePick(object, props) {
+  object = Object(object);
+  return basePickBy(object, props, function(value, key) {
+    return key in object;
+  });
+}
+
+/**
+ * The base implementation of  `_.pickBy` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Object} object The source object.
+ * @param {string[]} props The property identifiers to pick from.
+ * @param {Function} predicate The function invoked per property.
+ * @returns {Object} Returns the new object.
+ */
+function basePickBy(object, props, predicate) {
+  var index = -1,
+      length = props.length,
+      result = {};
+
+  while (++index < length) {
+    var key = props[index],
+        value = object[key];
+
+    if (predicate(value, key)) {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.rest` which doesn't validate or coerce arguments.
+ *
+ * @private
+ * @param {Function} func The function to apply a rest parameter to.
+ * @param {number} [start=func.length-1] The start position of the rest parameter.
+ * @returns {Function} Returns the new function.
+ */
+function baseRest(func, start) {
+  start = nativeMax(start === undefined ? (func.length - 1) : start, 0);
+  return function() {
+    var args = arguments,
+        index = -1,
+        length = nativeMax(args.length - start, 0),
+        array = Array(length);
+
+    while (++index < length) {
+      array[index] = args[start + index];
+    }
+    index = -1;
+    var otherArgs = Array(start + 1);
+    while (++index < start) {
+      otherArgs[index] = args[index];
+    }
+    otherArgs[start] = array;
+    return apply(func, this, otherArgs);
+  };
+}
+
+/**
+ * Creates an array of own and inherited enumerable property names and
+ * symbols of `object`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names and symbols.
+ */
+function getAllKeysIn(object) {
+  return baseGetAllKeys(object, keysIn, getSymbolsIn);
+}
+
+/**
+ * Gets the data for `map`.
+ *
+ * @private
+ * @param {Object} map The map to query.
+ * @param {string} key The reference key.
+ * @returns {*} Returns the map data.
+ */
+function getMapData(map, key) {
+  var data = map.__data__;
+  return isKeyable(key)
+    ? data[typeof key == 'string' ? 'string' : 'hash']
+    : data.map;
+}
+
+/**
+ * Gets the native function at `key` of `object`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {string} key The key of the method to get.
+ * @returns {*} Returns the function if it's native, else `undefined`.
+ */
+function getNative(object, key) {
+  var value = getValue(object, key);
+  return baseIsNative(value) ? value : undefined;
+}
+
+/**
+ * Creates an array of the own enumerable symbol properties of `object`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of symbols.
+ */
+var getSymbols = nativeGetSymbols ? overArg(nativeGetSymbols, Object) : stubArray;
+
+/**
+ * Creates an array of the own and inherited enumerable symbol properties
+ * of `object`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of symbols.
+ */
+var getSymbolsIn = !nativeGetSymbols ? stubArray : function(object) {
+  var result = [];
+  while (object) {
+    arrayPush(result, getSymbols(object));
+    object = getPrototype(object);
+  }
+  return result;
+};
+
+/**
+ * Checks if `value` is a flattenable `arguments` object or array.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is flattenable, else `false`.
+ */
+function isFlattenable(value) {
+  return isArray(value) || isArguments(value) ||
+    !!(spreadableSymbol && value && value[spreadableSymbol]);
+}
+
+/**
+ * Checks if `value` is a valid array-like index.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+ * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
+ */
+function isIndex(value, length) {
+  length = length == null ? MAX_SAFE_INTEGER : length;
+  return !!length &&
+    (typeof value == 'number' || reIsUint.test(value)) &&
+    (value > -1 && value % 1 == 0 && value < length);
+}
+
+/**
+ * Checks if `value` is suitable for use as unique object key.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is suitable, else `false`.
+ */
+function isKeyable(value) {
+  var type = typeof value;
+  return (type == 'string' || type == 'number' || type == 'symbol' || type == 'boolean')
+    ? (value !== '__proto__')
+    : (value === null);
+}
+
+/**
+ * Checks if `func` has its source masked.
+ *
+ * @private
+ * @param {Function} func The function to check.
+ * @returns {boolean} Returns `true` if `func` is masked, else `false`.
+ */
+function isMasked(func) {
+  return !!maskSrcKey && (maskSrcKey in func);
+}
+
+/**
+ * Checks if `value` is likely a prototype object.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
+ */
+function isPrototype(value) {
+  var Ctor = value && value.constructor,
+      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto;
+
+  return value === proto;
+}
+
+/**
+ * This function is like
+ * [`Object.keys`](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+ * except that it includes inherited enumerable properties.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ */
+function nativeKeysIn(object) {
+  var result = [];
+  if (object != null) {
+    for (var key in Object(object)) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/**
+ * Converts `value` to a string key if it's not a string or symbol.
+ *
+ * @private
+ * @param {*} value The value to inspect.
+ * @returns {string|symbol} Returns the key.
+ */
+function toKey(value) {
+  if (typeof value == 'string' || isSymbol(value)) {
+    return value;
+  }
+  var result = (value + '');
+  return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
+}
+
+/**
+ * Converts `func` to its source code.
+ *
+ * @private
+ * @param {Function} func The function to process.
+ * @returns {string} Returns the source code.
+ */
+function toSource(func) {
+  if (func != null) {
+    try {
+      return funcToString.call(func);
+    } catch (e) {}
+    try {
+      return (func + '');
+    } catch (e) {}
+  }
+  return '';
+}
+
+/**
+ * Performs a
+ * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+ * comparison between two values to determine if they are equivalent.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to compare.
+ * @param {*} other The other value to compare.
+ * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+ * @example
+ *
+ * var object = { 'a': 1 };
+ * var other = { 'a': 1 };
+ *
+ * _.eq(object, object);
+ * // => true
+ *
+ * _.eq(object, other);
+ * // => false
+ *
+ * _.eq('a', 'a');
+ * // => true
+ *
+ * _.eq('a', Object('a'));
+ * // => false
+ *
+ * _.eq(NaN, NaN);
+ * // => true
+ */
+function eq(value, other) {
+  return value === other || (value !== value && other !== other);
+}
+
+/**
+ * Checks if `value` is likely an `arguments` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArguments(function() { return arguments; }());
+ * // => true
+ *
+ * _.isArguments([1, 2, 3]);
+ * // => false
+ */
+function isArguments(value) {
+  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+  return isArrayLikeObject(value) && hasOwnProperty.call(value, 'callee') &&
+    (!propertyIsEnumerable.call(value, 'callee') || objectToString.call(value) == argsTag);
+}
+
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+var isArray = Array.isArray;
+
+/**
+ * Checks if `value` is array-like. A value is considered array-like if it's
+ * not a function and has a `value.length` that's an integer greater than or
+ * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+ * @example
+ *
+ * _.isArrayLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLike(document.body.children);
+ * // => true
+ *
+ * _.isArrayLike('abc');
+ * // => true
+ *
+ * _.isArrayLike(_.noop);
+ * // => false
+ */
+function isArrayLike(value) {
+  return value != null && isLength(value.length) && !isFunction(value);
+}
+
+/**
+ * This method is like `_.isArrayLike` except that it also checks if `value`
+ * is an object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array-like object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArrayLikeObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLikeObject(document.body.children);
+ * // => true
+ *
+ * _.isArrayLikeObject('abc');
+ * // => false
+ *
+ * _.isArrayLikeObject(_.noop);
+ * // => false
+ */
+function isArrayLikeObject(value) {
+  return isObjectLike(value) && isArrayLike(value);
+}
+
+/**
+ * Checks if `value` is classified as a `Function` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a function, else `false`.
+ * @example
+ *
+ * _.isFunction(_);
+ * // => true
+ *
+ * _.isFunction(/abc/);
+ * // => false
+ */
+function isFunction(value) {
+  // The use of `Object#toString` avoids issues with the `typeof` operator
+  // in Safari 8-9 which returns 'object' for typed array and other constructors.
+  var tag = isObject(value) ? objectToString.call(value) : '';
+  return tag == funcTag || tag == genTag;
+}
+
+/**
+ * Checks if `value` is a valid array-like length.
+ *
+ * **Note:** This method is loosely based on
+ * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+ * @example
+ *
+ * _.isLength(3);
+ * // => true
+ *
+ * _.isLength(Number.MIN_VALUE);
+ * // => false
+ *
+ * _.isLength(Infinity);
+ * // => false
+ *
+ * _.isLength('3');
+ * // => false
+ */
+function isLength(value) {
+  return typeof value == 'number' &&
+    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+}
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return !!value && (type == 'object' || type == 'function');
+}
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && objectToString.call(value) == symbolTag);
+}
+
+/**
+ * Creates an array of the own and inherited enumerable property names of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects.
+ *
+ * @static
+ * @memberOf _
+ * @since 3.0.0
+ * @category Object
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.keysIn(new Foo);
+ * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
+ */
+function keysIn(object) {
+  return isArrayLike(object) ? arrayLikeKeys(object, true) : baseKeysIn(object);
+}
+
+/**
+ * The opposite of `_.pick`; this method creates an object composed of the
+ * own and inherited enumerable string keyed properties of `object` that are
+ * not omitted.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The source object.
+ * @param {...(string|string[])} [props] The property identifiers to omit.
+ * @returns {Object} Returns the new object.
+ * @example
+ *
+ * var object = { 'a': 1, 'b': '2', 'c': 3 };
+ *
+ * _.omit(object, ['a', 'c']);
+ * // => { 'b': '2' }
+ */
+var omit = baseRest(function(object, props) {
+  if (object == null) {
+    return {};
+  }
+  props = arrayMap(baseFlatten(props, 1), toKey);
+  return basePick(object, baseDifference(getAllKeysIn(object), props));
+});
+
+/**
+ * This method returns a new empty array.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.13.0
+ * @category Util
+ * @returns {Array} Returns the new empty array.
+ * @example
+ *
+ * var arrays = _.times(2, _.stubArray);
+ *
+ * console.log(arrays);
+ * // => [[], []]
+ *
+ * console.log(arrays[0] === arrays[1]);
+ * // => false
+ */
+function stubArray() {
+  return [];
+}
+
+module.exports = omit;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],75:[function(require,module,exports){
+/**
+ * @name MarkerClustererPlus for Google Maps V3
+ * @version 2.1.2 [May 28, 2014]
+ * @author Gary Little
+ * @fileoverview
+ * The library creates and manages per-zoom-level clusters for large amounts of markers.
+ * <p>
+ * This is an enhanced V3 implementation of the
+ * <a href="http://gmaps-utility-library-dev.googlecode.com/svn/tags/markerclusterer/"
+ * >V2 MarkerClusterer</a> by Xiaoxi Wu. It is based on the
+ * <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclusterer/"
+ * >V3 MarkerClusterer</a> port by Luke Mahe. MarkerClustererPlus was created by Gary Little.
+ * <p>
+ * v2.0 release: MarkerClustererPlus v2.0 is backward compatible with MarkerClusterer v1.0. It
+ *  adds support for the <code>ignoreHidden</code>, <code>title</code>, <code>batchSizeIE</code>,
+ *  and <code>calculator</code> properties as well as support for four more events. It also allows
+ *  greater control over the styling of the text that appears on the cluster marker. The
+ *  documentation has been significantly improved and the overall code has been simplified and
+ *  polished. Very large numbers of markers can now be managed without causing Javascript timeout
+ *  errors on Internet Explorer. Note that the name of the <code>clusterclick</code> event has been
+ *  deprecated. The new name is <code>click</code>, so please change your application code now.
+ */
+
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+/**
+ * @name ClusterIconStyle
+ * @class This class represents the object for values in the <code>styles</code> array passed
+ *  to the {@link MarkerClusterer} constructor. The element in this array that is used to
+ *  style the cluster icon is determined by calling the <code>calculator</code> function.
+ *
+ * @property {string} url The URL of the cluster icon image file. Required.
+ * @property {number} height The display height (in pixels) of the cluster icon. Required.
+ * @property {number} width The display width (in pixels) of the cluster icon. Required.
+ * @property {Array} [anchorText] The position (in pixels) from the center of the cluster icon to
+ *  where the text label is to be centered and drawn. The format is <code>[yoffset, xoffset]</code>
+ *  where <code>yoffset</code> increases as you go down from center and <code>xoffset</code>
+ *  increases to the right of center. The default is <code>[0, 0]</code>.
+ * @property {Array} [anchorIcon] The anchor position (in pixels) of the cluster icon. This is the
+ *  spot on the cluster icon that is to be aligned with the cluster position. The format is
+ *  <code>[yoffset, xoffset]</code> where <code>yoffset</code> increases as you go down and
+ *  <code>xoffset</code> increases to the right of the top-left corner of the icon. The default
+ *  anchor position is the center of the cluster icon.
+ * @property {string} [textColor="black"] The color of the label text shown on the
+ *  cluster icon.
+ * @property {number} [textSize=11] The size (in pixels) of the label text shown on the
+ *  cluster icon.
+ * @property {string} [textDecoration="none"] The value of the CSS <code>text-decoration</code>
+ *  property for the label text shown on the cluster icon.
+ * @property {string} [fontWeight="bold"] The value of the CSS <code>font-weight</code>
+ *  property for the label text shown on the cluster icon.
+ * @property {string} [fontStyle="normal"] The value of the CSS <code>font-style</code>
+ *  property for the label text shown on the cluster icon.
+ * @property {string} [fontFamily="Arial,sans-serif"] The value of the CSS <code>font-family</code>
+ *  property for the label text shown on the cluster icon.
+ * @property {string} [backgroundPosition="0 0"] The position of the cluster icon image
+ *  within the image defined by <code>url</code>. The format is <code>"xpos ypos"</code>
+ *  (the same format as for the CSS <code>background-position</code> property). You must set
+ *  this property appropriately when the image defined by <code>url</code> represents a sprite
+ *  containing multiple images. Note that the position <i>must</i> be specified in px units.
+ */
+/**
+ * @name ClusterIconInfo
+ * @class This class is an object containing general information about a cluster icon. This is
+ *  the object that a <code>calculator</code> function returns.
+ *
+ * @property {string} text The text of the label to be shown on the cluster icon.
+ * @property {number} index The index plus 1 of the element in the <code>styles</code>
+ *  array to be used to style the cluster icon.
+ * @property {string} title The tooltip to display when the mouse moves over the cluster icon.
+ *  If this value is <code>undefined</code> or <code>""</code>, <code>title</code> is set to the
+ *  value of the <code>title</code> property passed to the MarkerClusterer.
+ */
+/**
+ * A cluster icon.
+ *
+ * @constructor
+ * @extends google.maps.OverlayView
+ * @param {Cluster} cluster The cluster with which the icon is to be associated.
+ * @param {Array} [styles] An array of {@link ClusterIconStyle} defining the cluster icons
+ *  to use for various cluster sizes.
+ * @private
+ */
+function ClusterIcon(cluster, styles) {
+  cluster.getMarkerClusterer().extend(ClusterIcon, google.maps.OverlayView);
+
+  this.cluster_ = cluster;
+  this.className_ = cluster.getMarkerClusterer().getClusterClass();
+  this.styles_ = styles;
+  this.center_ = null;
+  this.div_ = null;
+  this.sums_ = null;
+  this.visible_ = false;
+
+  this.setMap(cluster.getMap()); // Note: this causes onAdd to be called
+}
+
+
+/**
+ * Adds the icon to the DOM.
+ */
+ClusterIcon.prototype.onAdd = function () {
+  var cClusterIcon = this;
+  var cMouseDownInCluster;
+  var cDraggingMapByCluster;
+
+  this.div_ = document.createElement("div");
+  this.div_.className = this.className_;
+  if (this.visible_) {
+    this.show();
+  }
+
+  this.getPanes().overlayMouseTarget.appendChild(this.div_);
+
+  // Fix for Issue 157
+  this.boundsChangedListener_ = google.maps.event.addListener(this.getMap(), "bounds_changed", function () {
+    cDraggingMapByCluster = cMouseDownInCluster;
+  });
+
+  google.maps.event.addDomListener(this.div_, "mousedown", function () {
+    cMouseDownInCluster = true;
+    cDraggingMapByCluster = false;
+  });
+
+  google.maps.event.addDomListener(this.div_, "click", function (e) {
+    cMouseDownInCluster = false;
+    if (!cDraggingMapByCluster) {
+      var theBounds;
+      var mz;
+      var mc = cClusterIcon.cluster_.getMarkerClusterer();
+      /**
+       * This event is fired when a cluster marker is clicked.
+       * @name MarkerClusterer#click
+       * @param {Cluster} c The cluster that was clicked.
+       * @event
+       */
+      google.maps.event.trigger(mc, "click", cClusterIcon.cluster_);
+      google.maps.event.trigger(mc, "clusterclick", cClusterIcon.cluster_); // deprecated name
+
+      // The default click handler follows. Disable it by setting
+      // the zoomOnClick property to false.
+      if (mc.getZoomOnClick()) {
+        // Zoom into the cluster.
+        mz = mc.getMaxZoom();
+        theBounds = cClusterIcon.cluster_.getBounds();
+        mc.getMap().fitBounds(theBounds);
+        // There is a fix for Issue 170 here:
+        setTimeout(function () {
+          mc.getMap().fitBounds(theBounds);
+          // Don't zoom beyond the max zoom level
+          if (mz !== null && (mc.getMap().getZoom() > mz)) {
+            mc.getMap().setZoom(mz + 1);
+          }
+        }, 100);
+      }
+
+      // Prevent event propagation to the map:
+      e.cancelBubble = true;
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+    }
+  });
+
+  google.maps.event.addDomListener(this.div_, "mouseover", function () {
+    var mc = cClusterIcon.cluster_.getMarkerClusterer();
+    /**
+     * This event is fired when the mouse moves over a cluster marker.
+     * @name MarkerClusterer#mouseover
+     * @param {Cluster} c The cluster that the mouse moved over.
+     * @event
+     */
+    google.maps.event.trigger(mc, "mouseover", cClusterIcon.cluster_);
+  });
+
+  google.maps.event.addDomListener(this.div_, "mouseout", function () {
+    var mc = cClusterIcon.cluster_.getMarkerClusterer();
+    /**
+     * This event is fired when the mouse moves out of a cluster marker.
+     * @name MarkerClusterer#mouseout
+     * @param {Cluster} c The cluster that the mouse moved out of.
+     * @event
+     */
+    google.maps.event.trigger(mc, "mouseout", cClusterIcon.cluster_);
+  });
+};
+
+
+/**
+ * Removes the icon from the DOM.
+ */
+ClusterIcon.prototype.onRemove = function () {
+  if (this.div_ && this.div_.parentNode) {
+    this.hide();
+    google.maps.event.removeListener(this.boundsChangedListener_);
+    google.maps.event.clearInstanceListeners(this.div_);
+    this.div_.parentNode.removeChild(this.div_);
+    this.div_ = null;
+  }
+};
+
+
+/**
+ * Draws the icon.
+ */
+ClusterIcon.prototype.draw = function () {
+  if (this.visible_) {
+    var pos = this.getPosFromLatLng_(this.center_);
+    this.div_.style.top = pos.y + "px";
+    this.div_.style.left = pos.x + "px";
+  }
+};
+
+
+/**
+ * Hides the icon.
+ */
+ClusterIcon.prototype.hide = function () {
+  if (this.div_) {
+    this.div_.style.display = "none";
+  }
+  this.visible_ = false;
+};
+
+
+/**
+ * Positions and shows the icon.
+ */
+ClusterIcon.prototype.show = function () {
+  if (this.div_) {
+    var img = "";
+    // NOTE: values must be specified in px units
+    var bp = this.backgroundPosition_.split(" ");
+    var spriteH = parseInt(bp[0].replace(/^\s+|\s+$/g, ""), 10);
+    var spriteV = parseInt(bp[1].replace(/^\s+|\s+$/g, ""), 10);
+    var pos = this.getPosFromLatLng_(this.center_);
+    this.div_.style.cssText = this.createCss(pos);
+    img = "<img src='" + this.url_ + "' style='position: absolute; top: " + spriteV + "px; left: " + spriteH + "px; ";
+    if (!this.cluster_.getMarkerClusterer().enableRetinaIcons_) {
+      img += "clip: rect(" + (-1 * spriteV) + "px, " + ((-1 * spriteH) + this.width_) + "px, " +
+          ((-1 * spriteV) + this.height_) + "px, " + (-1 * spriteH) + "px);";
+    }
+    img += "'>";
+    this.div_.innerHTML = img + "<div style='" +
+        "position: absolute;" +
+        "top: " + this.anchorText_[0] + "px;" +
+        "left: " + this.anchorText_[1] + "px;" +
+        "color: " + this.textColor_ + ";" +
+        "font-size: " + this.textSize_ + "px;" +
+        "font-family: " + this.fontFamily_ + ";" +
+        "font-weight: " + this.fontWeight_ + ";" +
+        "font-style: " + this.fontStyle_ + ";" +
+        "text-decoration: " + this.textDecoration_ + ";" +
+        "text-align: center;" +
+        "width: " + this.width_ + "px;" +
+        "line-height:" + this.height_ + "px;" +
+        "'>" + this.sums_.text + "</div>";
+    if (typeof this.sums_.title === "undefined" || this.sums_.title === "") {
+      this.div_.title = this.cluster_.getMarkerClusterer().getTitle();
+    } else {
+      this.div_.title = this.sums_.title;
+    }
+    this.div_.style.display = "";
+  }
+  this.visible_ = true;
+};
+
+
+/**
+ * Sets the icon styles to the appropriate element in the styles array.
+ *
+ * @param {ClusterIconInfo} sums The icon label text and styles index.
+ */
+ClusterIcon.prototype.useStyle = function (sums) {
+  this.sums_ = sums;
+  var index = Math.max(0, sums.index - 1);
+  index = Math.min(this.styles_.length - 1, index);
+  var style = this.styles_[index];
+  this.url_ = style.url;
+  this.height_ = style.height;
+  this.width_ = style.width;
+  this.anchorText_ = style.anchorText || [0, 0];
+  this.anchorIcon_ = style.anchorIcon || [parseInt(this.height_ / 2, 10), parseInt(this.width_ / 2, 10)];
+  this.textColor_ = style.textColor || "black";
+  this.textSize_ = style.textSize || 11;
+  this.textDecoration_ = style.textDecoration || "none";
+  this.fontWeight_ = style.fontWeight || "bold";
+  this.fontStyle_ = style.fontStyle || "normal";
+  this.fontFamily_ = style.fontFamily || "Arial,sans-serif";
+  this.backgroundPosition_ = style.backgroundPosition || "0 0";
+};
+
+
+/**
+ * Sets the position at which to center the icon.
+ *
+ * @param {google.maps.LatLng} center The latlng to set as the center.
+ */
+ClusterIcon.prototype.setCenter = function (center) {
+  this.center_ = center;
+};
+
+
+/**
+ * Creates the cssText style parameter based on the position of the icon.
+ *
+ * @param {google.maps.Point} pos The position of the icon.
+ * @return {string} The CSS style text.
+ */
+ClusterIcon.prototype.createCss = function (pos) {
+  var style = [];
+  style.push("cursor: pointer;");
+  style.push("position: absolute; top: " + pos.y + "px; left: " + pos.x + "px;");
+  style.push("width: " + this.width_ + "px; height: " + this.height_ + "px;");
+  return style.join("");
+};
+
+
+/**
+ * Returns the position at which to place the DIV depending on the latlng.
+ *
+ * @param {google.maps.LatLng} latlng The position in latlng.
+ * @return {google.maps.Point} The position in pixels.
+ */
+ClusterIcon.prototype.getPosFromLatLng_ = function (latlng) {
+  var pos = this.getProjection().fromLatLngToDivPixel(latlng);
+  pos.x -= this.anchorIcon_[1];
+  pos.y -= this.anchorIcon_[0];
+  pos.x = parseInt(pos.x, 10);
+  pos.y = parseInt(pos.y, 10);
+  return pos;
+};
+
+
+/**
+ * Creates a single cluster that manages a group of proximate markers.
+ *  Used internally, do not call this constructor directly.
+ * @constructor
+ * @param {MarkerClusterer} mc The <code>MarkerClusterer</code> object with which this
+ *  cluster is associated.
+ */
+function Cluster(mc) {
+  this.markerClusterer_ = mc;
+  this.map_ = mc.getMap();
+  this.gridSize_ = mc.getGridSize();
+  this.minClusterSize_ = mc.getMinimumClusterSize();
+  this.averageCenter_ = mc.getAverageCenter();
+  this.markers_ = [];
+  this.center_ = null;
+  this.bounds_ = null;
+  this.clusterIcon_ = new ClusterIcon(this, mc.getStyles());
+}
+
+
+/**
+ * Returns the number of markers managed by the cluster. You can call this from
+ * a <code>click</code>, <code>mouseover</code>, or <code>mouseout</code> event handler
+ * for the <code>MarkerClusterer</code> object.
+ *
+ * @return {number} The number of markers in the cluster.
+ */
+Cluster.prototype.getSize = function () {
+  return this.markers_.length;
+};
+
+
+/**
+ * Returns the array of markers managed by the cluster. You can call this from
+ * a <code>click</code>, <code>mouseover</code>, or <code>mouseout</code> event handler
+ * for the <code>MarkerClusterer</code> object.
+ *
+ * @return {Array} The array of markers in the cluster.
+ */
+Cluster.prototype.getMarkers = function () {
+  return this.markers_;
+};
+
+
+/**
+ * Returns the center of the cluster. You can call this from
+ * a <code>click</code>, <code>mouseover</code>, or <code>mouseout</code> event handler
+ * for the <code>MarkerClusterer</code> object.
+ *
+ * @return {google.maps.LatLng} The center of the cluster.
+ */
+Cluster.prototype.getCenter = function () {
+  return this.center_;
+};
+
+
+/**
+ * Returns the map with which the cluster is associated.
+ *
+ * @return {google.maps.Map} The map.
+ * @ignore
+ */
+Cluster.prototype.getMap = function () {
+  return this.map_;
+};
+
+
+/**
+ * Returns the <code>MarkerClusterer</code> object with which the cluster is associated.
+ *
+ * @return {MarkerClusterer} The associated marker clusterer.
+ * @ignore
+ */
+Cluster.prototype.getMarkerClusterer = function () {
+  return this.markerClusterer_;
+};
+
+
+/**
+ * Returns the bounds of the cluster.
+ *
+ * @return {google.maps.LatLngBounds} the cluster bounds.
+ * @ignore
+ */
+Cluster.prototype.getBounds = function () {
+  var i;
+  var bounds = new google.maps.LatLngBounds(this.center_, this.center_);
+  var markers = this.getMarkers();
+  for (i = 0; i < markers.length; i++) {
+    bounds.extend(markers[i].getPosition());
+  }
+  return bounds;
+};
+
+
+/**
+ * Removes the cluster from the map.
+ *
+ * @ignore
+ */
+Cluster.prototype.remove = function () {
+  this.clusterIcon_.setMap(null);
+  this.markers_ = [];
+  delete this.markers_;
+};
+
+
+/**
+ * Adds a marker to the cluster.
+ *
+ * @param {google.maps.Marker} marker The marker to be added.
+ * @return {boolean} True if the marker was added.
+ * @ignore
+ */
+Cluster.prototype.addMarker = function (marker) {
+  var i;
+  var mCount;
+  var mz;
+
+  if (this.isMarkerAlreadyAdded_(marker)) {
+    return false;
+  }
+
+  if (!this.center_) {
+    this.center_ = marker.getPosition();
+    this.calculateBounds_();
+  } else {
+    if (this.averageCenter_) {
+      var l = this.markers_.length + 1;
+      var lat = (this.center_.lat() * (l - 1) + marker.getPosition().lat()) / l;
+      var lng = (this.center_.lng() * (l - 1) + marker.getPosition().lng()) / l;
+      this.center_ = new google.maps.LatLng(lat, lng);
+      this.calculateBounds_();
+    }
+  }
+
+  marker.isAdded = true;
+  this.markers_.push(marker);
+
+  mCount = this.markers_.length;
+  mz = this.markerClusterer_.getMaxZoom();
+  if (mz !== null && this.map_.getZoom() > mz) {
+    // Zoomed in past max zoom, so show the marker.
+    if (marker.getMap() !== this.map_) {
+      marker.setMap(this.map_);
+    }
+  } else if (mCount < this.minClusterSize_) {
+    // Min cluster size not reached so show the marker.
+    if (marker.getMap() !== this.map_) {
+      marker.setMap(this.map_);
+    }
+  } else if (mCount === this.minClusterSize_) {
+    // Hide the markers that were showing.
+    for (i = 0; i < mCount; i++) {
+      this.markers_[i].setMap(null);
+    }
+  } else {
+    marker.setMap(null);
+  }
+
+  this.updateIcon_();
+  return true;
+};
+
+
+/**
+ * Determines if a marker lies within the cluster's bounds.
+ *
+ * @param {google.maps.Marker} marker The marker to check.
+ * @return {boolean} True if the marker lies in the bounds.
+ * @ignore
+ */
+Cluster.prototype.isMarkerInClusterBounds = function (marker) {
+  return this.bounds_.contains(marker.getPosition());
+};
+
+
+/**
+ * Calculates the extended bounds of the cluster with the grid.
+ */
+Cluster.prototype.calculateBounds_ = function () {
+  var bounds = new google.maps.LatLngBounds(this.center_, this.center_);
+  this.bounds_ = this.markerClusterer_.getExtendedBounds(bounds);
+};
+
+
+/**
+ * Updates the cluster icon.
+ */
+Cluster.prototype.updateIcon_ = function () {
+  var mCount = this.markers_.length;
+  var mz = this.markerClusterer_.getMaxZoom();
+
+  if (mz !== null && this.map_.getZoom() > mz) {
+    this.clusterIcon_.hide();
+    return;
+  }
+
+  if (mCount < this.minClusterSize_) {
+    // Min cluster size not yet reached.
+    this.clusterIcon_.hide();
+    return;
+  }
+
+  var numStyles = this.markerClusterer_.getStyles().length;
+  var sums = this.markerClusterer_.getCalculator()(this.markers_, numStyles);
+  this.clusterIcon_.setCenter(this.center_);
+  this.clusterIcon_.useStyle(sums);
+  this.clusterIcon_.show();
+};
+
+
+/**
+ * Determines if a marker has already been added to the cluster.
+ *
+ * @param {google.maps.Marker} marker The marker to check.
+ * @return {boolean} True if the marker has already been added.
+ */
+Cluster.prototype.isMarkerAlreadyAdded_ = function (marker) {
+  var i;
+  if (this.markers_.indexOf) {
+    return this.markers_.indexOf(marker) !== -1;
+  } else {
+    for (i = 0; i < this.markers_.length; i++) {
+      if (marker === this.markers_[i]) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+
+/**
+ * @name MarkerClustererOptions
+ * @class This class represents the optional parameter passed to
+ *  the {@link MarkerClusterer} constructor.
+ * @property {number} [gridSize=60] The grid size of a cluster in pixels. The grid is a square.
+ * @property {number} [maxZoom=null] The maximum zoom level at which clustering is enabled or
+ *  <code>null</code> if clustering is to be enabled at all zoom levels.
+ * @property {boolean} [zoomOnClick=true] Whether to zoom the map when a cluster marker is
+ *  clicked. You may want to set this to <code>false</code> if you have installed a handler
+ *  for the <code>click</code> event and it deals with zooming on its own.
+ * @property {boolean} [averageCenter=false] Whether the position of a cluster marker should be
+ *  the average position of all markers in the cluster. If set to <code>false</code>, the
+ *  cluster marker is positioned at the location of the first marker added to the cluster.
+ * @property {number} [minimumClusterSize=2] The minimum number of markers needed in a cluster
+ *  before the markers are hidden and a cluster marker appears.
+ * @property {boolean} [ignoreHidden=false] Whether to ignore hidden markers in clusters. You
+ *  may want to set this to <code>true</code> to ensure that hidden markers are not included
+ *  in the marker count that appears on a cluster marker (this count is the value of the
+ *  <code>text</code> property of the result returned by the default <code>calculator</code>).
+ *  If set to <code>true</code> and you change the visibility of a marker being clustered, be
+ *  sure to also call <code>MarkerClusterer.repaint()</code>.
+ * @property {string} [title=""] The tooltip to display when the mouse moves over a cluster
+ *  marker. (Alternatively, you can use a custom <code>calculator</code> function to specify a
+ *  different tooltip for each cluster marker.)
+ * @property {function} [calculator=MarkerClusterer.CALCULATOR] The function used to determine
+ *  the text to be displayed on a cluster marker and the index indicating which style to use
+ *  for the cluster marker. The input parameters for the function are (1) the array of markers
+ *  represented by a cluster marker and (2) the number of cluster icon styles. It returns a
+ *  {@link ClusterIconInfo} object. The default <code>calculator</code> returns a
+ *  <code>text</code> property which is the number of markers in the cluster and an
+ *  <code>index</code> property which is one higher than the lowest integer such that
+ *  <code>10^i</code> exceeds the number of markers in the cluster, or the size of the styles
+ *  array, whichever is less. The <code>styles</code> array element used has an index of
+ *  <code>index</code> minus 1. For example, the default <code>calculator</code> returns a
+ *  <code>text</code> value of <code>"125"</code> and an <code>index</code> of <code>3</code>
+ *  for a cluster icon representing 125 markers so the element used in the <code>styles</code>
+ *  array is <code>2</code>. A <code>calculator</code> may also return a <code>title</code>
+ *  property that contains the text of the tooltip to be used for the cluster marker. If
+ *   <code>title</code> is not defined, the tooltip is set to the value of the <code>title</code>
+ *   property for the MarkerClusterer.
+ * @property {string} [clusterClass="cluster"] The name of the CSS class defining general styles
+ *  for the cluster markers. Use this class to define CSS styles that are not set up by the code
+ *  that processes the <code>styles</code> array.
+ * @property {Array} [styles] An array of {@link ClusterIconStyle} elements defining the styles
+ *  of the cluster markers to be used. The element to be used to style a given cluster marker
+ *  is determined by the function defined by the <code>calculator</code> property.
+ *  The default is an array of {@link ClusterIconStyle} elements whose properties are derived
+ *  from the values for <code>imagePath</code>, <code>imageExtension</code>, and
+ *  <code>imageSizes</code>.
+ * @property {boolean} [enableRetinaIcons=false] Whether to allow the use of cluster icons that
+ * have sizes that are some multiple (typically double) of their actual display size. Icons such
+ * as these look better when viewed on high-resolution monitors such as Apple's Retina displays.
+ * Note: if this property is <code>true</code>, sprites cannot be used as cluster icons.
+ * @property {number} [batchSize=MarkerClusterer.BATCH_SIZE] Set this property to the
+ *  number of markers to be processed in a single batch when using a browser other than
+ *  Internet Explorer (for Internet Explorer, use the batchSizeIE property instead).
+ * @property {number} [batchSizeIE=MarkerClusterer.BATCH_SIZE_IE] When Internet Explorer is
+ *  being used, markers are processed in several batches with a small delay inserted between
+ *  each batch in an attempt to avoid Javascript timeout errors. Set this property to the
+ *  number of markers to be processed in a single batch; select as high a number as you can
+ *  without causing a timeout error in the browser. This number might need to be as low as 100
+ *  if 15,000 markers are being managed, for example.
+ * @property {string} [imagePath=MarkerClusterer.IMAGE_PATH]
+ *  The full URL of the root name of the group of image files to use for cluster icons.
+ *  The complete file name is of the form <code>imagePath</code>n.<code>imageExtension</code>
+ *  where n is the image file number (1, 2, etc.).
+ * @property {string} [imageExtension=MarkerClusterer.IMAGE_EXTENSION]
+ *  The extension name for the cluster icon image files (e.g., <code>"png"</code> or
+ *  <code>"jpg"</code>).
+ * @property {Array} [imageSizes=MarkerClusterer.IMAGE_SIZES]
+ *  An array of numbers containing the widths of the group of
+ *  <code>imagePath</code>n.<code>imageExtension</code> image files.
+ *  (The images are assumed to be square.)
+ */
+/**
+ * Creates a MarkerClusterer object with the options specified in {@link MarkerClustererOptions}.
+ * @constructor
+ * @extends google.maps.OverlayView
+ * @param {google.maps.Map} map The Google map to attach to.
+ * @param {Array.<google.maps.Marker>} [opt_markers] The markers to be added to the cluster.
+ * @param {MarkerClustererOptions} [opt_options] The optional parameters.
+ */
+function MarkerClusterer(map, opt_markers, opt_options) {
+  // MarkerClusterer implements google.maps.OverlayView interface. We use the
+  // extend function to extend MarkerClusterer with google.maps.OverlayView
+  // because it might not always be available when the code is defined so we
+  // look for it at the last possible moment. If it doesn't exist now then
+  // there is no point going ahead :)
+  this.extend(MarkerClusterer, google.maps.OverlayView);
+
+  opt_markers = opt_markers || [];
+  opt_options = opt_options || {};
+
+  this.markers_ = [];
+  this.clusters_ = [];
+  this.listeners_ = [];
+  this.activeMap_ = null;
+  this.ready_ = false;
+
+  this.gridSize_ = opt_options.gridSize || 60;
+  this.minClusterSize_ = opt_options.minimumClusterSize || 2;
+  this.maxZoom_ = opt_options.maxZoom || null;
+  this.styles_ = opt_options.styles || [];
+  this.title_ = opt_options.title || "";
+  this.zoomOnClick_ = true;
+  if (opt_options.zoomOnClick !== undefined) {
+    this.zoomOnClick_ = opt_options.zoomOnClick;
+  }
+  this.averageCenter_ = false;
+  if (opt_options.averageCenter !== undefined) {
+    this.averageCenter_ = opt_options.averageCenter;
+  }
+  this.ignoreHidden_ = false;
+  if (opt_options.ignoreHidden !== undefined) {
+    this.ignoreHidden_ = opt_options.ignoreHidden;
+  }
+  this.enableRetinaIcons_ = false;
+  if (opt_options.enableRetinaIcons !== undefined) {
+    this.enableRetinaIcons_ = opt_options.enableRetinaIcons;
+  }
+  this.imagePath_ = opt_options.imagePath || MarkerClusterer.IMAGE_PATH;
+  this.imageExtension_ = opt_options.imageExtension || MarkerClusterer.IMAGE_EXTENSION;
+  this.imageSizes_ = opt_options.imageSizes || MarkerClusterer.IMAGE_SIZES;
+  this.calculator_ = opt_options.calculator || MarkerClusterer.CALCULATOR;
+  this.batchSize_ = opt_options.batchSize || MarkerClusterer.BATCH_SIZE;
+  this.batchSizeIE_ = opt_options.batchSizeIE || MarkerClusterer.BATCH_SIZE_IE;
+  this.clusterClass_ = opt_options.clusterClass || "cluster";
+
+  if (navigator.userAgent.toLowerCase().indexOf("msie") !== -1) {
+    // Try to avoid IE timeout when processing a huge number of markers:
+    this.batchSize_ = this.batchSizeIE_;
+  }
+
+  this.setupStyles_();
+
+  this.addMarkers(opt_markers, true);
+  this.setMap(map); // Note: this causes onAdd to be called
+}
+
+
+/**
+ * Implementation of the onAdd interface method.
+ * @ignore
+ */
+MarkerClusterer.prototype.onAdd = function () {
+  var cMarkerClusterer = this;
+
+  this.activeMap_ = this.getMap();
+  this.ready_ = true;
+
+  this.repaint();
+
+  // Add the map event listeners
+  this.listeners_ = [
+    google.maps.event.addListener(this.getMap(), "zoom_changed", function () {
+      cMarkerClusterer.resetViewport_(false);
+      // Workaround for this Google bug: when map is at level 0 and "-" of
+      // zoom slider is clicked, a "zoom_changed" event is fired even though
+      // the map doesn't zoom out any further. In this situation, no "idle"
+      // event is triggered so the cluster markers that have been removed
+      // do not get redrawn. Same goes for a zoom in at maxZoom.
+      if (this.getZoom() === (this.get("minZoom") || 0) || this.getZoom() === this.get("maxZoom")) {
+        google.maps.event.trigger(this, "idle");
+      }
+    }),
+    google.maps.event.addListener(this.getMap(), "idle", function () {
+      cMarkerClusterer.redraw_();
+    })
+  ];
+};
+
+
+/**
+ * Implementation of the onRemove interface method.
+ * Removes map event listeners and all cluster icons from the DOM.
+ * All managed markers are also put back on the map.
+ * @ignore
+ */
+MarkerClusterer.prototype.onRemove = function () {
+  var i;
+
+  // Put all the managed markers back on the map:
+  for (i = 0; i < this.markers_.length; i++) {
+    if (this.markers_[i].getMap() !== this.activeMap_) {
+      this.markers_[i].setMap(this.activeMap_);
+    }
+  }
+
+  // Remove all clusters:
+  for (i = 0; i < this.clusters_.length; i++) {
+    this.clusters_[i].remove();
+  }
+  this.clusters_ = [];
+
+  // Remove map event listeners:
+  for (i = 0; i < this.listeners_.length; i++) {
+    google.maps.event.removeListener(this.listeners_[i]);
+  }
+  this.listeners_ = [];
+
+  this.activeMap_ = null;
+  this.ready_ = false;
+};
+
+
+/**
+ * Implementation of the draw interface method.
+ * @ignore
+ */
+MarkerClusterer.prototype.draw = function () {};
+
+
+/**
+ * Sets up the styles object.
+ */
+MarkerClusterer.prototype.setupStyles_ = function () {
+  var i, size;
+  if (this.styles_.length > 0) {
+    return;
+  }
+
+  for (i = 0; i < this.imageSizes_.length; i++) {
+    size = this.imageSizes_[i];
+    this.styles_.push({
+      url: this.imagePath_ + (i + 1) + "." + this.imageExtension_,
+      height: size,
+      width: size
+    });
+  }
+};
+
+
+/**
+ *  Fits the map to the bounds of the markers managed by the clusterer.
+ */
+MarkerClusterer.prototype.fitMapToMarkers = function () {
+  var i;
+  var markers = this.getMarkers();
+  var bounds = new google.maps.LatLngBounds();
+  for (i = 0; i < markers.length; i++) {
+    bounds.extend(markers[i].getPosition());
+  }
+
+  this.getMap().fitBounds(bounds);
+};
+
+
+/**
+ * Returns the value of the <code>gridSize</code> property.
+ *
+ * @return {number} The grid size.
+ */
+MarkerClusterer.prototype.getGridSize = function () {
+  return this.gridSize_;
+};
+
+
+/**
+ * Sets the value of the <code>gridSize</code> property.
+ *
+ * @param {number} gridSize The grid size.
+ */
+MarkerClusterer.prototype.setGridSize = function (gridSize) {
+  this.gridSize_ = gridSize;
+};
+
+
+/**
+ * Returns the value of the <code>minimumClusterSize</code> property.
+ *
+ * @return {number} The minimum cluster size.
+ */
+MarkerClusterer.prototype.getMinimumClusterSize = function () {
+  return this.minClusterSize_;
+};
+
+/**
+ * Sets the value of the <code>minimumClusterSize</code> property.
+ *
+ * @param {number} minimumClusterSize The minimum cluster size.
+ */
+MarkerClusterer.prototype.setMinimumClusterSize = function (minimumClusterSize) {
+  this.minClusterSize_ = minimumClusterSize;
+};
+
+
+/**
+ *  Returns the value of the <code>maxZoom</code> property.
+ *
+ *  @return {number} The maximum zoom level.
+ */
+MarkerClusterer.prototype.getMaxZoom = function () {
+  return this.maxZoom_;
+};
+
+
+/**
+ *  Sets the value of the <code>maxZoom</code> property.
+ *
+ *  @param {number} maxZoom The maximum zoom level.
+ */
+MarkerClusterer.prototype.setMaxZoom = function (maxZoom) {
+  this.maxZoom_ = maxZoom;
+};
+
+
+/**
+ *  Returns the value of the <code>styles</code> property.
+ *
+ *  @return {Array} The array of styles defining the cluster markers to be used.
+ */
+MarkerClusterer.prototype.getStyles = function () {
+  return this.styles_;
+};
+
+
+/**
+ *  Sets the value of the <code>styles</code> property.
+ *
+ *  @param {Array.<ClusterIconStyle>} styles The array of styles to use.
+ */
+MarkerClusterer.prototype.setStyles = function (styles) {
+  this.styles_ = styles;
+};
+
+
+/**
+ * Returns the value of the <code>title</code> property.
+ *
+ * @return {string} The content of the title text.
+ */
+MarkerClusterer.prototype.getTitle = function () {
+  return this.title_;
+};
+
+
+/**
+ *  Sets the value of the <code>title</code> property.
+ *
+ *  @param {string} title The value of the title property.
+ */
+MarkerClusterer.prototype.setTitle = function (title) {
+  this.title_ = title;
+};
+
+
+/**
+ * Returns the value of the <code>zoomOnClick</code> property.
+ *
+ * @return {boolean} True if zoomOnClick property is set.
+ */
+MarkerClusterer.prototype.getZoomOnClick = function () {
+  return this.zoomOnClick_;
+};
+
+
+/**
+ *  Sets the value of the <code>zoomOnClick</code> property.
+ *
+ *  @param {boolean} zoomOnClick The value of the zoomOnClick property.
+ */
+MarkerClusterer.prototype.setZoomOnClick = function (zoomOnClick) {
+  this.zoomOnClick_ = zoomOnClick;
+};
+
+
+/**
+ * Returns the value of the <code>averageCenter</code> property.
+ *
+ * @return {boolean} True if averageCenter property is set.
+ */
+MarkerClusterer.prototype.getAverageCenter = function () {
+  return this.averageCenter_;
+};
+
+
+/**
+ *  Sets the value of the <code>averageCenter</code> property.
+ *
+ *  @param {boolean} averageCenter The value of the averageCenter property.
+ */
+MarkerClusterer.prototype.setAverageCenter = function (averageCenter) {
+  this.averageCenter_ = averageCenter;
+};
+
+
+/**
+ * Returns the value of the <code>ignoreHidden</code> property.
+ *
+ * @return {boolean} True if ignoreHidden property is set.
+ */
+MarkerClusterer.prototype.getIgnoreHidden = function () {
+  return this.ignoreHidden_;
+};
+
+
+/**
+ *  Sets the value of the <code>ignoreHidden</code> property.
+ *
+ *  @param {boolean} ignoreHidden The value of the ignoreHidden property.
+ */
+MarkerClusterer.prototype.setIgnoreHidden = function (ignoreHidden) {
+  this.ignoreHidden_ = ignoreHidden;
+};
+
+
+/**
+ * Returns the value of the <code>enableRetinaIcons</code> property.
+ *
+ * @return {boolean} True if enableRetinaIcons property is set.
+ */
+MarkerClusterer.prototype.getEnableRetinaIcons = function () {
+  return this.enableRetinaIcons_;
+};
+
+
+/**
+ *  Sets the value of the <code>enableRetinaIcons</code> property.
+ *
+ *  @param {boolean} enableRetinaIcons The value of the enableRetinaIcons property.
+ */
+MarkerClusterer.prototype.setEnableRetinaIcons = function (enableRetinaIcons) {
+  this.enableRetinaIcons_ = enableRetinaIcons;
+};
+
+
+/**
+ * Returns the value of the <code>imageExtension</code> property.
+ *
+ * @return {string} The value of the imageExtension property.
+ */
+MarkerClusterer.prototype.getImageExtension = function () {
+  return this.imageExtension_;
+};
+
+
+/**
+ *  Sets the value of the <code>imageExtension</code> property.
+ *
+ *  @param {string} imageExtension The value of the imageExtension property.
+ */
+MarkerClusterer.prototype.setImageExtension = function (imageExtension) {
+  this.imageExtension_ = imageExtension;
+};
+
+
+/**
+ * Returns the value of the <code>imagePath</code> property.
+ *
+ * @return {string} The value of the imagePath property.
+ */
+MarkerClusterer.prototype.getImagePath = function () {
+  return this.imagePath_;
+};
+
+
+/**
+ *  Sets the value of the <code>imagePath</code> property.
+ *
+ *  @param {string} imagePath The value of the imagePath property.
+ */
+MarkerClusterer.prototype.setImagePath = function (imagePath) {
+  this.imagePath_ = imagePath;
+};
+
+
+/**
+ * Returns the value of the <code>imageSizes</code> property.
+ *
+ * @return {Array} The value of the imageSizes property.
+ */
+MarkerClusterer.prototype.getImageSizes = function () {
+  return this.imageSizes_;
+};
+
+
+/**
+ *  Sets the value of the <code>imageSizes</code> property.
+ *
+ *  @param {Array} imageSizes The value of the imageSizes property.
+ */
+MarkerClusterer.prototype.setImageSizes = function (imageSizes) {
+  this.imageSizes_ = imageSizes;
+};
+
+
+/**
+ * Returns the value of the <code>calculator</code> property.
+ *
+ * @return {function} the value of the calculator property.
+ */
+MarkerClusterer.prototype.getCalculator = function () {
+  return this.calculator_;
+};
+
+
+/**
+ * Sets the value of the <code>calculator</code> property.
+ *
+ * @param {function(Array.<google.maps.Marker>, number)} calculator The value
+ *  of the calculator property.
+ */
+MarkerClusterer.prototype.setCalculator = function (calculator) {
+  this.calculator_ = calculator;
+};
+
+
+/**
+ * Returns the value of the <code>batchSizeIE</code> property.
+ *
+ * @return {number} the value of the batchSizeIE property.
+ */
+MarkerClusterer.prototype.getBatchSizeIE = function () {
+  return this.batchSizeIE_;
+};
+
+
+/**
+ * Sets the value of the <code>batchSizeIE</code> property.
+ *
+ *  @param {number} batchSizeIE The value of the batchSizeIE property.
+ */
+MarkerClusterer.prototype.setBatchSizeIE = function (batchSizeIE) {
+  this.batchSizeIE_ = batchSizeIE;
+};
+
+
+/**
+ * Returns the value of the <code>clusterClass</code> property.
+ *
+ * @return {string} the value of the clusterClass property.
+ */
+MarkerClusterer.prototype.getClusterClass = function () {
+  return this.clusterClass_;
+};
+
+
+/**
+ * Sets the value of the <code>clusterClass</code> property.
+ *
+ *  @param {string} clusterClass The value of the clusterClass property.
+ */
+MarkerClusterer.prototype.setClusterClass = function (clusterClass) {
+  this.clusterClass_ = clusterClass;
+};
+
+
+/**
+ *  Returns the array of markers managed by the clusterer.
+ *
+ *  @return {Array} The array of markers managed by the clusterer.
+ */
+MarkerClusterer.prototype.getMarkers = function () {
+  return this.markers_;
+};
+
+
+/**
+ *  Returns the number of markers managed by the clusterer.
+ *
+ *  @return {number} The number of markers.
+ */
+MarkerClusterer.prototype.getTotalMarkers = function () {
+  return this.markers_.length;
+};
+
+
+/**
+ * Returns the current array of clusters formed by the clusterer.
+ *
+ * @return {Array} The array of clusters formed by the clusterer.
+ */
+MarkerClusterer.prototype.getClusters = function () {
+  return this.clusters_;
+};
+
+
+/**
+ * Returns the number of clusters formed by the clusterer.
+ *
+ * @return {number} The number of clusters formed by the clusterer.
+ */
+MarkerClusterer.prototype.getTotalClusters = function () {
+  return this.clusters_.length;
+};
+
+
+/**
+ * Adds a marker to the clusterer. The clusters are redrawn unless
+ *  <code>opt_nodraw</code> is set to <code>true</code>.
+ *
+ * @param {google.maps.Marker} marker The marker to add.
+ * @param {boolean} [opt_nodraw] Set to <code>true</code> to prevent redrawing.
+ */
+MarkerClusterer.prototype.addMarker = function (marker, opt_nodraw) {
+  this.pushMarkerTo_(marker);
+  if (!opt_nodraw) {
+    this.redraw_();
+  }
+};
+
+
+/**
+ * Adds an array of markers to the clusterer. The clusters are redrawn unless
+ *  <code>opt_nodraw</code> is set to <code>true</code>.
+ *
+ * @param {Array.<google.maps.Marker>} markers The markers to add.
+ * @param {boolean} [opt_nodraw] Set to <code>true</code> to prevent redrawing.
+ */
+MarkerClusterer.prototype.addMarkers = function (markers, opt_nodraw) {
+  var key;
+  for (key in markers) {
+    if (markers.hasOwnProperty(key)) {
+      this.pushMarkerTo_(markers[key]);
+    }
+  }  
+  if (!opt_nodraw) {
+    this.redraw_();
+  }
+};
+
+
+/**
+ * Pushes a marker to the clusterer.
+ *
+ * @param {google.maps.Marker} marker The marker to add.
+ */
+MarkerClusterer.prototype.pushMarkerTo_ = function (marker) {
+  // If the marker is draggable add a listener so we can update the clusters on the dragend:
+  if (marker.getDraggable()) {
+    var cMarkerClusterer = this;
+    google.maps.event.addListener(marker, "dragend", function () {
+      if (cMarkerClusterer.ready_) {
+        this.isAdded = false;
+        cMarkerClusterer.repaint();
+      }
+    });
+  }
+  marker.isAdded = false;
+  this.markers_.push(marker);
+};
+
+
+/**
+ * Removes a marker from the cluster.  The clusters are redrawn unless
+ *  <code>opt_nodraw</code> is set to <code>true</code>. Returns <code>true</code> if the
+ *  marker was removed from the clusterer.
+ *
+ * @param {google.maps.Marker} marker The marker to remove.
+ * @param {boolean} [opt_nodraw] Set to <code>true</code> to prevent redrawing.
+ * @return {boolean} True if the marker was removed from the clusterer.
+ */
+MarkerClusterer.prototype.removeMarker = function (marker, opt_nodraw) {
+  var removed = this.removeMarker_(marker);
+
+  if (!opt_nodraw && removed) {
+    this.repaint();
+  }
+
+  return removed;
+};
+
+
+/**
+ * Removes an array of markers from the cluster. The clusters are redrawn unless
+ *  <code>opt_nodraw</code> is set to <code>true</code>. Returns <code>true</code> if markers
+ *  were removed from the clusterer.
+ *
+ * @param {Array.<google.maps.Marker>} markers The markers to remove.
+ * @param {boolean} [opt_nodraw] Set to <code>true</code> to prevent redrawing.
+ * @return {boolean} True if markers were removed from the clusterer.
+ */
+MarkerClusterer.prototype.removeMarkers = function (markers, opt_nodraw) {
+  var i, r;
+  var removed = false;
+
+  for (i = 0; i < markers.length; i++) {
+    r = this.removeMarker_(markers[i]);
+    removed = removed || r;
+  }
+
+  if (!opt_nodraw && removed) {
+    this.repaint();
+  }
+
+  return removed;
+};
+
+
+/**
+ * Removes a marker and returns true if removed, false if not.
+ *
+ * @param {google.maps.Marker} marker The marker to remove
+ * @return {boolean} Whether the marker was removed or not
+ */
+MarkerClusterer.prototype.removeMarker_ = function (marker) {
+  var i;
+  var index = -1;
+  if (this.markers_.indexOf) {
+    index = this.markers_.indexOf(marker);
+  } else {
+    for (i = 0; i < this.markers_.length; i++) {
+      if (marker === this.markers_[i]) {
+        index = i;
+        break;
+      }
+    }
+  }
+
+  if (index === -1) {
+    // Marker is not in our list of markers, so do nothing:
+    return false;
+  }
+
+  marker.setMap(null);
+  this.markers_.splice(index, 1); // Remove the marker from the list of managed markers
+  return true;
+};
+
+
+/**
+ * Removes all clusters and markers from the map and also removes all markers
+ *  managed by the clusterer.
+ */
+MarkerClusterer.prototype.clearMarkers = function () {
+  this.resetViewport_(true);
+  this.markers_ = [];
+};
+
+
+/**
+ * Recalculates and redraws all the marker clusters from scratch.
+ *  Call this after changing any properties.
+ */
+MarkerClusterer.prototype.repaint = function () {
+  var oldClusters = this.clusters_.slice();
+  this.clusters_ = [];
+  this.resetViewport_(false);
+  this.redraw_();
+
+  // Remove the old clusters.
+  // Do it in a timeout to prevent blinking effect.
+  setTimeout(function () {
+    var i;
+    for (i = 0; i < oldClusters.length; i++) {
+      oldClusters[i].remove();
+    }
+  }, 0);
+};
+
+
+/**
+ * Returns the current bounds extended by the grid size.
+ *
+ * @param {google.maps.LatLngBounds} bounds The bounds to extend.
+ * @return {google.maps.LatLngBounds} The extended bounds.
+ * @ignore
+ */
+MarkerClusterer.prototype.getExtendedBounds = function (bounds) {
+  var projection = this.getProjection();
+
+  // Turn the bounds into latlng.
+  var tr = new google.maps.LatLng(bounds.getNorthEast().lat(),
+      bounds.getNorthEast().lng());
+  var bl = new google.maps.LatLng(bounds.getSouthWest().lat(),
+      bounds.getSouthWest().lng());
+
+  // Convert the points to pixels and the extend out by the grid size.
+  var trPix = projection.fromLatLngToDivPixel(tr);
+  trPix.x += this.gridSize_;
+  trPix.y -= this.gridSize_;
+
+  var blPix = projection.fromLatLngToDivPixel(bl);
+  blPix.x -= this.gridSize_;
+  blPix.y += this.gridSize_;
+
+  // Convert the pixel points back to LatLng
+  var ne = projection.fromDivPixelToLatLng(trPix);
+  var sw = projection.fromDivPixelToLatLng(blPix);
+
+  // Extend the bounds to contain the new bounds.
+  bounds.extend(ne);
+  bounds.extend(sw);
+
+  return bounds;
+};
+
+
+/**
+ * Redraws all the clusters.
+ */
+MarkerClusterer.prototype.redraw_ = function () {
+  this.createClusters_(0);
+};
+
+
+/**
+ * Removes all clusters from the map. The markers are also removed from the map
+ *  if <code>opt_hide</code> is set to <code>true</code>.
+ *
+ * @param {boolean} [opt_hide] Set to <code>true</code> to also remove the markers
+ *  from the map.
+ */
+MarkerClusterer.prototype.resetViewport_ = function (opt_hide) {
+  var i, marker;
+  // Remove all the clusters
+  for (i = 0; i < this.clusters_.length; i++) {
+    this.clusters_[i].remove();
+  }
+  this.clusters_ = [];
+
+  // Reset the markers to not be added and to be removed from the map.
+  for (i = 0; i < this.markers_.length; i++) {
+    marker = this.markers_[i];
+    marker.isAdded = false;
+    if (opt_hide) {
+      marker.setMap(null);
+    }
+  }
+};
+
+
+/**
+ * Calculates the distance between two latlng locations in km.
+ *
+ * @param {google.maps.LatLng} p1 The first lat lng point.
+ * @param {google.maps.LatLng} p2 The second lat lng point.
+ * @return {number} The distance between the two points in km.
+ * @see http://www.movable-type.co.uk/scripts/latlong.html
+*/
+MarkerClusterer.prototype.distanceBetweenPoints_ = function (p1, p2) {
+  var R = 6371; // Radius of the Earth in km
+  var dLat = (p2.lat() - p1.lat()) * Math.PI / 180;
+  var dLon = (p2.lng() - p1.lng()) * Math.PI / 180;
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(p1.lat() * Math.PI / 180) * Math.cos(p2.lat() * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c;
+  return d;
+};
+
+
+/**
+ * Determines if a marker is contained in a bounds.
+ *
+ * @param {google.maps.Marker} marker The marker to check.
+ * @param {google.maps.LatLngBounds} bounds The bounds to check against.
+ * @return {boolean} True if the marker is in the bounds.
+ */
+MarkerClusterer.prototype.isMarkerInBounds_ = function (marker, bounds) {
+  return bounds.contains(marker.getPosition());
+};
+
+
+/**
+ * Adds a marker to a cluster, or creates a new cluster.
+ *
+ * @param {google.maps.Marker} marker The marker to add.
+ */
+MarkerClusterer.prototype.addToClosestCluster_ = function (marker) {
+  var i, d, cluster, center;
+  var distance = 40000; // Some large number
+  var clusterToAddTo = null;
+  for (i = 0; i < this.clusters_.length; i++) {
+    cluster = this.clusters_[i];
+    center = cluster.getCenter();
+    if (center) {
+      d = this.distanceBetweenPoints_(center, marker.getPosition());
+      if (d < distance) {
+        distance = d;
+        clusterToAddTo = cluster;
+      }
+    }
+  }
+
+  if (clusterToAddTo && clusterToAddTo.isMarkerInClusterBounds(marker)) {
+    clusterToAddTo.addMarker(marker);
+  } else {
+    cluster = new Cluster(this);
+    cluster.addMarker(marker);
+    this.clusters_.push(cluster);
+  }
+};
+
+
+/**
+ * Creates the clusters. This is done in batches to avoid timeout errors
+ *  in some browsers when there is a huge number of markers.
+ *
+ * @param {number} iFirst The index of the first marker in the batch of
+ *  markers to be added to clusters.
+ */
+MarkerClusterer.prototype.createClusters_ = function (iFirst) {
+  var i, marker;
+  var mapBounds;
+  var cMarkerClusterer = this;
+  if (!this.ready_) {
+    return;
+  }
+
+  // Cancel previous batch processing if we're working on the first batch:
+  if (iFirst === 0) {
+    /**
+     * This event is fired when the <code>MarkerClusterer</code> begins
+     *  clustering markers.
+     * @name MarkerClusterer#clusteringbegin
+     * @param {MarkerClusterer} mc The MarkerClusterer whose markers are being clustered.
+     * @event
+     */
+    google.maps.event.trigger(this, "clusteringbegin", this);
+
+    if (typeof this.timerRefStatic !== "undefined") {
+      clearTimeout(this.timerRefStatic);
+      delete this.timerRefStatic;
+    }
+  }
+
+  // Get our current map view bounds.
+  // Create a new bounds object so we don't affect the map.
+  //
+  // See Comments 9 & 11 on Issue 3651 relating to this workaround for a Google Maps bug:
+  if (this.getMap().getZoom() > 3) {
+    mapBounds = new google.maps.LatLngBounds(this.getMap().getBounds().getSouthWest(),
+      this.getMap().getBounds().getNorthEast());
+  } else {
+    mapBounds = new google.maps.LatLngBounds(new google.maps.LatLng(85.02070771743472, -178.48388434375), new google.maps.LatLng(-85.08136444384544, 178.00048865625));
+  }
+  var bounds = this.getExtendedBounds(mapBounds);
+
+  var iLast = Math.min(iFirst + this.batchSize_, this.markers_.length);
+
+  for (i = iFirst; i < iLast; i++) {
+    marker = this.markers_[i];
+    if (!marker.isAdded && this.isMarkerInBounds_(marker, bounds)) {
+      if (!this.ignoreHidden_ || (this.ignoreHidden_ && marker.getVisible())) {
+        this.addToClosestCluster_(marker);
+      }
+    }
+  }
+
+  if (iLast < this.markers_.length) {
+    this.timerRefStatic = setTimeout(function () {
+      cMarkerClusterer.createClusters_(iLast);
+    }, 0);
+  } else {
+    delete this.timerRefStatic;
+
+    /**
+     * This event is fired when the <code>MarkerClusterer</code> stops
+     *  clustering markers.
+     * @name MarkerClusterer#clusteringend
+     * @param {MarkerClusterer} mc The MarkerClusterer whose markers are being clustered.
+     * @event
+     */
+    google.maps.event.trigger(this, "clusteringend", this);
+  }
+};
+
+
+/**
+ * Extends an object's prototype by another's.
+ *
+ * @param {Object} obj1 The object to be extended.
+ * @param {Object} obj2 The object to extend with.
+ * @return {Object} The new extended object.
+ * @ignore
+ */
+MarkerClusterer.prototype.extend = function (obj1, obj2) {
+  return (function (object) {
+    var property;
+    for (property in object.prototype) {
+      this.prototype[property] = object.prototype[property];
+    }
+    return this;
+  }).apply(obj1, [obj2]);
+};
+
+
+/**
+ * The default function for determining the label text and style
+ * for a cluster icon.
+ *
+ * @param {Array.<google.maps.Marker>} markers The array of markers represented by the cluster.
+ * @param {number} numStyles The number of marker styles available.
+ * @return {ClusterIconInfo} The information resource for the cluster.
+ * @constant
+ * @ignore
+ */
+MarkerClusterer.CALCULATOR = function (markers, numStyles) {
+  var index = 0;
+  var title = "";
+  var count = markers.length.toString();
+
+  var dv = count;
+  while (dv !== 0) {
+    dv = parseInt(dv / 10, 10);
+    index++;
+  }
+
+  index = Math.min(index, numStyles);
+  return {
+    text: count,
+    index: index,
+    title: title
+  };
+};
+
+
+/**
+ * The number of markers to process in one batch.
+ *
+ * @type {number}
+ * @constant
+ */
+MarkerClusterer.BATCH_SIZE = 2000;
+
+
+/**
+ * The number of markers to process in one batch (IE only).
+ *
+ * @type {number}
+ * @constant
+ */
+MarkerClusterer.BATCH_SIZE_IE = 500;
+
+
+/**
+ * The default root name for the marker cluster images.
+ *
+ * @type {string}
+ * @constant
+ */
+MarkerClusterer.IMAGE_PATH = "https://raw.githubusercontent.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m";
+
+
+/**
+ * The default extension name for the marker cluster images.
+ *
+ * @type {string}
+ * @constant
+ */
+MarkerClusterer.IMAGE_EXTENSION = "png";
+
+
+/**
+ * The default array of sizes for the marker cluster images.
+ *
+ * @type {Array.<number>}
+ * @constant
+ */
+MarkerClusterer.IMAGE_SIZES = [53, 56, 66, 78, 90];
+
+module.exports = MarkerClusterer
+
+},{}],76:[function(require,module,exports){
+/*!
+ * Masonry v4.1.1
+ * Cascading grid layout library
+ * http://masonry.desandro.com
+ * MIT License
+ * by David DeSandro
+ */
+
+( function( window, factory ) {
+  // universal module definition
+  /* jshint strict: false */ /*globals define, module, require */
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD
+    define( [
+        'outlayer/outlayer',
+        'get-size/get-size'
+      ],
+      factory );
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+      require('outlayer'),
+      require('get-size')
+    );
+  } else {
+    // browser global
+    window.Masonry = factory(
+      window.Outlayer,
+      window.getSize
+    );
+  }
+
+}( window, function factory( Outlayer, getSize ) {
+
+'use strict';
+
+// -------------------------- masonryDefinition -------------------------- //
+
+  // create an Outlayer layout class
+  var Masonry = Outlayer.create('masonry');
+  // isFitWidth -> fitWidth
+  Masonry.compatOptions.fitWidth = 'isFitWidth';
+
+  Masonry.prototype._resetLayout = function() {
+    this.getSize();
+    this._getMeasurement( 'columnWidth', 'outerWidth' );
+    this._getMeasurement( 'gutter', 'outerWidth' );
+    this.measureColumns();
+
+    // reset column Y
+    this.colYs = [];
+    for ( var i=0; i < this.cols; i++ ) {
+      this.colYs.push( 0 );
+    }
+
+    this.maxY = 0;
+  };
+
+  Masonry.prototype.measureColumns = function() {
+    this.getContainerWidth();
+    // if columnWidth is 0, default to outerWidth of first item
+    if ( !this.columnWidth ) {
+      var firstItem = this.items[0];
+      var firstItemElem = firstItem && firstItem.element;
+      // columnWidth fall back to item of first element
+      this.columnWidth = firstItemElem && getSize( firstItemElem ).outerWidth ||
+        // if first elem has no width, default to size of container
+        this.containerWidth;
+    }
+
+    var columnWidth = this.columnWidth += this.gutter;
+
+    // calculate columns
+    var containerWidth = this.containerWidth + this.gutter;
+    var cols = containerWidth / columnWidth;
+    // fix rounding errors, typically with gutters
+    var excess = columnWidth - containerWidth % columnWidth;
+    // if overshoot is less than a pixel, round up, otherwise floor it
+    var mathMethod = excess && excess < 1 ? 'round' : 'floor';
+    cols = Math[ mathMethod ]( cols );
+    this.cols = Math.max( cols, 1 );
+  };
+
+  Masonry.prototype.getContainerWidth = function() {
+    // container is parent if fit width
+    var isFitWidth = this._getOption('fitWidth');
+    var container = isFitWidth ? this.element.parentNode : this.element;
+    // check that this.size and size are there
+    // IE8 triggers resize on body size change, so they might not be
+    var size = getSize( container );
+    this.containerWidth = size && size.innerWidth;
+  };
+
+  Masonry.prototype._getItemLayoutPosition = function( item ) {
+    item.getSize();
+    // how many columns does this brick span
+    var remainder = item.size.outerWidth % this.columnWidth;
+    var mathMethod = remainder && remainder < 1 ? 'round' : 'ceil';
+    // round if off by 1 pixel, otherwise use ceil
+    var colSpan = Math[ mathMethod ]( item.size.outerWidth / this.columnWidth );
+    colSpan = Math.min( colSpan, this.cols );
+
+    var colGroup = this._getColGroup( colSpan );
+    // get the minimum Y value from the columns
+    var minimumY = Math.min.apply( Math, colGroup );
+    var shortColIndex = colGroup.indexOf( minimumY );
+
+    // position the brick
+    var position = {
+      x: this.columnWidth * shortColIndex,
+      y: minimumY
+    };
+
+    // apply setHeight to necessary columns
+    var setHeight = minimumY + item.size.outerHeight;
+    var setSpan = this.cols + 1 - colGroup.length;
+    for ( var i = 0; i < setSpan; i++ ) {
+      this.colYs[ shortColIndex + i ] = setHeight;
+    }
+
+    return position;
+  };
+
+  /**
+   * @param {Number} colSpan - number of columns the element spans
+   * @returns {Array} colGroup
+   */
+  Masonry.prototype._getColGroup = function( colSpan ) {
+    if ( colSpan < 2 ) {
+      // if brick spans only one column, use all the column Ys
+      return this.colYs;
+    }
+
+    var colGroup = [];
+    // how many different places could this brick fit horizontally
+    var groupCount = this.cols + 1 - colSpan;
+    // for each group potential horizontal position
+    for ( var i = 0; i < groupCount; i++ ) {
+      // make an array of colY values for that one group
+      var groupColYs = this.colYs.slice( i, i + colSpan );
+      // and get the max value of the array
+      colGroup[i] = Math.max.apply( Math, groupColYs );
+    }
+    return colGroup;
+  };
+
+  Masonry.prototype._manageStamp = function( stamp ) {
+    var stampSize = getSize( stamp );
+    var offset = this._getElementOffset( stamp );
+    // get the columns that this stamp affects
+    var isOriginLeft = this._getOption('originLeft');
+    var firstX = isOriginLeft ? offset.left : offset.right;
+    var lastX = firstX + stampSize.outerWidth;
+    var firstCol = Math.floor( firstX / this.columnWidth );
+    firstCol = Math.max( 0, firstCol );
+    var lastCol = Math.floor( lastX / this.columnWidth );
+    // lastCol should not go over if multiple of columnWidth #425
+    lastCol -= lastX % this.columnWidth ? 0 : 1;
+    lastCol = Math.min( this.cols - 1, lastCol );
+    // set colYs to bottom of the stamp
+
+    var isOriginTop = this._getOption('originTop');
+    var stampMaxY = ( isOriginTop ? offset.top : offset.bottom ) +
+      stampSize.outerHeight;
+    for ( var i = firstCol; i <= lastCol; i++ ) {
+      this.colYs[i] = Math.max( stampMaxY, this.colYs[i] );
+    }
+  };
+
+  Masonry.prototype._getContainerSize = function() {
+    this.maxY = Math.max.apply( Math, this.colYs );
+    var size = {
+      height: this.maxY
+    };
+
+    if ( this._getOption('fitWidth') ) {
+      size.width = this._getContainerFitWidth();
+    }
+
+    return size;
+  };
+
+  Masonry.prototype._getContainerFitWidth = function() {
+    var unusedCols = 0;
+    // count unused columns
+    var i = this.cols;
+    while ( --i ) {
+      if ( this.colYs[i] !== 0 ) {
+        break;
+      }
+      unusedCols++;
+    }
+    // fit container to columns that have been used
+    return ( this.cols - unusedCols ) * this.columnWidth - this.gutter;
+  };
+
+  Masonry.prototype.needsResizeLayout = function() {
+    var previousWidth = this.containerWidth;
+    this.getContainerWidth();
+    return previousWidth != this.containerWidth;
+  };
+
+  return Masonry;
+
+}));
+
+},{"get-size":68,"outlayer":79}],77:[function(require,module,exports){
 //! moment.js
 //! version : 2.18.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -20323,7 +28636,1503 @@ return hooks;
 
 })));
 
-},{}],53:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
+/**
+ * Outlayer Item
+ */
+
+( function( window, factory ) {
+  // universal module definition
+  /* jshint strict: false */ /* globals define, module, require */
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD - RequireJS
+    define( [
+        'ev-emitter/ev-emitter',
+        'get-size/get-size'
+      ],
+      factory
+    );
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS - Browserify, Webpack
+    module.exports = factory(
+      require('ev-emitter'),
+      require('get-size')
+    );
+  } else {
+    // browser global
+    window.Outlayer = {};
+    window.Outlayer.Item = factory(
+      window.EvEmitter,
+      window.getSize
+    );
+  }
+
+}( window, function factory( EvEmitter, getSize ) {
+'use strict';
+
+// ----- helpers ----- //
+
+function isEmptyObj( obj ) {
+  for ( var prop in obj ) {
+    return false;
+  }
+  prop = null;
+  return true;
+}
+
+// -------------------------- CSS3 support -------------------------- //
+
+
+var docElemStyle = document.documentElement.style;
+
+var transitionProperty = typeof docElemStyle.transition == 'string' ?
+  'transition' : 'WebkitTransition';
+var transformProperty = typeof docElemStyle.transform == 'string' ?
+  'transform' : 'WebkitTransform';
+
+var transitionEndEvent = {
+  WebkitTransition: 'webkitTransitionEnd',
+  transition: 'transitionend'
+}[ transitionProperty ];
+
+// cache all vendor properties that could have vendor prefix
+var vendorProperties = {
+  transform: transformProperty,
+  transition: transitionProperty,
+  transitionDuration: transitionProperty + 'Duration',
+  transitionProperty: transitionProperty + 'Property',
+  transitionDelay: transitionProperty + 'Delay'
+};
+
+// -------------------------- Item -------------------------- //
+
+function Item( element, layout ) {
+  if ( !element ) {
+    return;
+  }
+
+  this.element = element;
+  // parent layout class, i.e. Masonry, Isotope, or Packery
+  this.layout = layout;
+  this.position = {
+    x: 0,
+    y: 0
+  };
+
+  this._create();
+}
+
+// inherit EvEmitter
+var proto = Item.prototype = Object.create( EvEmitter.prototype );
+proto.constructor = Item;
+
+proto._create = function() {
+  // transition objects
+  this._transn = {
+    ingProperties: {},
+    clean: {},
+    onEnd: {}
+  };
+
+  this.css({
+    position: 'absolute'
+  });
+};
+
+// trigger specified handler for event type
+proto.handleEvent = function( event ) {
+  var method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+proto.getSize = function() {
+  this.size = getSize( this.element );
+};
+
+/**
+ * apply CSS styles to element
+ * @param {Object} style
+ */
+proto.css = function( style ) {
+  var elemStyle = this.element.style;
+
+  for ( var prop in style ) {
+    // use vendor property if available
+    var supportedProp = vendorProperties[ prop ] || prop;
+    elemStyle[ supportedProp ] = style[ prop ];
+  }
+};
+
+ // measure position, and sets it
+proto.getPosition = function() {
+  var style = getComputedStyle( this.element );
+  var isOriginLeft = this.layout._getOption('originLeft');
+  var isOriginTop = this.layout._getOption('originTop');
+  var xValue = style[ isOriginLeft ? 'left' : 'right' ];
+  var yValue = style[ isOriginTop ? 'top' : 'bottom' ];
+  // convert percent to pixels
+  var layoutSize = this.layout.size;
+  var x = xValue.indexOf('%') != -1 ?
+    ( parseFloat( xValue ) / 100 ) * layoutSize.width : parseInt( xValue, 10 );
+  var y = yValue.indexOf('%') != -1 ?
+    ( parseFloat( yValue ) / 100 ) * layoutSize.height : parseInt( yValue, 10 );
+
+  // clean up 'auto' or other non-integer values
+  x = isNaN( x ) ? 0 : x;
+  y = isNaN( y ) ? 0 : y;
+  // remove padding from measurement
+  x -= isOriginLeft ? layoutSize.paddingLeft : layoutSize.paddingRight;
+  y -= isOriginTop ? layoutSize.paddingTop : layoutSize.paddingBottom;
+
+  this.position.x = x;
+  this.position.y = y;
+};
+
+// set settled position, apply padding
+proto.layoutPosition = function() {
+  var layoutSize = this.layout.size;
+  var style = {};
+  var isOriginLeft = this.layout._getOption('originLeft');
+  var isOriginTop = this.layout._getOption('originTop');
+
+  // x
+  var xPadding = isOriginLeft ? 'paddingLeft' : 'paddingRight';
+  var xProperty = isOriginLeft ? 'left' : 'right';
+  var xResetProperty = isOriginLeft ? 'right' : 'left';
+
+  var x = this.position.x + layoutSize[ xPadding ];
+  // set in percentage or pixels
+  style[ xProperty ] = this.getXValue( x );
+  // reset other property
+  style[ xResetProperty ] = '';
+
+  // y
+  var yPadding = isOriginTop ? 'paddingTop' : 'paddingBottom';
+  var yProperty = isOriginTop ? 'top' : 'bottom';
+  var yResetProperty = isOriginTop ? 'bottom' : 'top';
+
+  var y = this.position.y + layoutSize[ yPadding ];
+  // set in percentage or pixels
+  style[ yProperty ] = this.getYValue( y );
+  // reset other property
+  style[ yResetProperty ] = '';
+
+  this.css( style );
+  this.emitEvent( 'layout', [ this ] );
+};
+
+proto.getXValue = function( x ) {
+  var isHorizontal = this.layout._getOption('horizontal');
+  return this.layout.options.percentPosition && !isHorizontal ?
+    ( ( x / this.layout.size.width ) * 100 ) + '%' : x + 'px';
+};
+
+proto.getYValue = function( y ) {
+  var isHorizontal = this.layout._getOption('horizontal');
+  return this.layout.options.percentPosition && isHorizontal ?
+    ( ( y / this.layout.size.height ) * 100 ) + '%' : y + 'px';
+};
+
+proto._transitionTo = function( x, y ) {
+  this.getPosition();
+  // get current x & y from top/left
+  var curX = this.position.x;
+  var curY = this.position.y;
+
+  var compareX = parseInt( x, 10 );
+  var compareY = parseInt( y, 10 );
+  var didNotMove = compareX === this.position.x && compareY === this.position.y;
+
+  // save end position
+  this.setPosition( x, y );
+
+  // if did not move and not transitioning, just go to layout
+  if ( didNotMove && !this.isTransitioning ) {
+    this.layoutPosition();
+    return;
+  }
+
+  var transX = x - curX;
+  var transY = y - curY;
+  var transitionStyle = {};
+  transitionStyle.transform = this.getTranslate( transX, transY );
+
+  this.transition({
+    to: transitionStyle,
+    onTransitionEnd: {
+      transform: this.layoutPosition
+    },
+    isCleaning: true
+  });
+};
+
+proto.getTranslate = function( x, y ) {
+  // flip cooridinates if origin on right or bottom
+  var isOriginLeft = this.layout._getOption('originLeft');
+  var isOriginTop = this.layout._getOption('originTop');
+  x = isOriginLeft ? x : -x;
+  y = isOriginTop ? y : -y;
+  return 'translate3d(' + x + 'px, ' + y + 'px, 0)';
+};
+
+// non transition + transform support
+proto.goTo = function( x, y ) {
+  this.setPosition( x, y );
+  this.layoutPosition();
+};
+
+proto.moveTo = proto._transitionTo;
+
+proto.setPosition = function( x, y ) {
+  this.position.x = parseInt( x, 10 );
+  this.position.y = parseInt( y, 10 );
+};
+
+// ----- transition ----- //
+
+/**
+ * @param {Object} style - CSS
+ * @param {Function} onTransitionEnd
+ */
+
+// non transition, just trigger callback
+proto._nonTransition = function( args ) {
+  this.css( args.to );
+  if ( args.isCleaning ) {
+    this._removeStyles( args.to );
+  }
+  for ( var prop in args.onTransitionEnd ) {
+    args.onTransitionEnd[ prop ].call( this );
+  }
+};
+
+/**
+ * proper transition
+ * @param {Object} args - arguments
+ *   @param {Object} to - style to transition to
+ *   @param {Object} from - style to start transition from
+ *   @param {Boolean} isCleaning - removes transition styles after transition
+ *   @param {Function} onTransitionEnd - callback
+ */
+proto.transition = function( args ) {
+  // redirect to nonTransition if no transition duration
+  if ( !parseFloat( this.layout.options.transitionDuration ) ) {
+    this._nonTransition( args );
+    return;
+  }
+
+  var _transition = this._transn;
+  // keep track of onTransitionEnd callback by css property
+  for ( var prop in args.onTransitionEnd ) {
+    _transition.onEnd[ prop ] = args.onTransitionEnd[ prop ];
+  }
+  // keep track of properties that are transitioning
+  for ( prop in args.to ) {
+    _transition.ingProperties[ prop ] = true;
+    // keep track of properties to clean up when transition is done
+    if ( args.isCleaning ) {
+      _transition.clean[ prop ] = true;
+    }
+  }
+
+  // set from styles
+  if ( args.from ) {
+    this.css( args.from );
+    // force redraw. http://blog.alexmaccaw.com/css-transitions
+    var h = this.element.offsetHeight;
+    // hack for JSHint to hush about unused var
+    h = null;
+  }
+  // enable transition
+  this.enableTransition( args.to );
+  // set styles that are transitioning
+  this.css( args.to );
+
+  this.isTransitioning = true;
+
+};
+
+// dash before all cap letters, including first for
+// WebkitTransform => -webkit-transform
+function toDashedAll( str ) {
+  return str.replace( /([A-Z])/g, function( $1 ) {
+    return '-' + $1.toLowerCase();
+  });
+}
+
+var transitionProps = 'opacity,' + toDashedAll( transformProperty );
+
+proto.enableTransition = function(/* style */) {
+  // HACK changing transitionProperty during a transition
+  // will cause transition to jump
+  if ( this.isTransitioning ) {
+    return;
+  }
+
+  // make `transition: foo, bar, baz` from style object
+  // HACK un-comment this when enableTransition can work
+  // while a transition is happening
+  // var transitionValues = [];
+  // for ( var prop in style ) {
+  //   // dash-ify camelCased properties like WebkitTransition
+  //   prop = vendorProperties[ prop ] || prop;
+  //   transitionValues.push( toDashedAll( prop ) );
+  // }
+  // munge number to millisecond, to match stagger
+  var duration = this.layout.options.transitionDuration;
+  duration = typeof duration == 'number' ? duration + 'ms' : duration;
+  // enable transition styles
+  this.css({
+    transitionProperty: transitionProps,
+    transitionDuration: duration,
+    transitionDelay: this.staggerDelay || 0
+  });
+  // listen for transition end event
+  this.element.addEventListener( transitionEndEvent, this, false );
+};
+
+// ----- events ----- //
+
+proto.onwebkitTransitionEnd = function( event ) {
+  this.ontransitionend( event );
+};
+
+proto.onotransitionend = function( event ) {
+  this.ontransitionend( event );
+};
+
+// properties that I munge to make my life easier
+var dashedVendorProperties = {
+  '-webkit-transform': 'transform'
+};
+
+proto.ontransitionend = function( event ) {
+  // disregard bubbled events from children
+  if ( event.target !== this.element ) {
+    return;
+  }
+  var _transition = this._transn;
+  // get property name of transitioned property, convert to prefix-free
+  var propertyName = dashedVendorProperties[ event.propertyName ] || event.propertyName;
+
+  // remove property that has completed transitioning
+  delete _transition.ingProperties[ propertyName ];
+  // check if any properties are still transitioning
+  if ( isEmptyObj( _transition.ingProperties ) ) {
+    // all properties have completed transitioning
+    this.disableTransition();
+  }
+  // clean style
+  if ( propertyName in _transition.clean ) {
+    // clean up style
+    this.element.style[ event.propertyName ] = '';
+    delete _transition.clean[ propertyName ];
+  }
+  // trigger onTransitionEnd callback
+  if ( propertyName in _transition.onEnd ) {
+    var onTransitionEnd = _transition.onEnd[ propertyName ];
+    onTransitionEnd.call( this );
+    delete _transition.onEnd[ propertyName ];
+  }
+
+  this.emitEvent( 'transitionEnd', [ this ] );
+};
+
+proto.disableTransition = function() {
+  this.removeTransitionStyles();
+  this.element.removeEventListener( transitionEndEvent, this, false );
+  this.isTransitioning = false;
+};
+
+/**
+ * removes style property from element
+ * @param {Object} style
+**/
+proto._removeStyles = function( style ) {
+  // clean up transition styles
+  var cleanStyle = {};
+  for ( var prop in style ) {
+    cleanStyle[ prop ] = '';
+  }
+  this.css( cleanStyle );
+};
+
+var cleanTransitionStyle = {
+  transitionProperty: '',
+  transitionDuration: '',
+  transitionDelay: ''
+};
+
+proto.removeTransitionStyles = function() {
+  // remove transition
+  this.css( cleanTransitionStyle );
+};
+
+// ----- stagger ----- //
+
+proto.stagger = function( delay ) {
+  delay = isNaN( delay ) ? 0 : delay;
+  this.staggerDelay = delay + 'ms';
+};
+
+// ----- show/hide/remove ----- //
+
+// remove element from DOM
+proto.removeElem = function() {
+  this.element.parentNode.removeChild( this.element );
+  // remove display: none
+  this.css({ display: '' });
+  this.emitEvent( 'remove', [ this ] );
+};
+
+proto.remove = function() {
+  // just remove element if no transition support or no transition
+  if ( !transitionProperty || !parseFloat( this.layout.options.transitionDuration ) ) {
+    this.removeElem();
+    return;
+  }
+
+  // start transition
+  this.once( 'transitionEnd', function() {
+    this.removeElem();
+  });
+  this.hide();
+};
+
+proto.reveal = function() {
+  delete this.isHidden;
+  // remove display: none
+  this.css({ display: '' });
+
+  var options = this.layout.options;
+
+  var onTransitionEnd = {};
+  var transitionEndProperty = this.getHideRevealTransitionEndProperty('visibleStyle');
+  onTransitionEnd[ transitionEndProperty ] = this.onRevealTransitionEnd;
+
+  this.transition({
+    from: options.hiddenStyle,
+    to: options.visibleStyle,
+    isCleaning: true,
+    onTransitionEnd: onTransitionEnd
+  });
+};
+
+proto.onRevealTransitionEnd = function() {
+  // check if still visible
+  // during transition, item may have been hidden
+  if ( !this.isHidden ) {
+    this.emitEvent('reveal');
+  }
+};
+
+/**
+ * get style property use for hide/reveal transition end
+ * @param {String} styleProperty - hiddenStyle/visibleStyle
+ * @returns {String}
+ */
+proto.getHideRevealTransitionEndProperty = function( styleProperty ) {
+  var optionStyle = this.layout.options[ styleProperty ];
+  // use opacity
+  if ( optionStyle.opacity ) {
+    return 'opacity';
+  }
+  // get first property
+  for ( var prop in optionStyle ) {
+    return prop;
+  }
+};
+
+proto.hide = function() {
+  // set flag
+  this.isHidden = true;
+  // remove display: none
+  this.css({ display: '' });
+
+  var options = this.layout.options;
+
+  var onTransitionEnd = {};
+  var transitionEndProperty = this.getHideRevealTransitionEndProperty('hiddenStyle');
+  onTransitionEnd[ transitionEndProperty ] = this.onHideTransitionEnd;
+
+  this.transition({
+    from: options.visibleStyle,
+    to: options.hiddenStyle,
+    // keep hidden stuff hidden
+    isCleaning: true,
+    onTransitionEnd: onTransitionEnd
+  });
+};
+
+proto.onHideTransitionEnd = function() {
+  // check if still hidden
+  // during transition, item may have been un-hidden
+  if ( this.isHidden ) {
+    this.css({ display: 'none' });
+    this.emitEvent('hide');
+  }
+};
+
+proto.destroy = function() {
+  this.css({
+    position: '',
+    left: '',
+    right: '',
+    top: '',
+    bottom: '',
+    transition: '',
+    transform: ''
+  });
+};
+
+return Item;
+
+}));
+
+},{"ev-emitter":38,"get-size":68}],79:[function(require,module,exports){
+/*!
+ * Outlayer v2.1.0
+ * the brains and guts of a layout library
+ * MIT license
+ */
+
+( function( window, factory ) {
+  'use strict';
+  // universal module definition
+  /* jshint strict: false */ /* globals define, module, require */
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD - RequireJS
+    define( [
+        'ev-emitter/ev-emitter',
+        'get-size/get-size',
+        'fizzy-ui-utils/utils',
+        './item'
+      ],
+      function( EvEmitter, getSize, utils, Item ) {
+        return factory( window, EvEmitter, getSize, utils, Item);
+      }
+    );
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS - Browserify, Webpack
+    module.exports = factory(
+      window,
+      require('ev-emitter'),
+      require('get-size'),
+      require('fizzy-ui-utils'),
+      require('./item')
+    );
+  } else {
+    // browser global
+    window.Outlayer = factory(
+      window,
+      window.EvEmitter,
+      window.getSize,
+      window.fizzyUIUtils,
+      window.Outlayer.Item
+    );
+  }
+
+}( window, function factory( window, EvEmitter, getSize, utils, Item ) {
+'use strict';
+
+// ----- vars ----- //
+
+var console = window.console;
+var jQuery = window.jQuery;
+var noop = function() {};
+
+// -------------------------- Outlayer -------------------------- //
+
+// globally unique identifiers
+var GUID = 0;
+// internal store of all Outlayer intances
+var instances = {};
+
+
+/**
+ * @param {Element, String} element
+ * @param {Object} options
+ * @constructor
+ */
+function Outlayer( element, options ) {
+  var queryElement = utils.getQueryElement( element );
+  if ( !queryElement ) {
+    if ( console ) {
+      console.error( 'Bad element for ' + this.constructor.namespace +
+        ': ' + ( queryElement || element ) );
+    }
+    return;
+  }
+  this.element = queryElement;
+  // add jQuery
+  if ( jQuery ) {
+    this.$element = jQuery( this.element );
+  }
+
+  // options
+  this.options = utils.extend( {}, this.constructor.defaults );
+  this.option( options );
+
+  // add id for Outlayer.getFromElement
+  var id = ++GUID;
+  this.element.outlayerGUID = id; // expando
+  instances[ id ] = this; // associate via id
+
+  // kick it off
+  this._create();
+
+  var isInitLayout = this._getOption('initLayout');
+  if ( isInitLayout ) {
+    this.layout();
+  }
+}
+
+// settings are for internal use only
+Outlayer.namespace = 'outlayer';
+Outlayer.Item = Item;
+
+// default options
+Outlayer.defaults = {
+  containerStyle: {
+    position: 'relative'
+  },
+  initLayout: true,
+  originLeft: true,
+  originTop: true,
+  resize: true,
+  resizeContainer: true,
+  // item options
+  transitionDuration: '0.4s',
+  hiddenStyle: {
+    opacity: 0,
+    transform: 'scale(0.001)'
+  },
+  visibleStyle: {
+    opacity: 1,
+    transform: 'scale(1)'
+  }
+};
+
+var proto = Outlayer.prototype;
+// inherit EvEmitter
+utils.extend( proto, EvEmitter.prototype );
+
+/**
+ * set options
+ * @param {Object} opts
+ */
+proto.option = function( opts ) {
+  utils.extend( this.options, opts );
+};
+
+/**
+ * get backwards compatible option value, check old name
+ */
+proto._getOption = function( option ) {
+  var oldOption = this.constructor.compatOptions[ option ];
+  return oldOption && this.options[ oldOption ] !== undefined ?
+    this.options[ oldOption ] : this.options[ option ];
+};
+
+Outlayer.compatOptions = {
+  // currentName: oldName
+  initLayout: 'isInitLayout',
+  horizontal: 'isHorizontal',
+  layoutInstant: 'isLayoutInstant',
+  originLeft: 'isOriginLeft',
+  originTop: 'isOriginTop',
+  resize: 'isResizeBound',
+  resizeContainer: 'isResizingContainer'
+};
+
+proto._create = function() {
+  // get items from children
+  this.reloadItems();
+  // elements that affect layout, but are not laid out
+  this.stamps = [];
+  this.stamp( this.options.stamp );
+  // set container style
+  utils.extend( this.element.style, this.options.containerStyle );
+
+  // bind resize method
+  var canBindResize = this._getOption('resize');
+  if ( canBindResize ) {
+    this.bindResize();
+  }
+};
+
+// goes through all children again and gets bricks in proper order
+proto.reloadItems = function() {
+  // collection of item elements
+  this.items = this._itemize( this.element.children );
+};
+
+
+/**
+ * turn elements into Outlayer.Items to be used in layout
+ * @param {Array or NodeList or HTMLElement} elems
+ * @returns {Array} items - collection of new Outlayer Items
+ */
+proto._itemize = function( elems ) {
+
+  var itemElems = this._filterFindItemElements( elems );
+  var Item = this.constructor.Item;
+
+  // create new Outlayer Items for collection
+  var items = [];
+  for ( var i=0; i < itemElems.length; i++ ) {
+    var elem = itemElems[i];
+    var item = new Item( elem, this );
+    items.push( item );
+  }
+
+  return items;
+};
+
+/**
+ * get item elements to be used in layout
+ * @param {Array or NodeList or HTMLElement} elems
+ * @returns {Array} items - item elements
+ */
+proto._filterFindItemElements = function( elems ) {
+  return utils.filterFindElements( elems, this.options.itemSelector );
+};
+
+/**
+ * getter method for getting item elements
+ * @returns {Array} elems - collection of item elements
+ */
+proto.getItemElements = function() {
+  return this.items.map( function( item ) {
+    return item.element;
+  });
+};
+
+// ----- init & layout ----- //
+
+/**
+ * lays out all items
+ */
+proto.layout = function() {
+  this._resetLayout();
+  this._manageStamps();
+
+  // don't animate first layout
+  var layoutInstant = this._getOption('layoutInstant');
+  var isInstant = layoutInstant !== undefined ?
+    layoutInstant : !this._isLayoutInited;
+  this.layoutItems( this.items, isInstant );
+
+  // flag for initalized
+  this._isLayoutInited = true;
+};
+
+// _init is alias for layout
+proto._init = proto.layout;
+
+/**
+ * logic before any new layout
+ */
+proto._resetLayout = function() {
+  this.getSize();
+};
+
+
+proto.getSize = function() {
+  this.size = getSize( this.element );
+};
+
+/**
+ * get measurement from option, for columnWidth, rowHeight, gutter
+ * if option is String -> get element from selector string, & get size of element
+ * if option is Element -> get size of element
+ * else use option as a number
+ *
+ * @param {String} measurement
+ * @param {String} size - width or height
+ * @private
+ */
+proto._getMeasurement = function( measurement, size ) {
+  var option = this.options[ measurement ];
+  var elem;
+  if ( !option ) {
+    // default to 0
+    this[ measurement ] = 0;
+  } else {
+    // use option as an element
+    if ( typeof option == 'string' ) {
+      elem = this.element.querySelector( option );
+    } else if ( option instanceof HTMLElement ) {
+      elem = option;
+    }
+    // use size of element, if element
+    this[ measurement ] = elem ? getSize( elem )[ size ] : option;
+  }
+};
+
+/**
+ * layout a collection of item elements
+ * @api public
+ */
+proto.layoutItems = function( items, isInstant ) {
+  items = this._getItemsForLayout( items );
+
+  this._layoutItems( items, isInstant );
+
+  this._postLayout();
+};
+
+/**
+ * get the items to be laid out
+ * you may want to skip over some items
+ * @param {Array} items
+ * @returns {Array} items
+ */
+proto._getItemsForLayout = function( items ) {
+  return items.filter( function( item ) {
+    return !item.isIgnored;
+  });
+};
+
+/**
+ * layout items
+ * @param {Array} items
+ * @param {Boolean} isInstant
+ */
+proto._layoutItems = function( items, isInstant ) {
+  this._emitCompleteOnItems( 'layout', items );
+
+  if ( !items || !items.length ) {
+    // no items, emit event with empty array
+    return;
+  }
+
+  var queue = [];
+
+  items.forEach( function( item ) {
+    // get x/y object from method
+    var position = this._getItemLayoutPosition( item );
+    // enqueue
+    position.item = item;
+    position.isInstant = isInstant || item.isLayoutInstant;
+    queue.push( position );
+  }, this );
+
+  this._processLayoutQueue( queue );
+};
+
+/**
+ * get item layout position
+ * @param {Outlayer.Item} item
+ * @returns {Object} x and y position
+ */
+proto._getItemLayoutPosition = function( /* item */ ) {
+  return {
+    x: 0,
+    y: 0
+  };
+};
+
+/**
+ * iterate over array and position each item
+ * Reason being - separating this logic prevents 'layout invalidation'
+ * thx @paul_irish
+ * @param {Array} queue
+ */
+proto._processLayoutQueue = function( queue ) {
+  this.updateStagger();
+  queue.forEach( function( obj, i ) {
+    this._positionItem( obj.item, obj.x, obj.y, obj.isInstant, i );
+  }, this );
+};
+
+// set stagger from option in milliseconds number
+proto.updateStagger = function() {
+  var stagger = this.options.stagger;
+  if ( stagger === null || stagger === undefined ) {
+    this.stagger = 0;
+    return;
+  }
+  this.stagger = getMilliseconds( stagger );
+  return this.stagger;
+};
+
+/**
+ * Sets position of item in DOM
+ * @param {Outlayer.Item} item
+ * @param {Number} x - horizontal position
+ * @param {Number} y - vertical position
+ * @param {Boolean} isInstant - disables transitions
+ */
+proto._positionItem = function( item, x, y, isInstant, i ) {
+  if ( isInstant ) {
+    // if not transition, just set CSS
+    item.goTo( x, y );
+  } else {
+    item.stagger( i * this.stagger );
+    item.moveTo( x, y );
+  }
+};
+
+/**
+ * Any logic you want to do after each layout,
+ * i.e. size the container
+ */
+proto._postLayout = function() {
+  this.resizeContainer();
+};
+
+proto.resizeContainer = function() {
+  var isResizingContainer = this._getOption('resizeContainer');
+  if ( !isResizingContainer ) {
+    return;
+  }
+  var size = this._getContainerSize();
+  if ( size ) {
+    this._setContainerMeasure( size.width, true );
+    this._setContainerMeasure( size.height, false );
+  }
+};
+
+/**
+ * Sets width or height of container if returned
+ * @returns {Object} size
+ *   @param {Number} width
+ *   @param {Number} height
+ */
+proto._getContainerSize = noop;
+
+/**
+ * @param {Number} measure - size of width or height
+ * @param {Boolean} isWidth
+ */
+proto._setContainerMeasure = function( measure, isWidth ) {
+  if ( measure === undefined ) {
+    return;
+  }
+
+  var elemSize = this.size;
+  // add padding and border width if border box
+  if ( elemSize.isBorderBox ) {
+    measure += isWidth ? elemSize.paddingLeft + elemSize.paddingRight +
+      elemSize.borderLeftWidth + elemSize.borderRightWidth :
+      elemSize.paddingBottom + elemSize.paddingTop +
+      elemSize.borderTopWidth + elemSize.borderBottomWidth;
+  }
+
+  measure = Math.max( measure, 0 );
+  this.element.style[ isWidth ? 'width' : 'height' ] = measure + 'px';
+};
+
+/**
+ * emit eventComplete on a collection of items events
+ * @param {String} eventName
+ * @param {Array} items - Outlayer.Items
+ */
+proto._emitCompleteOnItems = function( eventName, items ) {
+  var _this = this;
+  function onComplete() {
+    _this.dispatchEvent( eventName + 'Complete', null, [ items ] );
+  }
+
+  var count = items.length;
+  if ( !items || !count ) {
+    onComplete();
+    return;
+  }
+
+  var doneCount = 0;
+  function tick() {
+    doneCount++;
+    if ( doneCount == count ) {
+      onComplete();
+    }
+  }
+
+  // bind callback
+  items.forEach( function( item ) {
+    item.once( eventName, tick );
+  });
+};
+
+/**
+ * emits events via EvEmitter and jQuery events
+ * @param {String} type - name of event
+ * @param {Event} event - original event
+ * @param {Array} args - extra arguments
+ */
+proto.dispatchEvent = function( type, event, args ) {
+  // add original event to arguments
+  var emitArgs = event ? [ event ].concat( args ) : args;
+  this.emitEvent( type, emitArgs );
+
+  if ( jQuery ) {
+    // set this.$element
+    this.$element = this.$element || jQuery( this.element );
+    if ( event ) {
+      // create jQuery event
+      var $event = jQuery.Event( event );
+      $event.type = type;
+      this.$element.trigger( $event, args );
+    } else {
+      // just trigger with type if no event available
+      this.$element.trigger( type, args );
+    }
+  }
+};
+
+// -------------------------- ignore & stamps -------------------------- //
+
+
+/**
+ * keep item in collection, but do not lay it out
+ * ignored items do not get skipped in layout
+ * @param {Element} elem
+ */
+proto.ignore = function( elem ) {
+  var item = this.getItem( elem );
+  if ( item ) {
+    item.isIgnored = true;
+  }
+};
+
+/**
+ * return item to layout collection
+ * @param {Element} elem
+ */
+proto.unignore = function( elem ) {
+  var item = this.getItem( elem );
+  if ( item ) {
+    delete item.isIgnored;
+  }
+};
+
+/**
+ * adds elements to stamps
+ * @param {NodeList, Array, Element, or String} elems
+ */
+proto.stamp = function( elems ) {
+  elems = this._find( elems );
+  if ( !elems ) {
+    return;
+  }
+
+  this.stamps = this.stamps.concat( elems );
+  // ignore
+  elems.forEach( this.ignore, this );
+};
+
+/**
+ * removes elements to stamps
+ * @param {NodeList, Array, or Element} elems
+ */
+proto.unstamp = function( elems ) {
+  elems = this._find( elems );
+  if ( !elems ){
+    return;
+  }
+
+  elems.forEach( function( elem ) {
+    // filter out removed stamp elements
+    utils.removeFrom( this.stamps, elem );
+    this.unignore( elem );
+  }, this );
+};
+
+/**
+ * finds child elements
+ * @param {NodeList, Array, Element, or String} elems
+ * @returns {Array} elems
+ */
+proto._find = function( elems ) {
+  if ( !elems ) {
+    return;
+  }
+  // if string, use argument as selector string
+  if ( typeof elems == 'string' ) {
+    elems = this.element.querySelectorAll( elems );
+  }
+  elems = utils.makeArray( elems );
+  return elems;
+};
+
+proto._manageStamps = function() {
+  if ( !this.stamps || !this.stamps.length ) {
+    return;
+  }
+
+  this._getBoundingRect();
+
+  this.stamps.forEach( this._manageStamp, this );
+};
+
+// update boundingLeft / Top
+proto._getBoundingRect = function() {
+  // get bounding rect for container element
+  var boundingRect = this.element.getBoundingClientRect();
+  var size = this.size;
+  this._boundingRect = {
+    left: boundingRect.left + size.paddingLeft + size.borderLeftWidth,
+    top: boundingRect.top + size.paddingTop + size.borderTopWidth,
+    right: boundingRect.right - ( size.paddingRight + size.borderRightWidth ),
+    bottom: boundingRect.bottom - ( size.paddingBottom + size.borderBottomWidth )
+  };
+};
+
+/**
+ * @param {Element} stamp
+**/
+proto._manageStamp = noop;
+
+/**
+ * get x/y position of element relative to container element
+ * @param {Element} elem
+ * @returns {Object} offset - has left, top, right, bottom
+ */
+proto._getElementOffset = function( elem ) {
+  var boundingRect = elem.getBoundingClientRect();
+  var thisRect = this._boundingRect;
+  var size = getSize( elem );
+  var offset = {
+    left: boundingRect.left - thisRect.left - size.marginLeft,
+    top: boundingRect.top - thisRect.top - size.marginTop,
+    right: thisRect.right - boundingRect.right - size.marginRight,
+    bottom: thisRect.bottom - boundingRect.bottom - size.marginBottom
+  };
+  return offset;
+};
+
+// -------------------------- resize -------------------------- //
+
+// enable event handlers for listeners
+// i.e. resize -> onresize
+proto.handleEvent = utils.handleEvent;
+
+/**
+ * Bind layout to window resizing
+ */
+proto.bindResize = function() {
+  window.addEventListener( 'resize', this );
+  this.isResizeBound = true;
+};
+
+/**
+ * Unbind layout to window resizing
+ */
+proto.unbindResize = function() {
+  window.removeEventListener( 'resize', this );
+  this.isResizeBound = false;
+};
+
+proto.onresize = function() {
+  this.resize();
+};
+
+utils.debounceMethod( Outlayer, 'onresize', 100 );
+
+proto.resize = function() {
+  // don't trigger if size did not change
+  // or if resize was unbound. See #9
+  if ( !this.isResizeBound || !this.needsResizeLayout() ) {
+    return;
+  }
+
+  this.layout();
+};
+
+/**
+ * check if layout is needed post layout
+ * @returns Boolean
+ */
+proto.needsResizeLayout = function() {
+  var size = getSize( this.element );
+  // check that this.size and size are there
+  // IE8 triggers resize on body size change, so they might not be
+  var hasSizes = this.size && size;
+  return hasSizes && size.innerWidth !== this.size.innerWidth;
+};
+
+// -------------------------- methods -------------------------- //
+
+/**
+ * add items to Outlayer instance
+ * @param {Array or NodeList or Element} elems
+ * @returns {Array} items - Outlayer.Items
+**/
+proto.addItems = function( elems ) {
+  var items = this._itemize( elems );
+  // add items to collection
+  if ( items.length ) {
+    this.items = this.items.concat( items );
+  }
+  return items;
+};
+
+/**
+ * Layout newly-appended item elements
+ * @param {Array or NodeList or Element} elems
+ */
+proto.appended = function( elems ) {
+  var items = this.addItems( elems );
+  if ( !items.length ) {
+    return;
+  }
+  // layout and reveal just the new items
+  this.layoutItems( items, true );
+  this.reveal( items );
+};
+
+/**
+ * Layout prepended elements
+ * @param {Array or NodeList or Element} elems
+ */
+proto.prepended = function( elems ) {
+  var items = this._itemize( elems );
+  if ( !items.length ) {
+    return;
+  }
+  // add items to beginning of collection
+  var previousItems = this.items.slice(0);
+  this.items = items.concat( previousItems );
+  // start new layout
+  this._resetLayout();
+  this._manageStamps();
+  // layout new stuff without transition
+  this.layoutItems( items, true );
+  this.reveal( items );
+  // layout previous items
+  this.layoutItems( previousItems );
+};
+
+/**
+ * reveal a collection of items
+ * @param {Array of Outlayer.Items} items
+ */
+proto.reveal = function( items ) {
+  this._emitCompleteOnItems( 'reveal', items );
+  if ( !items || !items.length ) {
+    return;
+  }
+  var stagger = this.updateStagger();
+  items.forEach( function( item, i ) {
+    item.stagger( i * stagger );
+    item.reveal();
+  });
+};
+
+/**
+ * hide a collection of items
+ * @param {Array of Outlayer.Items} items
+ */
+proto.hide = function( items ) {
+  this._emitCompleteOnItems( 'hide', items );
+  if ( !items || !items.length ) {
+    return;
+  }
+  var stagger = this.updateStagger();
+  items.forEach( function( item, i ) {
+    item.stagger( i * stagger );
+    item.hide();
+  });
+};
+
+/**
+ * reveal item elements
+ * @param {Array}, {Element}, {NodeList} items
+ */
+proto.revealItemElements = function( elems ) {
+  var items = this.getItems( elems );
+  this.reveal( items );
+};
+
+/**
+ * hide item elements
+ * @param {Array}, {Element}, {NodeList} items
+ */
+proto.hideItemElements = function( elems ) {
+  var items = this.getItems( elems );
+  this.hide( items );
+};
+
+/**
+ * get Outlayer.Item, given an Element
+ * @param {Element} elem
+ * @param {Function} callback
+ * @returns {Outlayer.Item} item
+ */
+proto.getItem = function( elem ) {
+  // loop through items to get the one that matches
+  for ( var i=0; i < this.items.length; i++ ) {
+    var item = this.items[i];
+    if ( item.element == elem ) {
+      // return item
+      return item;
+    }
+  }
+};
+
+/**
+ * get collection of Outlayer.Items, given Elements
+ * @param {Array} elems
+ * @returns {Array} items - Outlayer.Items
+ */
+proto.getItems = function( elems ) {
+  elems = utils.makeArray( elems );
+  var items = [];
+  elems.forEach( function( elem ) {
+    var item = this.getItem( elem );
+    if ( item ) {
+      items.push( item );
+    }
+  }, this );
+
+  return items;
+};
+
+/**
+ * remove element(s) from instance and DOM
+ * @param {Array or NodeList or Element} elems
+ */
+proto.remove = function( elems ) {
+  var removeItems = this.getItems( elems );
+
+  this._emitCompleteOnItems( 'remove', removeItems );
+
+  // bail if no items to remove
+  if ( !removeItems || !removeItems.length ) {
+    return;
+  }
+
+  removeItems.forEach( function( item ) {
+    item.remove();
+    // remove item from collection
+    utils.removeFrom( this.items, item );
+  }, this );
+};
+
+// ----- destroy ----- //
+
+// remove and disable Outlayer instance
+proto.destroy = function() {
+  // clean up dynamic styles
+  var style = this.element.style;
+  style.height = '';
+  style.position = '';
+  style.width = '';
+  // destroy items
+  this.items.forEach( function( item ) {
+    item.destroy();
+  });
+
+  this.unbindResize();
+
+  var id = this.element.outlayerGUID;
+  delete instances[ id ]; // remove reference to instance by id
+  delete this.element.outlayerGUID;
+  // remove data for jQuery
+  if ( jQuery ) {
+    jQuery.removeData( this.element, this.constructor.namespace );
+  }
+
+};
+
+// -------------------------- data -------------------------- //
+
+/**
+ * get Outlayer instance from element
+ * @param {Element} elem
+ * @returns {Outlayer}
+ */
+Outlayer.data = function( elem ) {
+  elem = utils.getQueryElement( elem );
+  var id = elem && elem.outlayerGUID;
+  return id && instances[ id ];
+};
+
+
+// -------------------------- create Outlayer class -------------------------- //
+
+/**
+ * create a layout class
+ * @param {String} namespace
+ */
+Outlayer.create = function( namespace, options ) {
+  // sub-class Outlayer
+  var Layout = subclass( Outlayer );
+  // apply new options and compatOptions
+  Layout.defaults = utils.extend( {}, Outlayer.defaults );
+  utils.extend( Layout.defaults, options );
+  Layout.compatOptions = utils.extend( {}, Outlayer.compatOptions  );
+
+  Layout.namespace = namespace;
+
+  Layout.data = Outlayer.data;
+
+  // sub-class Item
+  Layout.Item = subclass( Item );
+
+  // -------------------------- declarative -------------------------- //
+
+  utils.htmlInit( Layout, namespace );
+
+  // -------------------------- jQuery bridge -------------------------- //
+
+  // make into jQuery plugin
+  if ( jQuery && jQuery.bridget ) {
+    jQuery.bridget( namespace, Layout );
+  }
+
+  return Layout;
+};
+
+function subclass( Parent ) {
+  function SubClass() {
+    Parent.apply( this, arguments );
+  }
+
+  SubClass.prototype = Object.create( Parent.prototype );
+  SubClass.prototype.constructor = SubClass;
+
+  return SubClass;
+}
+
+// ----- helpers ----- //
+
+// how many milliseconds are in each unit
+var msUnits = {
+  ms: 1,
+  s: 1000
+};
+
+// munge time-like parameter into millisecond number
+// '0.4s' -> 40
+function getMilliseconds( time ) {
+  if ( typeof time == 'number' ) {
+    return time;
+  }
+  var matches = time.match( /(^\d*\.?\d*)(\w*)/ );
+  var num = matches && matches[1];
+  var unit = matches && matches[2];
+  if ( !num.length ) {
+    return 0;
+  }
+  num = parseFloat( num );
+  var mult = msUnits[ unit ] || 1;
+  return num * mult;
+}
+
+// ----- fin ----- //
+
+// back in global
+Outlayer.Item = Item;
+
+return Outlayer;
+
+}));
+
+},{"./item":78,"ev-emitter":38,"fizzy-ui-utils":67,"get-size":68}],80:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -20505,12 +30314,12 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],54:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 'use strict';
 
 module.exports = require('react/lib/ReactDOM');
 
-},{"react/lib/ReactDOM":133}],55:[function(require,module,exports){
+},{"react/lib/ReactDOM":170}],82:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20638,7 +30447,7 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./creators/CircleCreator":68,"can-use-dom":21,"react":227}],56:[function(require,module,exports){
+},{"./creators/CircleCreator":98,"can-use-dom":25,"react":264}],83:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20751,7 +30560,7 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./creators/DirectionsRendererCreator":69,"can-use-dom":21,"react":227}],57:[function(require,module,exports){
+},{"./creators/DirectionsRendererCreator":99,"can-use-dom":25,"react":264}],84:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20854,7 +30663,7 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./creators/DrawingManagerCreator":70,"can-use-dom":21,"react":227}],58:[function(require,module,exports){
+},{"./creators/DrawingManagerCreator":100,"can-use-dom":25,"react":264}],85:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21052,7 +30861,7 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./GoogleMapLoader":59,"./creators/GoogleMapHolder":71,"react":227,"warning":229}],59:[function(require,module,exports){
+},{"./GoogleMapLoader":86,"./creators/GoogleMapHolder":101,"react":264,"warning":266}],86:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21160,7 +30969,7 @@ var GoogleMapLoader = (function (_Component) {
 
 exports["default"] = GoogleMapLoader;
 module.exports = exports["default"];
-},{"./creators/GoogleMapHolder":71,"react":227}],60:[function(require,module,exports){
+},{"./creators/GoogleMapHolder":101,"react":264}],87:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21266,7 +31075,7 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./creators/InfoWindowCreator":72,"can-use-dom":21,"react":227}],61:[function(require,module,exports){
+},{"./creators/InfoWindowCreator":102,"can-use-dom":25,"react":264}],88:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21384,7 +31193,7 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./creators/KmlLayerCreator":73,"can-use-dom":21,"react":227}],62:[function(require,module,exports){
+},{"./creators/KmlLayerCreator":103,"can-use-dom":25,"react":264}],89:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21563,7 +31372,7 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./creators/MarkerCreator":74,"can-use-dom":21,"react":227}],63:[function(require,module,exports){
+},{"./creators/MarkerCreator":104,"can-use-dom":25,"react":264}],90:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21695,7 +31504,7 @@ module.exports = exports["default"];
 // Uncontrolled default[props] - used only in componentDidMount
 
 // Controlled [props] - used in componentDidMount/componentDidUpdate
-},{"./creators/OverlayViewCreator":75,"can-use-dom":21,"react":227}],64:[function(require,module,exports){
+},{"./creators/OverlayViewCreator":105,"can-use-dom":25,"react":264}],91:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21813,7 +31622,7 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./creators/PolygonCreator":76,"can-use-dom":21,"react":227}],65:[function(require,module,exports){
+},{"./creators/PolygonCreator":106,"can-use-dom":25,"react":264}],92:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21926,7 +31735,7 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./creators/PolylineCreator":77,"can-use-dom":21,"react":227}],66:[function(require,module,exports){
+},{"./creators/PolylineCreator":107,"can-use-dom":25,"react":264}],93:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22044,7 +31853,7 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./creators/RectangleCreator":78,"can-use-dom":21,"react":227}],67:[function(require,module,exports){
+},{"./creators/RectangleCreator":108,"can-use-dom":25,"react":264}],94:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22178,7 +31987,459 @@ module.exports = exports["default"];
 // Controlled [props] - used in componentDidMount/componentDidUpdate
 
 // Event [onEventName]
-},{"./creators/SearchBoxCreator":79,"can-use-dom":21,"react":227}],68:[function(require,module,exports){
+},{"./creators/SearchBoxCreator":109,"can-use-dom":25,"react":264}],95:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x5, _x6, _x7) { var _again = true; _function: while (_again) { var object = _x5, property = _x6, receiver = _x7; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x5 = parent; _x6 = property; _x7 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _canUseDom = require('can-use-dom');
+
+var _canUseDom2 = _interopRequireDefault(_canUseDom);
+
+var _addonsCreatorsMarkerClustererCreator = require('./addonsCreators/MarkerClustererCreator');
+
+var _addonsCreatorsMarkerClustererCreator2 = _interopRequireDefault(_addonsCreatorsMarkerClustererCreator);
+
+var MarkerClusterer = (function (_Component) {
+  _inherits(MarkerClusterer, _Component);
+
+  function MarkerClusterer() {
+    _classCallCheck(this, MarkerClusterer);
+
+    _get(Object.getPrototypeOf(MarkerClusterer.prototype), 'constructor', this).apply(this, arguments);
+
+    this.state = {};
+  }
+
+  _createClass(MarkerClusterer, [{
+    key: 'getAverageCenter',
+
+    // Public APIs
+    // http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/docs/reference.html#events
+    value: function getAverageCenter() {
+      return this.state.markerClusterer.getAverageCenter();
+    }
+  }, {
+    key: 'getBatchSizeIE',
+    value: function getBatchSizeIE() {
+      return this.state.markerClusterer.getBatchSizeIE();
+    }
+  }, {
+    key: 'getCalculator',
+    value: function getCalculator() {
+      return this.state.markerClusterer.getCalculator();
+    }
+  }, {
+    key: 'getClusterClass',
+    value: function getClusterClass() {
+      return this.state.markerClusterer.getClusterClass();
+    }
+  }, {
+    key: 'getClusters',
+    value: function getClusters() {
+      return this.state.markerClusterer.getClusters();
+    }
+  }, {
+    key: 'getEnableRetinaIcons',
+    value: function getEnableRetinaIcons() {
+      return this.state.markerClusterer.getEnableRetinaIcons();
+    }
+  }, {
+    key: 'getGridSize',
+    value: function getGridSize() {
+      return this.state.markerClusterer.getGridSize();
+    }
+  }, {
+    key: 'getIgnoreHidden',
+    value: function getIgnoreHidden() {
+      return this.state.markerClusterer.getIgnoreHidden();
+    }
+  }, {
+    key: 'getImageExtension',
+    value: function getImageExtension() {
+      return this.state.markerClusterer.getImageExtension();
+    }
+  }, {
+    key: 'getImagePath',
+    value: function getImagePath() {
+      return this.state.markerClusterer.getImagePath();
+    }
+  }, {
+    key: 'getImageSize',
+    value: function getImageSize() {
+      return this.state.markerClusterer.getImageSize();
+    }
+  }, {
+    key: 'getMarkers',
+    value: function getMarkers() {
+      return this.state.markerClusterer.getMarkers();
+    }
+  }, {
+    key: 'getMaxZoom',
+    value: function getMaxZoom() {
+      return this.state.markerClusterer.getMaxZoom();
+    }
+  }, {
+    key: 'getMinimumClusterSize',
+    value: function getMinimumClusterSize() {
+      return this.state.markerClusterer.getMinimumClusterSize();
+    }
+  }, {
+    key: 'getStyles',
+    value: function getStyles() {
+      return this.state.markerClusterer.getStyles();
+    }
+  }, {
+    key: 'getTitle',
+    value: function getTitle() {
+      return this.state.markerClusterer.getTitle();
+    }
+  }, {
+    key: 'getTotalClusters',
+    value: function getTotalClusters() {
+      return this.state.markerClusterer.getTotalClusters();
+    }
+  }, {
+    key: 'getZoomOnClick',
+    value: function getZoomOnClick() {
+      return this.state.markerClusterer.getZoomOnClick();
+    }
+
+    // Public APIs - Use this carefully
+  }, {
+    key: 'addMarker',
+    value: function addMarker(marker) {
+      var nodraw = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      return this.state.markerClusterer.addMarker(marker, nodraw);
+    }
+  }, {
+    key: 'addMarkers',
+    value: function addMarkers(markers) {
+      var nodraw = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      return this.state.markerClusterer.addMarkers(markers, nodraw);
+    }
+  }, {
+    key: 'removeMarker',
+    value: function removeMarker(marker) {
+      var nodraw = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      return this.state.markerClusterer.removeMarker(marker, nodraw);
+    }
+  }, {
+    key: 'removeMarkers',
+    value: function removeMarkers(markers) {
+      var nodraw = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+      return this.state.markerClusterer.removeMarkers(markers, nodraw);
+    }
+  }, {
+    key: 'clearMarkers',
+    value: function clearMarkers() {
+      return this.state.markerClusterer.clearMarkers();
+    }
+  }, {
+    key: 'fitMapToMarkers',
+    value: function fitMapToMarkers() {
+      return this.state.markerClusterer.fitMapToMarkers();
+    }
+  }, {
+    key: 'repaint',
+    value: function repaint() {
+      return this.state.markerClusterer.repaint();
+    }
+  }, {
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      if (!_canUseDom2['default']) {
+        return;
+      }
+
+      var _props = this.props;
+      var mapHolderRef = _props.mapHolderRef;
+
+      var markerClustererProps = _objectWithoutProperties(_props, ['mapHolderRef']);
+
+      var markerClusterer = _addonsCreatorsMarkerClustererCreator2['default']._createMarkerClusterer(mapHolderRef, markerClustererProps);
+
+      this.setState({ markerClusterer: markerClusterer });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      if (this.state.markerClusterer) {
+        return _react2['default'].createElement(
+          _addonsCreatorsMarkerClustererCreator2['default'],
+          _extends({ markerClusterer: this.state.markerClusterer }, this.props),
+          this.props.children
+        );
+      } else {
+        return _react2['default'].createElement('noscript', null);
+      }
+    }
+  }], [{
+    key: 'propTypes',
+    value: _extends({}, _addonsCreatorsMarkerClustererCreator.markerClusterDefaultPropTypes, _addonsCreatorsMarkerClustererCreator.markerClusterControlledPropTypes, _addonsCreatorsMarkerClustererCreator.markerClusterEventPropTypes),
+    enumerable: true
+  }]);
+
+  return MarkerClusterer;
+})(_react.Component);
+
+exports['default'] = MarkerClusterer;
+module.exports = exports['default'];
+},{"./addonsCreators/MarkerClustererCreator":96,"can-use-dom":25,"react":264}],96:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _addonsEventListsMarkerClustererEventList = require('../addonsEventLists/MarkerClustererEventList');
+
+var _addonsEventListsMarkerClustererEventList2 = _interopRequireDefault(_addonsEventListsMarkerClustererEventList);
+
+var _utilsEventHandlerCreator = require('../../utils/eventHandlerCreator');
+
+var _utilsEventHandlerCreator2 = _interopRequireDefault(_utilsEventHandlerCreator);
+
+var _utilsDefaultPropsCreator = require('../../utils/defaultPropsCreator');
+
+var _utilsDefaultPropsCreator2 = _interopRequireDefault(_utilsDefaultPropsCreator);
+
+var _utilsComposeOptions = require('../../utils/composeOptions');
+
+var _utilsComposeOptions2 = _interopRequireDefault(_utilsComposeOptions);
+
+var _utilsComponentLifecycleDecorator = require('../../utils/componentLifecycleDecorator');
+
+var _utilsComponentLifecycleDecorator2 = _interopRequireDefault(_utilsComponentLifecycleDecorator);
+
+var _creatorsGoogleMapHolder = require('../../creators/GoogleMapHolder');
+
+var _creatorsGoogleMapHolder2 = _interopRequireDefault(_creatorsGoogleMapHolder);
+
+var markerClustererControlledPropTypes = {
+  // http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/docs/reference.html
+  averageCenter: _react.PropTypes.bool,
+  batchSizeIE: _react.PropTypes.number,
+  calculator: _react.PropTypes.func,
+  clusterClass: _react.PropTypes.string,
+  enableRetinaIcons: _react.PropTypes.bool,
+  gridSize: _react.PropTypes.number,
+  ignoreHidden: _react.PropTypes.bool,
+  imageExtension: _react.PropTypes.string,
+  imagePath: _react.PropTypes.string,
+  imageSizes: _react.PropTypes.array,
+  maxZoom: _react.PropTypes.number,
+  minimumClusterSize: _react.PropTypes.number,
+  styles: _react.PropTypes.array,
+  title: _react.PropTypes.string,
+  zoomOnClick: _react.PropTypes.bool
+};
+
+exports.markerClustererControlledPropTypes = markerClustererControlledPropTypes;
+var markerClustererDefaultPropTypes = (0, _utilsDefaultPropsCreator2['default'])(markerClustererControlledPropTypes);
+
+exports.markerClustererDefaultPropTypes = markerClustererDefaultPropTypes;
+var markerClustererUpdaters = {
+  averageCenter: function averageCenter(_averageCenter, component) {
+    component.getMarkerClusterer().setAverageCenter(_averageCenter);
+  },
+
+  batchSizeIE: function batchSizeIE(_batchSizeIE, component) {
+    component.getMarkerClusterer().setBatchSizeIE(_batchSizeIE);
+  },
+
+  calculator: function calculator(_calculator, component) {
+    component.getMarkerClusterer().setCalculator(_calculator);
+  },
+
+  enableRetinaIcons: function enableRetinaIcons(_enableRetinaIcons, component) {
+    component.getMarkerClusterer().setEnableRetinaIcons(_enableRetinaIcons);
+  },
+
+  gridSize: function gridSize(_gridSize, component) {
+    component.getMarkerClusterer().setGridSize(_gridSize);
+  },
+
+  ignoreHidden: function ignoreHidden(_ignoreHidden, component) {
+    component.getMarkerClusterer().setIgnoreHidden(_ignoreHidden);
+  },
+
+  imageExtension: function imageExtension(_imageExtension, component) {
+    component.getMarkerClusterer().setImageExtension(_imageExtension);
+  },
+
+  imagePath: function imagePath(_imagePath, component) {
+    component.getMarkerClusterer().setImagePath(_imagePath);
+  },
+
+  imageSizes: function imageSizes(_imageSizes, component) {
+    component.getMarkerClusterer().setImageSizes(_imageSizes);
+  },
+
+  maxZoom: function maxZoom(_maxZoom, component) {
+    component.getMarkerClusterer().setMaxZoom(_maxZoom);
+  },
+
+  minimumClusterSize: function minimumClusterSize(_minimumClusterSize, component) {
+    component.getMarkerClusterer().setMinimumClusterSize(_minimumClusterSize);
+  },
+
+  styles: function styles(_styles, component) {
+    component.getMarkerClusterer().setStyles(_styles);
+  },
+
+  title: function title(_title, component) {
+    component.getMarkerClusterer().setTitle(_title);
+  },
+
+  zoomOnClick: function zoomOnClick(_zoomOnClick, component) {
+    component.getMarkerClusterer().setZoomOnClick(_zoomOnClick);
+  }
+};
+
+var _eventHandlerCreator = (0, _utilsEventHandlerCreator2['default'])(_addonsEventListsMarkerClustererEventList2['default']);
+
+var eventPropTypes = _eventHandlerCreator.eventPropTypes;
+var registerEvents = _eventHandlerCreator.registerEvents;
+var markerClustererEventPropTypes = eventPropTypes;
+
+exports.markerClustererEventPropTypes = markerClustererEventPropTypes;
+
+var MarkerClustererCreator = (function (_Component) {
+  _inherits(MarkerClustererCreator, _Component);
+
+  function MarkerClustererCreator() {
+    _classCallCheck(this, _MarkerClustererCreator);
+
+    _get(Object.getPrototypeOf(_MarkerClustererCreator.prototype), 'constructor', this).apply(this, arguments);
+  }
+
+  _createClass(MarkerClustererCreator, [{
+    key: 'getMarkerClusterer',
+    value: function getMarkerClusterer() {
+      return this.props.markerClusterer;
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps) {
+      this.props.markerClusterer.repaint();
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.props.markerClusterer.setMap(null);
+    }
+  }, {
+    key: 'getAnchor',
+    value: function getAnchor() {
+      return this.props.markerClusterer;
+    }
+  }, {
+    key: 'getAnchorType',
+    value: function getAnchorType() {
+      return 'MarkerClusterer';
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this = this;
+
+      var _props = this.props;
+      var mapHolderRef = _props.mapHolderRef;
+      var children = _props.children;
+
+      if (_react.Children.count(children) > 0) {
+        return _react2['default'].createElement(
+          'div',
+          null,
+          _react.Children.map(children, function (childElement) {
+            if (_react2['default'].isValidElement(childElement)) {
+              return _react2['default'].cloneElement(childElement, {
+                mapHolderRef: mapHolderRef,
+                anchorHolderRef: _this
+              });
+            } else {
+              return childElement;
+            }
+          })
+        );
+      } else {
+        return _react2['default'].createElement('noscript', null);
+      }
+    }
+  }], [{
+    key: '_createMarkerClusterer',
+    value: function _createMarkerClusterer(mapHolderRef, markerClustererProps) {
+      var GoogleMarkerClusterer = require('marker-clusterer-plus');
+
+      // http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/docs/reference.html#events
+      var markerClusterer = new GoogleMarkerClusterer(mapHolderRef.getMap(), [], (0, _utilsComposeOptions2['default'])(markerClustererProps, markerClustererControlledPropTypes));
+
+      return markerClusterer;
+    }
+  }, {
+    key: 'PropTypes',
+    value: {
+      mapHolderRef: _react.PropTypes.instanceOf(_creatorsGoogleMapHolder2['default']).isRequired,
+      markerClusterer: _react.PropTypes.object.isRequired
+    },
+    enumerable: true
+  }]);
+
+  var _MarkerClustererCreator = MarkerClustererCreator;
+  MarkerClustererCreator = (0, _utilsComponentLifecycleDecorator2['default'])({
+    registerEvents: registerEvents,
+    instanceMethodName: 'getMarkerClusterer',
+    updaters: markerClustererUpdaters
+  })(MarkerClustererCreator) || MarkerClustererCreator;
+  return MarkerClustererCreator;
+})(_react.Component);
+
+exports['default'] = MarkerClustererCreator;
+},{"../../creators/GoogleMapHolder":101,"../../utils/componentLifecycleDecorator":123,"../../utils/composeOptions":124,"../../utils/defaultPropsCreator":126,"../../utils/eventHandlerCreator":127,"../addonsEventLists/MarkerClustererEventList":97,"marker-clusterer-plus":75,"react":264}],97:[function(require,module,exports){
+// http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/docs/reference.html
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = ["click", "clusteringbegin", "clusteringend", "mouseout", "mouseover"];
+module.exports = exports["default"];
+},{}],98:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22322,7 +32583,7 @@ var CircleCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = CircleCreator;
-},{"../eventLists/CircleEventList":80,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"./GoogleMapHolder":71,"react":227}],69:[function(require,module,exports){
+},{"../eventLists/CircleEventList":110,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"./GoogleMapHolder":101,"react":264}],99:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22469,7 +32730,7 @@ var DirectionsRendererCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = DirectionsRendererCreator;
-},{"../eventLists/DirectionsRendererEventList":81,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"./GoogleMapHolder":71,"react":227}],70:[function(require,module,exports){
+},{"../eventLists/DirectionsRendererEventList":111,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"./GoogleMapHolder":101,"react":264}],100:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22597,7 +32858,7 @@ var DrawingManagerCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = DrawingManagerCreator;
-},{"../eventLists/DrawingManagerEventList":82,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"./GoogleMapHolder":71,"react":227}],71:[function(require,module,exports){
+},{"../eventLists/DrawingManagerEventList":112,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"./GoogleMapHolder":101,"react":264}],101:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22753,7 +33014,7 @@ var GoogleMapHolder = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = GoogleMapHolder;
-},{"../eventLists/GoogleMapEventList":83,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"react":227,"warning":229}],72:[function(require,module,exports){
+},{"../eventLists/GoogleMapEventList":113,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"react":264,"warning":266}],102:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22906,7 +33167,7 @@ var InfoWindowCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = InfoWindowCreator;
-},{"../eventLists/InfoWindowEventList":84,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"../utils/setContentForOptionalReactElement":98,"./GoogleMapHolder":71,"react":227}],73:[function(require,module,exports){
+},{"../eventLists/InfoWindowEventList":114,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"../utils/setContentForOptionalReactElement":128,"./GoogleMapHolder":101,"react":264}],103:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23062,7 +33323,7 @@ var KmlLayerCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = KmlLayerCreator;
-},{"../eventLists/KmlLayerEventList":85,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"./GoogleMapHolder":71,"react":227}],74:[function(require,module,exports){
+},{"../eventLists/KmlLayerEventList":115,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"./GoogleMapHolder":101,"react":264}],104:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23276,7 +33537,7 @@ var MarkerCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = MarkerCreator;
-},{"../eventLists/MarkerEventList":86,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"./GoogleMapHolder":71,"react":227}],75:[function(require,module,exports){
+},{"../eventLists/MarkerEventList":116,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"./GoogleMapHolder":101,"react":264}],105:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23524,7 +33785,7 @@ var OverlayViewCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = OverlayViewCreator;
-},{"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"./GoogleMapHolder":71,"invariant":50,"react":227,"react-dom":54}],76:[function(require,module,exports){
+},{"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"./GoogleMapHolder":101,"invariant":70,"react":264,"react-dom":81}],106:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23668,7 +33929,7 @@ var PolygonCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = PolygonCreator;
-},{"../eventLists/PolygonEventList":87,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"./GoogleMapHolder":71,"react":227}],77:[function(require,module,exports){
+},{"../eventLists/PolygonEventList":117,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"./GoogleMapHolder":101,"react":264}],107:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23808,7 +34069,7 @@ var PolylineCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = PolylineCreator;
-},{"../eventLists/PolylineEventList":88,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"./GoogleMapHolder":71,"react":227}],78:[function(require,module,exports){
+},{"../eventLists/PolylineEventList":118,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"./GoogleMapHolder":101,"react":264}],108:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23948,7 +34209,7 @@ var RectangleCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = RectangleCreator;
-},{"../eventLists/RectangleEventList":89,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"./GoogleMapHolder":71,"react":227}],79:[function(require,module,exports){
+},{"../eventLists/RectangleEventList":119,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"./GoogleMapHolder":101,"react":264}],109:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24101,7 +34362,7 @@ var SearchBoxCreator = (function (_Component) {
 })(_react.Component);
 
 exports["default"] = SearchBoxCreator;
-},{"../eventLists/SearchBoxEventList":90,"../utils/componentLifecycleDecorator":93,"../utils/composeOptions":94,"../utils/defaultPropsCreator":96,"../utils/eventHandlerCreator":97,"./GoogleMapHolder":71,"react":227}],80:[function(require,module,exports){
+},{"../eventLists/SearchBoxEventList":120,"../utils/componentLifecycleDecorator":123,"../utils/composeOptions":124,"../utils/defaultPropsCreator":126,"../utils/eventHandlerCreator":127,"./GoogleMapHolder":101,"react":264}],110:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#Circle
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24111,7 +34372,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["center_changed", "click", "dblclick", "drag", "dragend", "dragstart", "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", "radius_changed", "rightclick"];
 module.exports = exports["default"];
-},{}],81:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#DirectionsRenderer
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24121,7 +34382,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["directions_changed"];
 module.exports = exports["default"];
-},{}],82:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#DrawingManager
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24131,7 +34392,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["circlecomplete", "markercomplete", "overlaycomplete", "polygoncomplete", "polylinecomplete", "rectanglecomplete"];
 module.exports = exports["default"];
-},{}],83:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#Map
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24141,7 +34402,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["bounds_changed", "center_changed", "click", "dblclick", "drag", "dragend", "dragstart", "heading_changed", "idle", "maptypeid_changed", "mousemove", "mouseout", "mouseover", "projection_changed", "resize", "rightclick", "tilesloaded", "tilt_changed", "zoom_changed"];
 module.exports = exports["default"];
-},{}],84:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#InfoWindow
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24151,7 +34412,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["closeclick", "content_changed", "domready", "position_changed", "zindex_changed"];
 module.exports = exports["default"];
-},{}],85:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#KmlLayer
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24161,7 +34422,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["click", "defaultviewport_changed", "status_changed"];
 module.exports = exports["default"];
-},{}],86:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#Marker
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24171,7 +34432,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["animation_changed", "click", "clickable_changed", "cursor_changed", "dblclick", "drag", "dragend", "draggable_changed", "dragstart", "flat_changed", "icon_changed", "mousedown", "mouseout", "mouseover", "mouseup", "position_changed", "rightclick", "shape_changed", "title_changed", "visible_changed", "zindex_changed"];
 module.exports = exports["default"];
-},{}],87:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#Polygon
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24181,7 +34442,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["click", "dblclick", "drag", "dragend", "dragstart", "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", "rightclick"];
 module.exports = exports["default"];
-},{}],88:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#Polyline
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24191,7 +34452,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["click", "dblclick", "drag", "dragend", "dragstart", "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", "rightclick"];
 module.exports = exports["default"];
-},{}],89:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#Rectangle
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24201,7 +34462,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["bounds_changed", "click", "dblclick", "drag", "dragend", "dragstart", "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", "rightclick"];
 module.exports = exports["default"];
-},{}],90:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 // https://developers.google.com/maps/documentation/javascript/3.exp/reference#SearchBox
 // [].map.call($0.querySelectorAll("tr>td>code"), function(it){ return it.textContent; })
 "use strict";
@@ -24211,7 +34472,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = ["places_changed"];
 module.exports = exports["default"];
-},{}],91:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24271,7 +34532,7 @@ exports.Rectangle = _interopRequire(_Rectangle);
 var _SearchBox = require("./SearchBox");
 
 exports.SearchBox = _interopRequire(_SearchBox);
-},{"./Circle":55,"./DirectionsRenderer":56,"./DrawingManager":57,"./GoogleMap":58,"./GoogleMapLoader":59,"./InfoWindow":60,"./KmlLayer":61,"./Marker":62,"./OverlayView":63,"./Polygon":64,"./Polyline":65,"./Rectangle":66,"./SearchBox":67}],92:[function(require,module,exports){
+},{"./Circle":82,"./DirectionsRenderer":83,"./DrawingManager":84,"./GoogleMap":85,"./GoogleMapLoader":86,"./InfoWindow":87,"./KmlLayer":88,"./Marker":89,"./OverlayView":90,"./Polygon":91,"./Polyline":92,"./Rectangle":93,"./SearchBox":94}],122:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24284,7 +34545,7 @@ function addDefaultPrefix(name) {
 }
 
 module.exports = exports["default"];
-},{}],93:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24370,7 +34631,7 @@ function componentLifecycleDecorator(_ref) {
 }
 
 module.exports = exports["default"];
-},{}],94:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24405,7 +34666,7 @@ function composeOptions(props, controlledPropTypes) {
 }
 
 module.exports = exports["default"];
-},{"./controlledOrDefault":95}],95:[function(require,module,exports){
+},{"./controlledOrDefault":125}],125:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24430,7 +34691,7 @@ function controlledOrDefault(props) {
 }
 
 module.exports = exports["default"];
-},{"./addDefaultPrefix":92}],96:[function(require,module,exports){
+},{"./addDefaultPrefix":122}],126:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24452,7 +34713,7 @@ function defaultPropsCreator(propTypes) {
 }
 
 module.exports = exports["default"];
-},{"./addDefaultPrefix":92}],97:[function(require,module,exports){
+},{"./addDefaultPrefix":122}],127:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24500,7 +34761,7 @@ function eventHandlerCreator(rawNameList) {
 }
 
 module.exports = exports["default"];
-},{"react":227}],98:[function(require,module,exports){
+},{"react":264}],128:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24539,7 +34800,849 @@ function setContentForOptionalReactElement(contentOptionalReactElement, infoWind
 }
 
 module.exports = exports["default"];
-},{"react":227,"react-dom":54}],99:[function(require,module,exports){
+},{"react":264,"react-dom":81}],129:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _index = require('./index');
+
+var _index2 = _interopRequireDefault(_index);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var getDisplayName = function getDisplayName(WrappedComponent) {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+};
+
+exports.default = function () {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  return function lazyload(WrappedComponent) {
+    return function (_Component) {
+      _inherits(LazyLoadDecorated, _Component);
+
+      function LazyLoadDecorated() {
+        _classCallCheck(this, LazyLoadDecorated);
+
+        var _this = _possibleConstructorReturn(this, (LazyLoadDecorated.__proto__ || Object.getPrototypeOf(LazyLoadDecorated)).call(this));
+
+        _this.displayName = 'LazyLoad' + getDisplayName(WrappedComponent);
+        return _this;
+      }
+
+      _createClass(LazyLoadDecorated, [{
+        key: 'render',
+        value: function render() {
+          return _react2.default.createElement(
+            _index2.default,
+            options,
+            _react2.default.createElement(WrappedComponent, this.props)
+          );
+        }
+      }]);
+
+      return LazyLoadDecorated;
+    }(_react.Component);
+  };
+};
+},{"./index":130,"react":264}],130:[function(require,module,exports){
+(function (process){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.forceCheck = exports.lazyload = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = require('react-dom');
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _event = require('./utils/event');
+
+var _scrollParent = require('./utils/scrollParent');
+
+var _scrollParent2 = _interopRequireDefault(_scrollParent);
+
+var _debounce = require('./utils/debounce');
+
+var _debounce2 = _interopRequireDefault(_debounce);
+
+var _throttle = require('./utils/throttle');
+
+var _throttle2 = _interopRequireDefault(_throttle);
+
+var _decorator = require('./decorator');
+
+var _decorator2 = _interopRequireDefault(_decorator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * react-lazyload
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+
+var defaultBoundingClientRect = { top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0 };
+var LISTEN_FLAG = 'data-lazyload-listened';
+var listeners = [];
+var pending = [];
+
+/**
+ * Check if `component` is visible in overflow container `parent`
+ * @param  {node} component React component
+ * @param  {node} parent    component's scroll parent
+ * @return {bool}
+ */
+var checkOverflowVisible = function checkOverflowVisible(component, parent) {
+  var node = _reactDom2.default.findDOMNode(component);
+
+  var parentTop = void 0;
+  var parentHeight = void 0;
+
+  try {
+    var _parent$getBoundingCl = parent.getBoundingClientRect();
+
+    parentTop = _parent$getBoundingCl.top;
+    parentHeight = _parent$getBoundingCl.height;
+  } catch (e) {
+    parentTop = defaultBoundingClientRect.top;
+    parentHeight = defaultBoundingClientRect.height;
+  }
+
+  var windowInnerHeight = window.innerHeight || document.documentElement.clientHeight;
+
+  // calculate top and height of the intersection of the element's scrollParent and viewport
+  var intersectionTop = Math.max(parentTop, 0); // intersection's top relative to viewport
+  var intersectionHeight = Math.min(windowInnerHeight, parentTop + parentHeight) - intersectionTop; // height
+
+  // check whether the element is visible in the intersection
+  var top = void 0;
+  var height = void 0;
+
+  try {
+    var _node$getBoundingClie = node.getBoundingClientRect();
+
+    top = _node$getBoundingClie.top;
+    height = _node$getBoundingClie.height;
+  } catch (e) {
+    top = defaultBoundingClientRect.top;
+    height = defaultBoundingClientRect.height;
+  }
+
+  var offsetTop = top - intersectionTop; // element's top relative to intersection
+
+  var offsets = Array.isArray(component.props.offset) ? component.props.offset : [component.props.offset, component.props.offset]; // Be compatible with previous API
+
+  return offsetTop - offsets[0] <= intersectionHeight && offsetTop + height + offsets[1] >= 0;
+};
+
+/**
+ * Check if `component` is visible in document
+ * @param  {node} component React component
+ * @return {bool}
+ */
+var checkNormalVisible = function checkNormalVisible(component) {
+  var node = _reactDom2.default.findDOMNode(component);
+
+  var top = void 0;
+  var elementHeight = void 0;
+
+  try {
+    var _node$getBoundingClie2 = node.getBoundingClientRect();
+
+    top = _node$getBoundingClie2.top;
+    elementHeight = _node$getBoundingClie2.height;
+  } catch (e) {
+    top = defaultBoundingClientRect.top;
+    elementHeight = defaultBoundingClientRect.height;
+  }
+
+  var windowInnerHeight = window.innerHeight || document.documentElement.clientHeight;
+
+  var offsets = Array.isArray(component.props.offset) ? component.props.offset : [component.props.offset, component.props.offset]; // Be compatible with previous API
+
+  return top - offsets[0] <= windowInnerHeight && top + elementHeight + offsets[1] >= 0;
+};
+
+/**
+ * Detect if element is visible in viewport, if so, set `visible` state to true.
+ * If `once` prop is provided true, remove component as listener after checkVisible
+ *
+ * @param  {React} component   React component that respond to scroll and resize
+ */
+var checkVisible = function checkVisible(component) {
+  var node = _reactDom2.default.findDOMNode(component);
+  if (!node) {
+    return;
+  }
+
+  var parent = (0, _scrollParent2.default)(node);
+  var isOverflow = component.props.overflow && parent !== node.ownerDocument && parent !== document && parent !== document.documentElement;
+  var visible = isOverflow ? checkOverflowVisible(component, parent) : checkNormalVisible(component);
+
+  if (visible) {
+    // Avoid extra render if previously is visible, yeah I mean `render` call,
+    // not actual DOM render
+    if (!component.visible) {
+      if (component.props.once) {
+        pending.push(component);
+      }
+
+      component.visible = true;
+      component.forceUpdate();
+    }
+  } else if (!(component.props.once && component.visible)) {
+    component.visible = false;
+    if (component.props.unmountIfInvisible) {
+      component.forceUpdate();
+    }
+  }
+};
+
+var purgePending = function purgePending() {
+  pending.forEach(function (component) {
+    var index = listeners.indexOf(component);
+    if (index !== -1) {
+      listeners.splice(index, 1);
+    }
+  });
+
+  pending = [];
+};
+
+var lazyLoadHandler = function lazyLoadHandler() {
+  for (var i = 0; i < listeners.length; ++i) {
+    var listener = listeners[i];
+    checkVisible(listener);
+  }
+
+  // Remove `once` component in listeners
+  purgePending();
+};
+
+// Depending on component's props
+var delayType = void 0;
+var finalLazyLoadHandler = null;
+
+var LazyLoad = function (_Component) {
+  _inherits(LazyLoad, _Component);
+
+  function LazyLoad(props) {
+    _classCallCheck(this, LazyLoad);
+
+    var _this = _possibleConstructorReturn(this, (LazyLoad.__proto__ || Object.getPrototypeOf(LazyLoad)).call(this, props));
+
+    _this.visible = false;
+    return _this;
+  }
+
+  _createClass(LazyLoad, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+        if (_react2.default.Children.count(this.props.children) > 1) {
+          console.warn('[react-lazyload] Only one child is allowed to be passed to `LazyLoad`.');
+        }
+
+        if (this.props.wheel) {
+          // eslint-disable-line
+          console.warn('[react-lazyload] Props `wheel` is not supported anymore, try set `overflow` for lazy loading in overflow containers.');
+        }
+
+        // Warn the user if placeholder and height is not specified and the rendered height is 0
+        if (!this.props.placeholder && this.props.height === undefined && _reactDom2.default.findDOMNode(this).offsetHeight === 0) {
+          console.warn('[react-lazyload] Please add `height` props to <LazyLoad> for better performance.');
+        }
+      }
+
+      // It's unlikely to change delay type on the fly, this is mainly
+      // designed for tests
+      var needResetFinalLazyLoadHandler = false;
+      if (this.props.debounce !== undefined && delayType === 'throttle') {
+        console.warn('[react-lazyload] Previous delay function is `throttle`, now switching to `debounce`, try setting them unanimously');
+        needResetFinalLazyLoadHandler = true;
+      } else if (delayType === 'debounce' && this.props.debounce === undefined) {
+        console.warn('[react-lazyload] Previous delay function is `debounce`, now switching to `throttle`, try setting them unanimously');
+        needResetFinalLazyLoadHandler = true;
+      }
+
+      if (needResetFinalLazyLoadHandler) {
+        (0, _event.off)(window, 'scroll', finalLazyLoadHandler);
+        (0, _event.off)(window, 'resize', finalLazyLoadHandler);
+        finalLazyLoadHandler = null;
+      }
+
+      if (!finalLazyLoadHandler) {
+        if (this.props.debounce !== undefined) {
+          finalLazyLoadHandler = (0, _debounce2.default)(lazyLoadHandler, typeof this.props.debounce === 'number' ? this.props.debounce : 300);
+          delayType = 'debounce';
+        } else {
+          finalLazyLoadHandler = (0, _throttle2.default)(lazyLoadHandler, typeof this.props.throttle === 'number' ? this.props.throttle : 300);
+          delayType = 'throttle';
+        }
+      }
+
+      if (this.props.overflow) {
+        var parent = (0, _scrollParent2.default)(_reactDom2.default.findDOMNode(this));
+        if (parent && typeof parent.getAttribute === 'function') {
+          var listenerCount = 1 + +parent.getAttribute(LISTEN_FLAG);
+          if (listenerCount === 1) {
+            parent.addEventListener('scroll', finalLazyLoadHandler);
+          }
+          parent.setAttribute(LISTEN_FLAG, listenerCount);
+        }
+      } else if (listeners.length === 0 || needResetFinalLazyLoadHandler) {
+        var _props = this.props,
+            scroll = _props.scroll,
+            resize = _props.resize;
+
+
+        if (scroll) {
+          (0, _event.on)(window, 'scroll', finalLazyLoadHandler);
+        }
+
+        if (resize) {
+          (0, _event.on)(window, 'resize', finalLazyLoadHandler);
+        }
+      }
+
+      listeners.push(this);
+      checkVisible(this);
+    }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate() {
+      return this.visible;
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      if (this.props.overflow) {
+        var parent = (0, _scrollParent2.default)(_reactDom2.default.findDOMNode(this));
+        if (parent && typeof parent.getAttribute === 'function') {
+          var listenerCount = +parent.getAttribute(LISTEN_FLAG) - 1;
+          if (listenerCount === 0) {
+            parent.removeEventListener('scroll', finalLazyLoadHandler);
+            parent.removeAttribute(LISTEN_FLAG);
+          } else {
+            parent.setAttribute(LISTEN_FLAG, listenerCount);
+          }
+        }
+      }
+
+      var index = listeners.indexOf(this);
+      if (index !== -1) {
+        listeners.splice(index, 1);
+      }
+
+      if (listeners.length === 0) {
+        (0, _event.off)(window, 'resize', finalLazyLoadHandler);
+        (0, _event.off)(window, 'scroll', finalLazyLoadHandler);
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return this.visible ? this.props.children : this.props.placeholder ? this.props.placeholder : _react2.default.createElement('div', { style: { height: this.props.height }, className: 'lazyload-placeholder' });
+    }
+  }]);
+
+  return LazyLoad;
+}(_react.Component);
+
+LazyLoad.propTypes = {
+  once: _react.PropTypes.bool,
+  height: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
+  offset: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.arrayOf(_react.PropTypes.number)]),
+  overflow: _react.PropTypes.bool,
+  resize: _react.PropTypes.bool,
+  scroll: _react.PropTypes.bool,
+  children: _react.PropTypes.node,
+  throttle: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.bool]),
+  debounce: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.bool]),
+  placeholder: _react.PropTypes.node,
+  unmountIfInvisible: _react.PropTypes.bool
+};
+
+LazyLoad.defaultProps = {
+  once: false,
+  offset: 0,
+  overflow: false,
+  resize: false,
+  scroll: true,
+  unmountIfInvisible: false
+};
+
+var lazyload = exports.lazyload = _decorator2.default;
+exports.default = LazyLoad;
+exports.forceCheck = lazyLoadHandler;
+}).call(this,require('_process'))
+},{"./decorator":129,"./utils/debounce":131,"./utils/event":132,"./utils/scrollParent":133,"./utils/throttle":134,"_process":80,"react":264,"react-dom":81}],131:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = debounce;
+function debounce(func, wait, immediate) {
+  var timeout = void 0;
+  var args = void 0;
+  var context = void 0;
+  var timestamp = void 0;
+  var result = void 0;
+
+  var later = function later() {
+    var last = +new Date() - timestamp;
+
+    if (last < wait && last >= 0) {
+      timeout = setTimeout(later, wait - last);
+    } else {
+      timeout = null;
+      if (!immediate) {
+        result = func.apply(context, args);
+        if (!timeout) {
+          context = null;
+          args = null;
+        }
+      }
+    }
+  };
+
+  return function debounced() {
+    context = this;
+    args = arguments;
+    timestamp = +new Date();
+
+    var callNow = immediate && !timeout;
+    if (!timeout) {
+      timeout = setTimeout(later, wait);
+    }
+
+    if (callNow) {
+      result = func.apply(context, args);
+      context = null;
+      args = null;
+    }
+
+    return result;
+  };
+}
+},{}],132:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.on = on;
+exports.off = off;
+function on(el, eventName, callback) {
+  if (el.addEventListener) {
+    el.addEventListener(eventName, callback, false);
+  } else if (el.attachEvent) {
+    el.attachEvent("on" + eventName, function (e) {
+      callback.call(el, e || window.event);
+    });
+  }
+}
+
+function off(el, eventName, callback) {
+  if (el.removeEventListener) {
+    el.removeEventListener(eventName, callback);
+  } else if (el.detachEvent) {
+    el.detachEvent("on" + eventName, callback);
+  }
+}
+},{}],133:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+/**
+ * @fileOverview Find scroll parent
+ */
+
+exports.default = function (node) {
+  if (!node) {
+    return document.documentElement;
+  }
+
+  var excludeStaticParent = node.style.position === 'absolute';
+  var overflowRegex = /(scroll|auto)/;
+  var parent = node;
+
+  while (parent) {
+    if (!parent.parentNode) {
+      return node.ownerDocument || document.documentElement;
+    }
+
+    var style = window.getComputedStyle(parent);
+    var position = style.position;
+    var overflow = style.overflow;
+    var overflowX = style['overflow-x'];
+    var overflowY = style['overflow-y'];
+
+    if (position === 'static' && excludeStaticParent) {
+      continue;
+    }
+
+    if (overflowRegex.test(overflow) && overflowRegex.test(overflowX) && overflowRegex.test(overflowY)) {
+      return parent;
+    }
+
+    parent = parent.parentNode;
+  }
+
+  return node.ownerDocument || node.documentElement || document.documentElement;
+};
+},{}],134:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = throttle;
+/*eslint-disable */
+function throttle(fn, threshhold, scope) {
+  threshhold || (threshhold = 250);
+  var last, deferTimer;
+  return function () {
+    var context = scope || this;
+
+    var now = +new Date(),
+        args = arguments;
+    if (last && now < last + threshhold) {
+      // hold on to it
+      clearTimeout(deferTimer);
+      deferTimer = setTimeout(function () {
+        last = now;
+        fn.apply(context, args);
+      }, threshhold);
+    } else {
+      last = now;
+      fn.apply(context, args);
+    }
+  };
+}
+},{}],135:[function(require,module,exports){
+var isBrowser = typeof window !== 'undefined';
+var Masonry = isBrowser ? window.Masonry || require('masonry-layout') : null;
+var imagesloaded = isBrowser ? require('imagesloaded') : null;
+var assign = require('lodash.assign');
+var elementResizeDetectorMaker = require('element-resize-detector');
+var debounce = require('lodash.debounce');
+var omit = require('lodash.omit');
+var React = require('react');
+var refName = 'masonryContainer';
+
+var propTypes = {
+  enableResizableChildren: React.PropTypes.bool,
+  disableImagesLoaded: React.PropTypes.bool,
+  onImagesLoaded: React.PropTypes.func,
+  updateOnEachImageLoad: React.PropTypes.bool,
+  options: React.PropTypes.object,
+  elementType: React.PropTypes.string,
+  onLayoutComplete: React.PropTypes.func,
+  onRemoveComplete: React.PropTypes.func
+};
+
+var MasonryComponent = React.createClass({
+  masonry: false,
+  erd: undefined,
+  latestKnownDomChildren: [],
+  displayName: 'MasonryComponent',
+  propTypes: propTypes,
+
+  getDefaultProps: function() {
+    return {
+      enableResizableChildren: false,
+      disableImagesLoaded: false,
+      updateOnEachImageLoad: false,
+      options: {},
+      className: '',
+      elementType: 'div',
+      onLayoutComplete: function() {
+      },
+      onRemoveComplete: function() {
+      }
+    };
+  },
+
+  initializeMasonry: function(force) {
+    if (!this.masonry || force) {
+      this.masonry = new Masonry(
+        this.refs[refName],
+        this.props.options
+      );
+
+      if (this.props.onLayoutComplete) {
+        this.masonry.on('layoutComplete', this.props.onLayoutComplete);
+      }
+
+      if (this.props.onRemoveComplete) {
+        this.masonry.on('removeComplete', this.props.onRemoveComplete);
+      }
+
+      this.latestKnownDomChildren = this.getCurrentDomChildren();
+    }
+  },
+
+  getCurrentDomChildren: function() {
+    var node = this.refs[refName];
+    var children = this.props.options.itemSelector ? node.querySelectorAll(this.props.options.itemSelector) : node.children;
+    return Array.prototype.slice.call(children);
+  },
+
+  diffDomChildren: function() {
+    var forceItemReload = false;
+
+    var knownChildrenStillAttached = this.latestKnownDomChildren.filter(function(element) {
+      /*
+       * take only elements attached to DOM
+       * (aka the parent is the masonry container, not null)
+       * otherwise masonry would try to "remove it" again from the DOM
+       */
+      return !!element.parentNode;
+    });
+
+    /*
+     * If not all known children are attached to the dom - we have no other way of notifying
+     * masonry to remove the ones not still attached besides invoking a complete item reload.
+     * basically all the rest of the code below does not matter in that case.
+     */
+    if (knownChildrenStillAttached.length !== this.latestKnownDomChildren) {
+      forceItemReload = true;
+    }
+
+    var currentDomChildren = this.getCurrentDomChildren();
+
+    /*
+     * Since we are looking for a known child which is also attached to the dom AND
+     * not attached to the dom at the same time - this would *always* produce an empty array.
+     */
+    var removed = knownChildrenStillAttached.filter(function(attachedKnownChild) {
+      return !~currentDomChildren.indexOf(attachedKnownChild);
+    });
+
+    /*
+     * This would get any children which are attached to the dom but are *unkown* to us
+     * from previous renders
+     */
+    var newDomChildren = currentDomChildren.filter(function(currentChild) {
+      return !~knownChildrenStillAttached.indexOf(currentChild);
+    });
+
+    var beginningIndex = 0;
+
+    // get everything added to the beginning of the DOMNode list
+    var prepended = newDomChildren.filter(function(newChild) {
+      var prepend = (beginningIndex === currentDomChildren.indexOf(newChild));
+
+      if (prepend) {
+        // increase the index
+        beginningIndex++;
+      }
+
+      return prepend;
+    });
+
+    // we assume that everything else is appended
+    var appended = newDomChildren.filter(function(el) {
+      return prepended.indexOf(el) === -1;
+    });
+
+    /*
+     * otherwise we reverse it because so we're going through the list picking off the items that
+     * have been added at the end of the list. this complex logic is preserved in case it needs to be
+     * invoked
+     *
+     * var endingIndex = currentDomChildren.length - 1;
+     *
+     * newDomChildren.reverse().filter(function(newChild, i){
+     *     var append = endingIndex == currentDomChildren.indexOf(newChild);
+     *
+     *     if (append) {
+     *         endingIndex--;
+     *     }
+     *
+     *     return append;
+     * });
+     */
+
+    // get everything added to the end of the DOMNode list
+    var moved = [];
+
+    /*
+     * This would always be true (see above about the lofic for "removed")
+     */
+    if (removed.length === 0) {
+      /*
+       * 'moved' will contain some random elements (if any) since the "knownChildrenStillAttached" is a filter
+       * of the "known" children which are still attached - All indexes could basically change. (for example
+       * if the first element is not attached)
+       * Don't trust this array.
+       */
+      moved = knownChildrenStillAttached.filter(function(child, index) {
+        return index !== currentDomChildren.indexOf(child);
+      });
+    }
+
+    this.latestKnownDomChildren = currentDomChildren;
+
+    return {
+      old: knownChildrenStillAttached, // Not used
+      new: currentDomChildren, // Not used
+      removed: removed,
+      appended: appended,
+      prepended: prepended,
+      moved: moved,
+      forceItemReload: forceItemReload
+    };
+  },
+
+  performLayout: function() {
+    var diff = this.diffDomChildren();
+
+    // Would never be true. (see comments of 'diffDomChildren' about 'removed')
+    if (diff.removed.length > 0) {
+      if (this.props.enableResizableChildren) {
+        diff.removed.forEach(this.erd.removeAllListeners, this.erd);
+      }
+      this.masonry.remove(diff.removed);
+      this.masonry.reloadItems();
+    }
+
+    if (diff.appended.length > 0) {
+      this.masonry.appended(diff.appended);
+
+      if (diff.prepended.length === 0) {
+        this.masonry.reloadItems();
+      }
+
+      if (this.props.enableResizableChildren) {
+        diff.appended.forEach(this.listenToElementResize, this);
+      }
+    }
+
+    if (diff.prepended.length > 0) {
+      this.masonry.prepended(diff.prepended);
+
+      if (this.props.enableResizableChildren) {
+        diff.prepended.forEach(this.listenToElementResize, this);
+      }
+    }
+
+    if (diff.forceItemReload || diff.moved.length > 0) {
+      this.masonry.reloadItems();
+    }
+
+    this.masonry.layout();
+  },
+
+  imagesLoaded: function() {
+    if (this.props.disableImagesLoaded) {
+      return;
+    }
+
+    imagesloaded(this.refs[refName])
+      .on(
+        this.props.updateOnEachImageLoad ? 'progress' : 'always',
+        debounce(
+          function(instance) {
+            if (this.props.onImagesLoaded) {
+              this.props.onImagesLoaded(instance);
+            }
+            this.masonry.layout();
+          }.bind(this), 100)
+      );
+  },
+
+  initializeResizableChildren: function() {
+    if (!this.props.enableResizableChildren) {
+      return;
+    }
+
+    this.erd = elementResizeDetectorMaker({
+      strategy: 'scroll'
+    });
+
+    this.latestKnownDomChildren.forEach(this.listenToElementResize, this);
+  },
+
+  listenToElementResize: function(el) {
+    this.erd.listenTo(el, function() {
+      this.masonry.layout()
+    }.bind(this))
+  },
+
+  destroyErd: function() {
+    if (this.erd) {
+      this.latestKnownDomChildren.forEach(this.erd.uninstall, this.erd);
+    }
+  },
+
+  componentDidMount: function() {
+    this.initializeMasonry();
+    this.initializeResizableChildren();
+    this.imagesLoaded();
+  },
+
+  componentDidUpdate: function() {
+    this.performLayout();
+    this.imagesLoaded();
+  },
+
+  componentWillUnmount: function() {
+    this.destroyErd();
+
+    // unregister events
+    if (this.props.onLayoutComplete) {
+      this.masonry.off('layoutComplete', this.props.onLayoutComplete);
+    }
+
+    if (this.props.onRemoveComplete) {
+      this.masonry.off('removeComplete', this.props.onLayoutComplete);
+    }
+
+    this.masonry.destroy();
+  },
+
+  render: function() {
+    var props = omit(this.props, Object.keys(propTypes));
+    return React.createElement(this.props.elementType, assign({}, props, {ref: refName}), this.props.children);
+  }
+});
+
+module.exports = MasonryComponent;
+module.exports.default = MasonryComponent;
+
+},{"element-resize-detector":31,"imagesloaded":69,"lodash.assign":72,"lodash.debounce":73,"lodash.omit":74,"masonry-layout":76,"react":264}],136:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -24576,7 +35679,7 @@ var AutoFocusUtils = {
 };
 
 module.exports = AutoFocusUtils;
-},{"./ReactMount":163,"./findDOMNode":206,"fbjs/lib/focusNode":32}],100:[function(require,module,exports){
+},{"./ReactMount":200,"./findDOMNode":243,"fbjs/lib/focusNode":49}],137:[function(require,module,exports){
 /**
  * Copyright 2013-2015 Facebook, Inc.
  * All rights reserved.
@@ -24982,7 +36085,7 @@ var BeforeInputEventPlugin = {
 };
 
 module.exports = BeforeInputEventPlugin;
-},{"./EventConstants":112,"./EventPropagators":116,"./FallbackCompositionState":117,"./SyntheticCompositionEvent":188,"./SyntheticInputEvent":192,"fbjs/lib/ExecutionEnvironment":24,"fbjs/lib/keyOf":42}],101:[function(require,module,exports){
+},{"./EventConstants":149,"./EventPropagators":153,"./FallbackCompositionState":154,"./SyntheticCompositionEvent":225,"./SyntheticInputEvent":229,"fbjs/lib/ExecutionEnvironment":41,"fbjs/lib/keyOf":59}],138:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -25122,7 +36225,7 @@ var CSSProperty = {
 };
 
 module.exports = CSSProperty;
-},{}],102:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -25300,7 +36403,7 @@ ReactPerf.measureMethods(CSSPropertyOperations, 'CSSPropertyOperations', {
 
 module.exports = CSSPropertyOperations;
 }).call(this,require('_process'))
-},{"./CSSProperty":101,"./ReactPerf":169,"./dangerousStyleValue":203,"_process":53,"fbjs/lib/ExecutionEnvironment":24,"fbjs/lib/camelizeStyleName":26,"fbjs/lib/hyphenateStyleName":37,"fbjs/lib/memoizeStringOnly":44,"fbjs/lib/warning":49}],103:[function(require,module,exports){
+},{"./CSSProperty":138,"./ReactPerf":206,"./dangerousStyleValue":240,"_process":80,"fbjs/lib/ExecutionEnvironment":41,"fbjs/lib/camelizeStyleName":43,"fbjs/lib/hyphenateStyleName":54,"fbjs/lib/memoizeStringOnly":61,"fbjs/lib/warning":66}],140:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -25396,7 +36499,7 @@ PooledClass.addPoolingTo(CallbackQueue);
 
 module.exports = CallbackQueue;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"./PooledClass":121,"_process":53,"fbjs/lib/invariant":38}],104:[function(require,module,exports){
+},{"./Object.assign":157,"./PooledClass":158,"_process":80,"fbjs/lib/invariant":55}],141:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -25718,7 +36821,7 @@ var ChangeEventPlugin = {
 };
 
 module.exports = ChangeEventPlugin;
-},{"./EventConstants":112,"./EventPluginHub":113,"./EventPropagators":116,"./ReactUpdates":181,"./SyntheticEvent":190,"./getEventTarget":212,"./isEventSupported":217,"./isTextInputElement":218,"fbjs/lib/ExecutionEnvironment":24,"fbjs/lib/keyOf":42}],105:[function(require,module,exports){
+},{"./EventConstants":149,"./EventPluginHub":150,"./EventPropagators":153,"./ReactUpdates":218,"./SyntheticEvent":227,"./getEventTarget":249,"./isEventSupported":254,"./isTextInputElement":255,"fbjs/lib/ExecutionEnvironment":41,"fbjs/lib/keyOf":59}],142:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -25742,7 +36845,7 @@ var ClientReactRootIndex = {
 };
 
 module.exports = ClientReactRootIndex;
-},{}],106:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -25874,7 +36977,7 @@ ReactPerf.measureMethods(DOMChildrenOperations, 'DOMChildrenOperations', {
 
 module.exports = DOMChildrenOperations;
 }).call(this,require('_process'))
-},{"./Danger":109,"./ReactMultiChildUpdateTypes":165,"./ReactPerf":169,"./setInnerHTML":222,"./setTextContent":223,"_process":53,"fbjs/lib/invariant":38}],107:[function(require,module,exports){
+},{"./Danger":146,"./ReactMultiChildUpdateTypes":202,"./ReactPerf":206,"./setInnerHTML":259,"./setTextContent":260,"_process":80,"fbjs/lib/invariant":55}],144:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -26111,7 +37214,7 @@ var DOMProperty = {
 
 module.exports = DOMProperty;
 }).call(this,require('_process'))
-},{"_process":53,"fbjs/lib/invariant":38}],108:[function(require,module,exports){
+},{"_process":80,"fbjs/lib/invariant":55}],145:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -26339,7 +37442,7 @@ ReactPerf.measureMethods(DOMPropertyOperations, 'DOMPropertyOperations', {
 
 module.exports = DOMPropertyOperations;
 }).call(this,require('_process'))
-},{"./DOMProperty":107,"./ReactPerf":169,"./quoteAttributeValueForBrowser":220,"_process":53,"fbjs/lib/warning":49}],109:[function(require,module,exports){
+},{"./DOMProperty":144,"./ReactPerf":206,"./quoteAttributeValueForBrowser":257,"_process":80,"fbjs/lib/warning":66}],146:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -26487,7 +37590,7 @@ var Danger = {
 
 module.exports = Danger;
 }).call(this,require('_process'))
-},{"_process":53,"fbjs/lib/ExecutionEnvironment":24,"fbjs/lib/createNodesFromMarkup":29,"fbjs/lib/emptyFunction":30,"fbjs/lib/getMarkupWrap":34,"fbjs/lib/invariant":38}],110:[function(require,module,exports){
+},{"_process":80,"fbjs/lib/ExecutionEnvironment":41,"fbjs/lib/createNodesFromMarkup":46,"fbjs/lib/emptyFunction":47,"fbjs/lib/getMarkupWrap":51,"fbjs/lib/invariant":55}],147:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -26515,7 +37618,7 @@ var keyOf = require('fbjs/lib/keyOf');
 var DefaultEventPluginOrder = [keyOf({ ResponderEventPlugin: null }), keyOf({ SimpleEventPlugin: null }), keyOf({ TapEventPlugin: null }), keyOf({ EnterLeaveEventPlugin: null }), keyOf({ ChangeEventPlugin: null }), keyOf({ SelectEventPlugin: null }), keyOf({ BeforeInputEventPlugin: null })];
 
 module.exports = DefaultEventPluginOrder;
-},{"fbjs/lib/keyOf":42}],111:[function(require,module,exports){
+},{"fbjs/lib/keyOf":59}],148:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -26640,7 +37743,7 @@ var EnterLeaveEventPlugin = {
 };
 
 module.exports = EnterLeaveEventPlugin;
-},{"./EventConstants":112,"./EventPropagators":116,"./ReactMount":163,"./SyntheticMouseEvent":194,"fbjs/lib/keyOf":42}],112:[function(require,module,exports){
+},{"./EventConstants":149,"./EventPropagators":153,"./ReactMount":200,"./SyntheticMouseEvent":231,"fbjs/lib/keyOf":59}],149:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -26733,7 +37836,7 @@ var EventConstants = {
 };
 
 module.exports = EventConstants;
-},{"fbjs/lib/keyMirror":41}],113:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":58}],150:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -27015,7 +38118,7 @@ var EventPluginHub = {
 
 module.exports = EventPluginHub;
 }).call(this,require('_process'))
-},{"./EventPluginRegistry":114,"./EventPluginUtils":115,"./ReactErrorUtils":154,"./accumulateInto":200,"./forEachAccumulated":208,"_process":53,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],114:[function(require,module,exports){
+},{"./EventPluginRegistry":151,"./EventPluginUtils":152,"./ReactErrorUtils":191,"./accumulateInto":237,"./forEachAccumulated":245,"_process":80,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],151:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -27238,7 +38341,7 @@ var EventPluginRegistry = {
 
 module.exports = EventPluginRegistry;
 }).call(this,require('_process'))
-},{"_process":53,"fbjs/lib/invariant":38}],115:[function(require,module,exports){
+},{"_process":80,"fbjs/lib/invariant":55}],152:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -27443,7 +38546,7 @@ var EventPluginUtils = {
 
 module.exports = EventPluginUtils;
 }).call(this,require('_process'))
-},{"./EventConstants":112,"./ReactErrorUtils":154,"_process":53,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],116:[function(require,module,exports){
+},{"./EventConstants":149,"./ReactErrorUtils":191,"_process":80,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],153:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -27581,7 +38684,7 @@ var EventPropagators = {
 
 module.exports = EventPropagators;
 }).call(this,require('_process'))
-},{"./EventConstants":112,"./EventPluginHub":113,"./accumulateInto":200,"./forEachAccumulated":208,"_process":53,"fbjs/lib/warning":49}],117:[function(require,module,exports){
+},{"./EventConstants":149,"./EventPluginHub":150,"./accumulateInto":237,"./forEachAccumulated":245,"_process":80,"fbjs/lib/warning":66}],154:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -27677,7 +38780,7 @@ assign(FallbackCompositionState.prototype, {
 PooledClass.addPoolingTo(FallbackCompositionState);
 
 module.exports = FallbackCompositionState;
-},{"./Object.assign":120,"./PooledClass":121,"./getTextContentAccessor":215}],118:[function(require,module,exports){
+},{"./Object.assign":157,"./PooledClass":158,"./getTextContentAccessor":252}],155:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -27908,7 +39011,7 @@ var HTMLDOMPropertyConfig = {
 };
 
 module.exports = HTMLDOMPropertyConfig;
-},{"./DOMProperty":107,"fbjs/lib/ExecutionEnvironment":24}],119:[function(require,module,exports){
+},{"./DOMProperty":144,"fbjs/lib/ExecutionEnvironment":41}],156:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -28045,7 +39148,7 @@ var LinkedValueUtils = {
 
 module.exports = LinkedValueUtils;
 }).call(this,require('_process'))
-},{"./ReactPropTypeLocations":171,"./ReactPropTypes":172,"_process":53,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],120:[function(require,module,exports){
+},{"./ReactPropTypeLocations":208,"./ReactPropTypes":209,"_process":80,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],157:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -28093,7 +39196,7 @@ function assign(target, sources) {
 }
 
 module.exports = assign;
-},{}],121:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -28215,7 +39318,7 @@ var PooledClass = {
 
 module.exports = PooledClass;
 }).call(this,require('_process'))
-},{"_process":53,"fbjs/lib/invariant":38}],122:[function(require,module,exports){
+},{"_process":80,"fbjs/lib/invariant":55}],159:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -28256,7 +39359,7 @@ React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
 React.__SECRET_DOM_SERVER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOMServer;
 
 module.exports = React;
-},{"./Object.assign":120,"./ReactDOM":133,"./ReactDOMServer":143,"./ReactIsomorphic":161,"./deprecated":204}],123:[function(require,module,exports){
+},{"./Object.assign":157,"./ReactDOM":170,"./ReactDOMServer":180,"./ReactIsomorphic":198,"./deprecated":241}],160:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -28295,7 +39398,7 @@ var ReactBrowserComponentMixin = {
 
 module.exports = ReactBrowserComponentMixin;
 }).call(this,require('_process'))
-},{"./ReactInstanceMap":160,"./findDOMNode":206,"_process":53,"fbjs/lib/warning":49}],124:[function(require,module,exports){
+},{"./ReactInstanceMap":197,"./findDOMNode":243,"_process":80,"fbjs/lib/warning":66}],161:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -28620,7 +39723,7 @@ ReactPerf.measureMethods(ReactBrowserEventEmitter, 'ReactBrowserEventEmitter', {
 });
 
 module.exports = ReactBrowserEventEmitter;
-},{"./EventConstants":112,"./EventPluginHub":113,"./EventPluginRegistry":114,"./Object.assign":120,"./ReactEventEmitterMixin":155,"./ReactPerf":169,"./ViewportMetrics":199,"./isEventSupported":217}],125:[function(require,module,exports){
+},{"./EventConstants":149,"./EventPluginHub":150,"./EventPluginRegistry":151,"./Object.assign":157,"./ReactEventEmitterMixin":192,"./ReactPerf":206,"./ViewportMetrics":236,"./isEventSupported":254}],162:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -28745,7 +39848,7 @@ var ReactChildReconciler = {
 
 module.exports = ReactChildReconciler;
 }).call(this,require('_process'))
-},{"./ReactReconciler":174,"./instantiateReactComponent":216,"./shouldUpdateReactComponent":224,"./traverseAllChildren":225,"_process":53,"fbjs/lib/warning":49}],126:[function(require,module,exports){
+},{"./ReactReconciler":211,"./instantiateReactComponent":253,"./shouldUpdateReactComponent":261,"./traverseAllChildren":262,"_process":80,"fbjs/lib/warning":66}],163:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -28928,7 +40031,7 @@ var ReactChildren = {
 };
 
 module.exports = ReactChildren;
-},{"./PooledClass":121,"./ReactElement":150,"./traverseAllChildren":225,"fbjs/lib/emptyFunction":30}],127:[function(require,module,exports){
+},{"./PooledClass":158,"./ReactElement":187,"./traverseAllChildren":262,"fbjs/lib/emptyFunction":47}],164:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -29702,7 +40805,7 @@ var ReactClass = {
 
 module.exports = ReactClass;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"./ReactComponent":128,"./ReactElement":150,"./ReactNoopUpdateQueue":167,"./ReactPropTypeLocationNames":170,"./ReactPropTypeLocations":171,"_process":53,"fbjs/lib/emptyObject":31,"fbjs/lib/invariant":38,"fbjs/lib/keyMirror":41,"fbjs/lib/keyOf":42,"fbjs/lib/warning":49}],128:[function(require,module,exports){
+},{"./Object.assign":157,"./ReactComponent":165,"./ReactElement":187,"./ReactNoopUpdateQueue":204,"./ReactPropTypeLocationNames":207,"./ReactPropTypeLocations":208,"_process":80,"fbjs/lib/emptyObject":48,"fbjs/lib/invariant":55,"fbjs/lib/keyMirror":58,"fbjs/lib/keyOf":59,"fbjs/lib/warning":66}],165:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -29827,7 +40930,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = ReactComponent;
 }).call(this,require('_process'))
-},{"./ReactNoopUpdateQueue":167,"./canDefineProperty":202,"_process":53,"fbjs/lib/emptyObject":31,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],129:[function(require,module,exports){
+},{"./ReactNoopUpdateQueue":204,"./canDefineProperty":239,"_process":80,"fbjs/lib/emptyObject":48,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],166:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -29869,7 +40972,7 @@ var ReactComponentBrowserEnvironment = {
 };
 
 module.exports = ReactComponentBrowserEnvironment;
-},{"./ReactDOMIDOperations":138,"./ReactMount":163}],130:[function(require,module,exports){
+},{"./ReactDOMIDOperations":175,"./ReactMount":200}],167:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -29923,7 +41026,7 @@ var ReactComponentEnvironment = {
 
 module.exports = ReactComponentEnvironment;
 }).call(this,require('_process'))
-},{"_process":53,"fbjs/lib/invariant":38}],131:[function(require,module,exports){
+},{"_process":80,"fbjs/lib/invariant":55}],168:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -30620,7 +41723,7 @@ var ReactCompositeComponent = {
 
 module.exports = ReactCompositeComponent;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"./ReactComponentEnvironment":130,"./ReactCurrentOwner":132,"./ReactElement":150,"./ReactInstanceMap":160,"./ReactPerf":169,"./ReactPropTypeLocationNames":170,"./ReactPropTypeLocations":171,"./ReactReconciler":174,"./ReactUpdateQueue":180,"./shouldUpdateReactComponent":224,"_process":53,"fbjs/lib/emptyObject":31,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],132:[function(require,module,exports){
+},{"./Object.assign":157,"./ReactComponentEnvironment":167,"./ReactCurrentOwner":169,"./ReactElement":187,"./ReactInstanceMap":197,"./ReactPerf":206,"./ReactPropTypeLocationNames":207,"./ReactPropTypeLocations":208,"./ReactReconciler":211,"./ReactUpdateQueue":217,"./shouldUpdateReactComponent":261,"_process":80,"fbjs/lib/emptyObject":48,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],169:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30651,7 +41754,7 @@ var ReactCurrentOwner = {
 };
 
 module.exports = ReactCurrentOwner;
-},{}],133:[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -30746,7 +41849,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = React;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":132,"./ReactDOMTextComponent":144,"./ReactDefaultInjection":147,"./ReactInstanceHandles":159,"./ReactMount":163,"./ReactPerf":169,"./ReactReconciler":174,"./ReactUpdates":181,"./ReactVersion":182,"./findDOMNode":206,"./renderSubtreeIntoContainer":221,"_process":53,"fbjs/lib/ExecutionEnvironment":24,"fbjs/lib/warning":49}],134:[function(require,module,exports){
+},{"./ReactCurrentOwner":169,"./ReactDOMTextComponent":181,"./ReactDefaultInjection":184,"./ReactInstanceHandles":196,"./ReactMount":200,"./ReactPerf":206,"./ReactReconciler":211,"./ReactUpdates":218,"./ReactVersion":219,"./findDOMNode":243,"./renderSubtreeIntoContainer":258,"_process":80,"fbjs/lib/ExecutionEnvironment":41,"fbjs/lib/warning":66}],171:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -30797,7 +41900,7 @@ var ReactDOMButton = {
 };
 
 module.exports = ReactDOMButton;
-},{}],135:[function(require,module,exports){
+},{}],172:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -31762,7 +42865,7 @@ assign(ReactDOMComponent.prototype, ReactDOMComponent.Mixin, ReactMultiChild.Mix
 
 module.exports = ReactDOMComponent;
 }).call(this,require('_process'))
-},{"./AutoFocusUtils":99,"./CSSPropertyOperations":102,"./DOMProperty":107,"./DOMPropertyOperations":108,"./EventConstants":112,"./Object.assign":120,"./ReactBrowserEventEmitter":124,"./ReactComponentBrowserEnvironment":129,"./ReactDOMButton":134,"./ReactDOMInput":139,"./ReactDOMOption":140,"./ReactDOMSelect":141,"./ReactDOMTextarea":145,"./ReactMount":163,"./ReactMultiChild":164,"./ReactPerf":169,"./ReactUpdateQueue":180,"./canDefineProperty":202,"./escapeTextContentForBrowser":205,"./isEventSupported":217,"./setInnerHTML":222,"./setTextContent":223,"./validateDOMNesting":226,"_process":53,"fbjs/lib/invariant":38,"fbjs/lib/keyOf":42,"fbjs/lib/shallowEqual":47,"fbjs/lib/warning":49}],136:[function(require,module,exports){
+},{"./AutoFocusUtils":136,"./CSSPropertyOperations":139,"./DOMProperty":144,"./DOMPropertyOperations":145,"./EventConstants":149,"./Object.assign":157,"./ReactBrowserEventEmitter":161,"./ReactComponentBrowserEnvironment":166,"./ReactDOMButton":171,"./ReactDOMInput":176,"./ReactDOMOption":177,"./ReactDOMSelect":178,"./ReactDOMTextarea":182,"./ReactMount":200,"./ReactMultiChild":201,"./ReactPerf":206,"./ReactUpdateQueue":217,"./canDefineProperty":239,"./escapeTextContentForBrowser":242,"./isEventSupported":254,"./setInnerHTML":259,"./setTextContent":260,"./validateDOMNesting":263,"_process":80,"fbjs/lib/invariant":55,"fbjs/lib/keyOf":59,"fbjs/lib/shallowEqual":64,"fbjs/lib/warning":66}],173:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -31942,7 +43045,7 @@ var ReactDOMFactories = mapObject({
 
 module.exports = ReactDOMFactories;
 }).call(this,require('_process'))
-},{"./ReactElement":150,"./ReactElementValidator":151,"_process":53,"fbjs/lib/mapObject":43}],137:[function(require,module,exports){
+},{"./ReactElement":187,"./ReactElementValidator":188,"_process":80,"fbjs/lib/mapObject":60}],174:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -31961,7 +43064,7 @@ var ReactDOMFeatureFlags = {
 };
 
 module.exports = ReactDOMFeatureFlags;
-},{}],138:[function(require,module,exports){
+},{}],175:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -32058,7 +43161,7 @@ ReactPerf.measureMethods(ReactDOMIDOperations, 'ReactDOMIDOperations', {
 
 module.exports = ReactDOMIDOperations;
 }).call(this,require('_process'))
-},{"./DOMChildrenOperations":106,"./DOMPropertyOperations":108,"./ReactMount":163,"./ReactPerf":169,"_process":53,"fbjs/lib/invariant":38}],139:[function(require,module,exports){
+},{"./DOMChildrenOperations":143,"./DOMPropertyOperations":145,"./ReactMount":200,"./ReactPerf":206,"_process":80,"fbjs/lib/invariant":55}],176:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -32214,7 +43317,7 @@ function _handleChange(event) {
 
 module.exports = ReactDOMInput;
 }).call(this,require('_process'))
-},{"./LinkedValueUtils":119,"./Object.assign":120,"./ReactDOMIDOperations":138,"./ReactMount":163,"./ReactUpdates":181,"_process":53,"fbjs/lib/invariant":38}],140:[function(require,module,exports){
+},{"./LinkedValueUtils":156,"./Object.assign":157,"./ReactDOMIDOperations":175,"./ReactMount":200,"./ReactUpdates":218,"_process":80,"fbjs/lib/invariant":55}],177:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -32306,7 +43409,7 @@ var ReactDOMOption = {
 
 module.exports = ReactDOMOption;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"./ReactChildren":126,"./ReactDOMSelect":141,"_process":53,"fbjs/lib/warning":49}],141:[function(require,module,exports){
+},{"./Object.assign":157,"./ReactChildren":163,"./ReactDOMSelect":178,"_process":80,"fbjs/lib/warning":66}],178:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -32497,7 +43600,7 @@ function _handleChange(event) {
 
 module.exports = ReactDOMSelect;
 }).call(this,require('_process'))
-},{"./LinkedValueUtils":119,"./Object.assign":120,"./ReactMount":163,"./ReactUpdates":181,"_process":53,"fbjs/lib/warning":49}],142:[function(require,module,exports){
+},{"./LinkedValueUtils":156,"./Object.assign":157,"./ReactMount":200,"./ReactUpdates":218,"_process":80,"fbjs/lib/warning":66}],179:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32710,7 +43813,7 @@ var ReactDOMSelection = {
 };
 
 module.exports = ReactDOMSelection;
-},{"./getNodeForCharacterOffset":214,"./getTextContentAccessor":215,"fbjs/lib/ExecutionEnvironment":24}],143:[function(require,module,exports){
+},{"./getNodeForCharacterOffset":251,"./getTextContentAccessor":252,"fbjs/lib/ExecutionEnvironment":41}],180:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -32737,7 +43840,7 @@ var ReactDOMServer = {
 };
 
 module.exports = ReactDOMServer;
-},{"./ReactDefaultInjection":147,"./ReactServerRendering":178,"./ReactVersion":182}],144:[function(require,module,exports){
+},{"./ReactDefaultInjection":184,"./ReactServerRendering":215,"./ReactVersion":219}],181:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -32867,7 +43970,7 @@ assign(ReactDOMTextComponent.prototype, {
 
 module.exports = ReactDOMTextComponent;
 }).call(this,require('_process'))
-},{"./DOMChildrenOperations":106,"./DOMPropertyOperations":108,"./Object.assign":120,"./ReactComponentBrowserEnvironment":129,"./ReactMount":163,"./escapeTextContentForBrowser":205,"./setTextContent":223,"./validateDOMNesting":226,"_process":53}],145:[function(require,module,exports){
+},{"./DOMChildrenOperations":143,"./DOMPropertyOperations":145,"./Object.assign":157,"./ReactComponentBrowserEnvironment":166,"./ReactMount":200,"./escapeTextContentForBrowser":242,"./setTextContent":260,"./validateDOMNesting":263,"_process":80}],182:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -32983,7 +44086,7 @@ function _handleChange(event) {
 
 module.exports = ReactDOMTextarea;
 }).call(this,require('_process'))
-},{"./LinkedValueUtils":119,"./Object.assign":120,"./ReactDOMIDOperations":138,"./ReactUpdates":181,"_process":53,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],146:[function(require,module,exports){
+},{"./LinkedValueUtils":156,"./Object.assign":157,"./ReactDOMIDOperations":175,"./ReactUpdates":218,"_process":80,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],183:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33051,7 +44154,7 @@ var ReactDefaultBatchingStrategy = {
 };
 
 module.exports = ReactDefaultBatchingStrategy;
-},{"./Object.assign":120,"./ReactUpdates":181,"./Transaction":198,"fbjs/lib/emptyFunction":30}],147:[function(require,module,exports){
+},{"./Object.assign":157,"./ReactUpdates":218,"./Transaction":235,"fbjs/lib/emptyFunction":47}],184:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -33151,7 +44254,7 @@ module.exports = {
   inject: inject
 };
 }).call(this,require('_process'))
-},{"./BeforeInputEventPlugin":100,"./ChangeEventPlugin":104,"./ClientReactRootIndex":105,"./DefaultEventPluginOrder":110,"./EnterLeaveEventPlugin":111,"./HTMLDOMPropertyConfig":118,"./ReactBrowserComponentMixin":123,"./ReactComponentBrowserEnvironment":129,"./ReactDOMComponent":135,"./ReactDOMTextComponent":144,"./ReactDefaultBatchingStrategy":146,"./ReactDefaultPerf":148,"./ReactEventListener":156,"./ReactInjection":157,"./ReactInstanceHandles":159,"./ReactMount":163,"./ReactReconcileTransaction":173,"./SVGDOMPropertyConfig":183,"./SelectEventPlugin":184,"./ServerReactRootIndex":185,"./SimpleEventPlugin":186,"_process":53,"fbjs/lib/ExecutionEnvironment":24}],148:[function(require,module,exports){
+},{"./BeforeInputEventPlugin":137,"./ChangeEventPlugin":141,"./ClientReactRootIndex":142,"./DefaultEventPluginOrder":147,"./EnterLeaveEventPlugin":148,"./HTMLDOMPropertyConfig":155,"./ReactBrowserComponentMixin":160,"./ReactComponentBrowserEnvironment":166,"./ReactDOMComponent":172,"./ReactDOMTextComponent":181,"./ReactDefaultBatchingStrategy":183,"./ReactDefaultPerf":185,"./ReactEventListener":193,"./ReactInjection":194,"./ReactInstanceHandles":196,"./ReactMount":200,"./ReactReconcileTransaction":210,"./SVGDOMPropertyConfig":220,"./SelectEventPlugin":221,"./ServerReactRootIndex":222,"./SimpleEventPlugin":223,"_process":80,"fbjs/lib/ExecutionEnvironment":41}],185:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33389,7 +44492,7 @@ var ReactDefaultPerf = {
 };
 
 module.exports = ReactDefaultPerf;
-},{"./DOMProperty":107,"./ReactDefaultPerfAnalysis":149,"./ReactMount":163,"./ReactPerf":169,"fbjs/lib/performanceNow":46}],149:[function(require,module,exports){
+},{"./DOMProperty":144,"./ReactDefaultPerfAnalysis":186,"./ReactMount":200,"./ReactPerf":206,"fbjs/lib/performanceNow":63}],186:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -33591,7 +44694,7 @@ var ReactDefaultPerfAnalysis = {
 };
 
 module.exports = ReactDefaultPerfAnalysis;
-},{"./Object.assign":120}],150:[function(require,module,exports){
+},{"./Object.assign":157}],187:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -33841,7 +44944,7 @@ ReactElement.isValidElement = function (object) {
 
 module.exports = ReactElement;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"./ReactCurrentOwner":132,"./canDefineProperty":202,"_process":53}],151:[function(require,module,exports){
+},{"./Object.assign":157,"./ReactCurrentOwner":169,"./canDefineProperty":239,"_process":80}],188:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -34125,7 +45228,7 @@ var ReactElementValidator = {
 
 module.exports = ReactElementValidator;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":132,"./ReactElement":150,"./ReactPropTypeLocationNames":170,"./ReactPropTypeLocations":171,"./canDefineProperty":202,"./getIteratorFn":213,"_process":53,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],152:[function(require,module,exports){
+},{"./ReactCurrentOwner":169,"./ReactElement":187,"./ReactPropTypeLocationNames":207,"./ReactPropTypeLocations":208,"./canDefineProperty":239,"./getIteratorFn":250,"_process":80,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],189:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -34181,7 +45284,7 @@ assign(ReactEmptyComponent.prototype, {
 ReactEmptyComponent.injection = ReactEmptyComponentInjection;
 
 module.exports = ReactEmptyComponent;
-},{"./Object.assign":120,"./ReactElement":150,"./ReactEmptyComponentRegistry":153,"./ReactReconciler":174}],153:[function(require,module,exports){
+},{"./Object.assign":157,"./ReactElement":187,"./ReactEmptyComponentRegistry":190,"./ReactReconciler":211}],190:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -34230,7 +45333,7 @@ var ReactEmptyComponentRegistry = {
 };
 
 module.exports = ReactEmptyComponentRegistry;
-},{}],154:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -34310,7 +45413,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = ReactErrorUtils;
 }).call(this,require('_process'))
-},{"_process":53}],155:[function(require,module,exports){
+},{"_process":80}],192:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34349,7 +45452,7 @@ var ReactEventEmitterMixin = {
 };
 
 module.exports = ReactEventEmitterMixin;
-},{"./EventPluginHub":113}],156:[function(require,module,exports){
+},{"./EventPluginHub":150}],193:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34561,7 +45664,7 @@ var ReactEventListener = {
 };
 
 module.exports = ReactEventListener;
-},{"./Object.assign":120,"./PooledClass":121,"./ReactInstanceHandles":159,"./ReactMount":163,"./ReactUpdates":181,"./getEventTarget":212,"fbjs/lib/EventListener":23,"fbjs/lib/ExecutionEnvironment":24,"fbjs/lib/getUnboundedScrollPosition":35}],157:[function(require,module,exports){
+},{"./Object.assign":157,"./PooledClass":158,"./ReactInstanceHandles":196,"./ReactMount":200,"./ReactUpdates":218,"./getEventTarget":249,"fbjs/lib/EventListener":40,"fbjs/lib/ExecutionEnvironment":41,"fbjs/lib/getUnboundedScrollPosition":52}],194:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34600,7 +45703,7 @@ var ReactInjection = {
 };
 
 module.exports = ReactInjection;
-},{"./DOMProperty":107,"./EventPluginHub":113,"./ReactBrowserEventEmitter":124,"./ReactClass":127,"./ReactComponentEnvironment":130,"./ReactEmptyComponent":152,"./ReactNativeComponent":166,"./ReactPerf":169,"./ReactRootIndex":176,"./ReactUpdates":181}],158:[function(require,module,exports){
+},{"./DOMProperty":144,"./EventPluginHub":150,"./ReactBrowserEventEmitter":161,"./ReactClass":164,"./ReactComponentEnvironment":167,"./ReactEmptyComponent":189,"./ReactNativeComponent":203,"./ReactPerf":206,"./ReactRootIndex":213,"./ReactUpdates":218}],195:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -34725,7 +45828,7 @@ var ReactInputSelection = {
 };
 
 module.exports = ReactInputSelection;
-},{"./ReactDOMSelection":142,"fbjs/lib/containsNode":27,"fbjs/lib/focusNode":32,"fbjs/lib/getActiveElement":33}],159:[function(require,module,exports){
+},{"./ReactDOMSelection":179,"fbjs/lib/containsNode":44,"fbjs/lib/focusNode":49,"fbjs/lib/getActiveElement":50}],196:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -35030,7 +46133,7 @@ var ReactInstanceHandles = {
 
 module.exports = ReactInstanceHandles;
 }).call(this,require('_process'))
-},{"./ReactRootIndex":176,"_process":53,"fbjs/lib/invariant":38}],160:[function(require,module,exports){
+},{"./ReactRootIndex":213,"_process":80,"fbjs/lib/invariant":55}],197:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -35078,7 +46181,7 @@ var ReactInstanceMap = {
 };
 
 module.exports = ReactInstanceMap;
-},{}],161:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -35155,7 +46258,7 @@ var React = {
 
 module.exports = React;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"./ReactChildren":126,"./ReactClass":127,"./ReactComponent":128,"./ReactDOMFactories":136,"./ReactElement":150,"./ReactElementValidator":151,"./ReactPropTypes":172,"./ReactVersion":182,"./onlyChild":219,"_process":53}],162:[function(require,module,exports){
+},{"./Object.assign":157,"./ReactChildren":163,"./ReactClass":164,"./ReactComponent":165,"./ReactDOMFactories":173,"./ReactElement":187,"./ReactElementValidator":188,"./ReactPropTypes":209,"./ReactVersion":219,"./onlyChild":256,"_process":80}],199:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -35201,7 +46304,7 @@ var ReactMarkupChecksum = {
 };
 
 module.exports = ReactMarkupChecksum;
-},{"./adler32":201}],163:[function(require,module,exports){
+},{"./adler32":238}],200:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -36054,7 +47157,7 @@ ReactPerf.measureMethods(ReactMount, 'ReactMount', {
 
 module.exports = ReactMount;
 }).call(this,require('_process'))
-},{"./DOMProperty":107,"./Object.assign":120,"./ReactBrowserEventEmitter":124,"./ReactCurrentOwner":132,"./ReactDOMFeatureFlags":137,"./ReactElement":150,"./ReactEmptyComponentRegistry":153,"./ReactInstanceHandles":159,"./ReactInstanceMap":160,"./ReactMarkupChecksum":162,"./ReactPerf":169,"./ReactReconciler":174,"./ReactUpdateQueue":180,"./ReactUpdates":181,"./instantiateReactComponent":216,"./setInnerHTML":222,"./shouldUpdateReactComponent":224,"./validateDOMNesting":226,"_process":53,"fbjs/lib/containsNode":27,"fbjs/lib/emptyObject":31,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],164:[function(require,module,exports){
+},{"./DOMProperty":144,"./Object.assign":157,"./ReactBrowserEventEmitter":161,"./ReactCurrentOwner":169,"./ReactDOMFeatureFlags":174,"./ReactElement":187,"./ReactEmptyComponentRegistry":190,"./ReactInstanceHandles":196,"./ReactInstanceMap":197,"./ReactMarkupChecksum":199,"./ReactPerf":206,"./ReactReconciler":211,"./ReactUpdateQueue":217,"./ReactUpdates":218,"./instantiateReactComponent":253,"./setInnerHTML":259,"./shouldUpdateReactComponent":261,"./validateDOMNesting":263,"_process":80,"fbjs/lib/containsNode":44,"fbjs/lib/emptyObject":48,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],201:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -36553,7 +47656,7 @@ var ReactMultiChild = {
 
 module.exports = ReactMultiChild;
 }).call(this,require('_process'))
-},{"./ReactChildReconciler":125,"./ReactComponentEnvironment":130,"./ReactCurrentOwner":132,"./ReactMultiChildUpdateTypes":165,"./ReactReconciler":174,"./flattenChildren":207,"_process":53}],165:[function(require,module,exports){
+},{"./ReactChildReconciler":162,"./ReactComponentEnvironment":167,"./ReactCurrentOwner":169,"./ReactMultiChildUpdateTypes":202,"./ReactReconciler":211,"./flattenChildren":244,"_process":80}],202:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -36586,7 +47689,7 @@ var ReactMultiChildUpdateTypes = keyMirror({
 });
 
 module.exports = ReactMultiChildUpdateTypes;
-},{"fbjs/lib/keyMirror":41}],166:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":58}],203:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -36683,7 +47786,7 @@ var ReactNativeComponent = {
 
 module.exports = ReactNativeComponent;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"_process":53,"fbjs/lib/invariant":38}],167:[function(require,module,exports){
+},{"./Object.assign":157,"_process":80,"fbjs/lib/invariant":55}],204:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -36804,7 +47907,7 @@ var ReactNoopUpdateQueue = {
 
 module.exports = ReactNoopUpdateQueue;
 }).call(this,require('_process'))
-},{"_process":53,"fbjs/lib/warning":49}],168:[function(require,module,exports){
+},{"_process":80,"fbjs/lib/warning":66}],205:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -36898,7 +48001,7 @@ var ReactOwner = {
 
 module.exports = ReactOwner;
 }).call(this,require('_process'))
-},{"_process":53,"fbjs/lib/invariant":38}],169:[function(require,module,exports){
+},{"_process":80,"fbjs/lib/invariant":55}],206:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -36997,7 +48100,7 @@ function _noMeasure(objName, fnName, func) {
 
 module.exports = ReactPerf;
 }).call(this,require('_process'))
-},{"_process":53}],170:[function(require,module,exports){
+},{"_process":80}],207:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -37024,7 +48127,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = ReactPropTypeLocationNames;
 }).call(this,require('_process'))
-},{"_process":53}],171:[function(require,module,exports){
+},{"_process":80}],208:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -37047,7 +48150,7 @@ var ReactPropTypeLocations = keyMirror({
 });
 
 module.exports = ReactPropTypeLocations;
-},{"fbjs/lib/keyMirror":41}],172:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":58}],209:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -37404,7 +48507,7 @@ function getClassName(propValue) {
 }
 
 module.exports = ReactPropTypes;
-},{"./ReactElement":150,"./ReactPropTypeLocationNames":170,"./getIteratorFn":213,"fbjs/lib/emptyFunction":30}],173:[function(require,module,exports){
+},{"./ReactElement":187,"./ReactPropTypeLocationNames":207,"./getIteratorFn":250,"fbjs/lib/emptyFunction":47}],210:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -37556,7 +48659,7 @@ assign(ReactReconcileTransaction.prototype, Transaction.Mixin, Mixin);
 PooledClass.addPoolingTo(ReactReconcileTransaction);
 
 module.exports = ReactReconcileTransaction;
-},{"./CallbackQueue":103,"./Object.assign":120,"./PooledClass":121,"./ReactBrowserEventEmitter":124,"./ReactDOMFeatureFlags":137,"./ReactInputSelection":158,"./Transaction":198}],174:[function(require,module,exports){
+},{"./CallbackQueue":140,"./Object.assign":157,"./PooledClass":158,"./ReactBrowserEventEmitter":161,"./ReactDOMFeatureFlags":174,"./ReactInputSelection":195,"./Transaction":235}],211:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -37664,7 +48767,7 @@ var ReactReconciler = {
 };
 
 module.exports = ReactReconciler;
-},{"./ReactRef":175}],175:[function(require,module,exports){
+},{"./ReactRef":212}],212:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -37743,7 +48846,7 @@ ReactRef.detachRefs = function (instance, element) {
 };
 
 module.exports = ReactRef;
-},{"./ReactOwner":168}],176:[function(require,module,exports){
+},{"./ReactOwner":205}],213:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -37773,7 +48876,7 @@ var ReactRootIndex = {
 };
 
 module.exports = ReactRootIndex;
-},{}],177:[function(require,module,exports){
+},{}],214:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -37797,7 +48900,7 @@ var ReactServerBatchingStrategy = {
 };
 
 module.exports = ReactServerBatchingStrategy;
-},{}],178:[function(require,module,exports){
+},{}],215:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -37883,7 +48986,7 @@ module.exports = {
   renderToStaticMarkup: renderToStaticMarkup
 };
 }).call(this,require('_process'))
-},{"./ReactDefaultBatchingStrategy":146,"./ReactElement":150,"./ReactInstanceHandles":159,"./ReactMarkupChecksum":162,"./ReactServerBatchingStrategy":177,"./ReactServerRenderingTransaction":179,"./ReactUpdates":181,"./instantiateReactComponent":216,"_process":53,"fbjs/lib/emptyObject":31,"fbjs/lib/invariant":38}],179:[function(require,module,exports){
+},{"./ReactDefaultBatchingStrategy":183,"./ReactElement":187,"./ReactInstanceHandles":196,"./ReactMarkupChecksum":199,"./ReactServerBatchingStrategy":214,"./ReactServerRenderingTransaction":216,"./ReactUpdates":218,"./instantiateReactComponent":253,"_process":80,"fbjs/lib/emptyObject":48,"fbjs/lib/invariant":55}],216:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -37971,7 +49074,7 @@ assign(ReactServerRenderingTransaction.prototype, Transaction.Mixin, Mixin);
 PooledClass.addPoolingTo(ReactServerRenderingTransaction);
 
 module.exports = ReactServerRenderingTransaction;
-},{"./CallbackQueue":103,"./Object.assign":120,"./PooledClass":121,"./Transaction":198,"fbjs/lib/emptyFunction":30}],180:[function(require,module,exports){
+},{"./CallbackQueue":140,"./Object.assign":157,"./PooledClass":158,"./Transaction":235,"fbjs/lib/emptyFunction":47}],217:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -38231,7 +49334,7 @@ var ReactUpdateQueue = {
 
 module.exports = ReactUpdateQueue;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"./ReactCurrentOwner":132,"./ReactElement":150,"./ReactInstanceMap":160,"./ReactUpdates":181,"_process":53,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],181:[function(require,module,exports){
+},{"./Object.assign":157,"./ReactCurrentOwner":169,"./ReactElement":187,"./ReactInstanceMap":197,"./ReactUpdates":218,"_process":80,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],218:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -38457,7 +49560,7 @@ var ReactUpdates = {
 
 module.exports = ReactUpdates;
 }).call(this,require('_process'))
-},{"./CallbackQueue":103,"./Object.assign":120,"./PooledClass":121,"./ReactPerf":169,"./ReactReconciler":174,"./Transaction":198,"_process":53,"fbjs/lib/invariant":38}],182:[function(require,module,exports){
+},{"./CallbackQueue":140,"./Object.assign":157,"./PooledClass":158,"./ReactPerf":206,"./ReactReconciler":211,"./Transaction":235,"_process":80,"fbjs/lib/invariant":55}],219:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -38472,7 +49575,7 @@ module.exports = ReactUpdates;
 'use strict';
 
 module.exports = '0.14.8';
-},{}],183:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -38600,7 +49703,7 @@ var SVGDOMPropertyConfig = {
 };
 
 module.exports = SVGDOMPropertyConfig;
-},{"./DOMProperty":107}],184:[function(require,module,exports){
+},{"./DOMProperty":144}],221:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -38802,7 +49905,7 @@ var SelectEventPlugin = {
 };
 
 module.exports = SelectEventPlugin;
-},{"./EventConstants":112,"./EventPropagators":116,"./ReactInputSelection":158,"./SyntheticEvent":190,"./isTextInputElement":218,"fbjs/lib/ExecutionEnvironment":24,"fbjs/lib/getActiveElement":33,"fbjs/lib/keyOf":42,"fbjs/lib/shallowEqual":47}],185:[function(require,module,exports){
+},{"./EventConstants":149,"./EventPropagators":153,"./ReactInputSelection":195,"./SyntheticEvent":227,"./isTextInputElement":255,"fbjs/lib/ExecutionEnvironment":41,"fbjs/lib/getActiveElement":50,"fbjs/lib/keyOf":59,"fbjs/lib/shallowEqual":64}],222:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -38832,7 +49935,7 @@ var ServerReactRootIndex = {
 };
 
 module.exports = ServerReactRootIndex;
-},{}],186:[function(require,module,exports){
+},{}],223:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -39422,7 +50525,7 @@ var SimpleEventPlugin = {
 
 module.exports = SimpleEventPlugin;
 }).call(this,require('_process'))
-},{"./EventConstants":112,"./EventPropagators":116,"./ReactMount":163,"./SyntheticClipboardEvent":187,"./SyntheticDragEvent":189,"./SyntheticEvent":190,"./SyntheticFocusEvent":191,"./SyntheticKeyboardEvent":193,"./SyntheticMouseEvent":194,"./SyntheticTouchEvent":195,"./SyntheticUIEvent":196,"./SyntheticWheelEvent":197,"./getEventCharCode":209,"_process":53,"fbjs/lib/EventListener":23,"fbjs/lib/emptyFunction":30,"fbjs/lib/invariant":38,"fbjs/lib/keyOf":42}],187:[function(require,module,exports){
+},{"./EventConstants":149,"./EventPropagators":153,"./ReactMount":200,"./SyntheticClipboardEvent":224,"./SyntheticDragEvent":226,"./SyntheticEvent":227,"./SyntheticFocusEvent":228,"./SyntheticKeyboardEvent":230,"./SyntheticMouseEvent":231,"./SyntheticTouchEvent":232,"./SyntheticUIEvent":233,"./SyntheticWheelEvent":234,"./getEventCharCode":246,"_process":80,"fbjs/lib/EventListener":40,"fbjs/lib/emptyFunction":47,"fbjs/lib/invariant":55,"fbjs/lib/keyOf":59}],224:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -39462,7 +50565,7 @@ function SyntheticClipboardEvent(dispatchConfig, dispatchMarker, nativeEvent, na
 SyntheticEvent.augmentClass(SyntheticClipboardEvent, ClipboardEventInterface);
 
 module.exports = SyntheticClipboardEvent;
-},{"./SyntheticEvent":190}],188:[function(require,module,exports){
+},{"./SyntheticEvent":227}],225:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -39500,7 +50603,7 @@ function SyntheticCompositionEvent(dispatchConfig, dispatchMarker, nativeEvent, 
 SyntheticEvent.augmentClass(SyntheticCompositionEvent, CompositionEventInterface);
 
 module.exports = SyntheticCompositionEvent;
-},{"./SyntheticEvent":190}],189:[function(require,module,exports){
+},{"./SyntheticEvent":227}],226:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -39538,7 +50641,7 @@ function SyntheticDragEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeE
 SyntheticMouseEvent.augmentClass(SyntheticDragEvent, DragEventInterface);
 
 module.exports = SyntheticDragEvent;
-},{"./SyntheticMouseEvent":194}],190:[function(require,module,exports){
+},{"./SyntheticMouseEvent":231}],227:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -39721,7 +50824,7 @@ PooledClass.addPoolingTo(SyntheticEvent, PooledClass.fourArgumentPooler);
 
 module.exports = SyntheticEvent;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"./PooledClass":121,"_process":53,"fbjs/lib/emptyFunction":30,"fbjs/lib/warning":49}],191:[function(require,module,exports){
+},{"./Object.assign":157,"./PooledClass":158,"_process":80,"fbjs/lib/emptyFunction":47,"fbjs/lib/warning":66}],228:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -39759,7 +50862,7 @@ function SyntheticFocusEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticFocusEvent, FocusEventInterface);
 
 module.exports = SyntheticFocusEvent;
-},{"./SyntheticUIEvent":196}],192:[function(require,module,exports){
+},{"./SyntheticUIEvent":233}],229:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -39798,7 +50901,7 @@ function SyntheticInputEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticEvent.augmentClass(SyntheticInputEvent, InputEventInterface);
 
 module.exports = SyntheticInputEvent;
-},{"./SyntheticEvent":190}],193:[function(require,module,exports){
+},{"./SyntheticEvent":227}],230:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -39884,7 +50987,7 @@ function SyntheticKeyboardEvent(dispatchConfig, dispatchMarker, nativeEvent, nat
 SyntheticUIEvent.augmentClass(SyntheticKeyboardEvent, KeyboardEventInterface);
 
 module.exports = SyntheticKeyboardEvent;
-},{"./SyntheticUIEvent":196,"./getEventCharCode":209,"./getEventKey":210,"./getEventModifierState":211}],194:[function(require,module,exports){
+},{"./SyntheticUIEvent":233,"./getEventCharCode":246,"./getEventKey":247,"./getEventModifierState":248}],231:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -39958,7 +51061,7 @@ function SyntheticMouseEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticMouseEvent, MouseEventInterface);
 
 module.exports = SyntheticMouseEvent;
-},{"./SyntheticUIEvent":196,"./ViewportMetrics":199,"./getEventModifierState":211}],195:[function(require,module,exports){
+},{"./SyntheticUIEvent":233,"./ViewportMetrics":236,"./getEventModifierState":248}],232:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40005,7 +51108,7 @@ function SyntheticTouchEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticTouchEvent, TouchEventInterface);
 
 module.exports = SyntheticTouchEvent;
-},{"./SyntheticUIEvent":196,"./getEventModifierState":211}],196:[function(require,module,exports){
+},{"./SyntheticUIEvent":233,"./getEventModifierState":248}],233:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40066,7 +51169,7 @@ function SyntheticUIEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeEve
 SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 
 module.exports = SyntheticUIEvent;
-},{"./SyntheticEvent":190,"./getEventTarget":212}],197:[function(require,module,exports){
+},{"./SyntheticEvent":227,"./getEventTarget":249}],234:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40122,7 +51225,7 @@ function SyntheticWheelEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticMouseEvent.augmentClass(SyntheticWheelEvent, WheelEventInterface);
 
 module.exports = SyntheticWheelEvent;
-},{"./SyntheticMouseEvent":194}],198:[function(require,module,exports){
+},{"./SyntheticMouseEvent":231}],235:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -40356,7 +51459,7 @@ var Transaction = {
 
 module.exports = Transaction;
 }).call(this,require('_process'))
-},{"_process":53,"fbjs/lib/invariant":38}],199:[function(require,module,exports){
+},{"_process":80,"fbjs/lib/invariant":55}],236:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40384,7 +51487,7 @@ var ViewportMetrics = {
 };
 
 module.exports = ViewportMetrics;
-},{}],200:[function(require,module,exports){
+},{}],237:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -40446,7 +51549,7 @@ function accumulateInto(current, next) {
 
 module.exports = accumulateInto;
 }).call(this,require('_process'))
-},{"_process":53,"fbjs/lib/invariant":38}],201:[function(require,module,exports){
+},{"_process":80,"fbjs/lib/invariant":55}],238:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40489,7 +51592,7 @@ function adler32(data) {
 }
 
 module.exports = adler32;
-},{}],202:[function(require,module,exports){
+},{}],239:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -40516,7 +51619,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = canDefineProperty;
 }).call(this,require('_process'))
-},{"_process":53}],203:[function(require,module,exports){
+},{"_process":80}],240:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40572,7 +51675,7 @@ function dangerousStyleValue(name, value) {
 }
 
 module.exports = dangerousStyleValue;
-},{"./CSSProperty":101}],204:[function(require,module,exports){
+},{"./CSSProperty":138}],241:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -40623,7 +51726,7 @@ function deprecated(fnName, newModule, newPackage, ctx, fn) {
 
 module.exports = deprecated;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"_process":53,"fbjs/lib/warning":49}],205:[function(require,module,exports){
+},{"./Object.assign":157,"_process":80,"fbjs/lib/warning":66}],242:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40662,7 +51765,7 @@ function escapeTextContentForBrowser(text) {
 }
 
 module.exports = escapeTextContentForBrowser;
-},{}],206:[function(require,module,exports){
+},{}],243:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -40714,7 +51817,7 @@ function findDOMNode(componentOrElement) {
 
 module.exports = findDOMNode;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":132,"./ReactInstanceMap":160,"./ReactMount":163,"_process":53,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],207:[function(require,module,exports){
+},{"./ReactCurrentOwner":169,"./ReactInstanceMap":197,"./ReactMount":200,"_process":80,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],244:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -40765,7 +51868,7 @@ function flattenChildren(children) {
 
 module.exports = flattenChildren;
 }).call(this,require('_process'))
-},{"./traverseAllChildren":225,"_process":53,"fbjs/lib/warning":49}],208:[function(require,module,exports){
+},{"./traverseAllChildren":262,"_process":80,"fbjs/lib/warning":66}],245:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40795,7 +51898,7 @@ var forEachAccumulated = function (arr, cb, scope) {
 };
 
 module.exports = forEachAccumulated;
-},{}],209:[function(require,module,exports){
+},{}],246:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40846,7 +51949,7 @@ function getEventCharCode(nativeEvent) {
 }
 
 module.exports = getEventCharCode;
-},{}],210:[function(require,module,exports){
+},{}],247:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40950,7 +52053,7 @@ function getEventKey(nativeEvent) {
 }
 
 module.exports = getEventKey;
-},{"./getEventCharCode":209}],211:[function(require,module,exports){
+},{"./getEventCharCode":246}],248:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -40995,7 +52098,7 @@ function getEventModifierState(nativeEvent) {
 }
 
 module.exports = getEventModifierState;
-},{}],212:[function(require,module,exports){
+},{}],249:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41025,7 +52128,7 @@ function getEventTarget(nativeEvent) {
 }
 
 module.exports = getEventTarget;
-},{}],213:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41066,7 +52169,7 @@ function getIteratorFn(maybeIterable) {
 }
 
 module.exports = getIteratorFn;
-},{}],214:[function(require,module,exports){
+},{}],251:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41140,7 +52243,7 @@ function getNodeForCharacterOffset(root, offset) {
 }
 
 module.exports = getNodeForCharacterOffset;
-},{}],215:[function(require,module,exports){
+},{}],252:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41174,7 +52277,7 @@ function getTextContentAccessor() {
 }
 
 module.exports = getTextContentAccessor;
-},{"fbjs/lib/ExecutionEnvironment":24}],216:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":41}],253:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -41289,7 +52392,7 @@ function instantiateReactComponent(node) {
 
 module.exports = instantiateReactComponent;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"./ReactCompositeComponent":131,"./ReactEmptyComponent":152,"./ReactNativeComponent":166,"_process":53,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],217:[function(require,module,exports){
+},{"./Object.assign":157,"./ReactCompositeComponent":168,"./ReactEmptyComponent":189,"./ReactNativeComponent":203,"_process":80,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],254:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41350,7 +52453,7 @@ function isEventSupported(eventNameSuffix, capture) {
 }
 
 module.exports = isEventSupported;
-},{"fbjs/lib/ExecutionEnvironment":24}],218:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":41}],255:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41391,7 +52494,7 @@ function isTextInputElement(elem) {
 }
 
 module.exports = isTextInputElement;
-},{}],219:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -41427,7 +52530,7 @@ function onlyChild(children) {
 
 module.exports = onlyChild;
 }).call(this,require('_process'))
-},{"./ReactElement":150,"_process":53,"fbjs/lib/invariant":38}],220:[function(require,module,exports){
+},{"./ReactElement":187,"_process":80,"fbjs/lib/invariant":55}],257:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41454,7 +52557,7 @@ function quoteAttributeValueForBrowser(value) {
 }
 
 module.exports = quoteAttributeValueForBrowser;
-},{"./escapeTextContentForBrowser":205}],221:[function(require,module,exports){
+},{"./escapeTextContentForBrowser":242}],258:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41471,7 +52574,7 @@ module.exports = quoteAttributeValueForBrowser;
 var ReactMount = require('./ReactMount');
 
 module.exports = ReactMount.renderSubtreeIntoContainer;
-},{"./ReactMount":163}],222:[function(require,module,exports){
+},{"./ReactMount":200}],259:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41562,7 +52665,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = setInnerHTML;
-},{"fbjs/lib/ExecutionEnvironment":24}],223:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":41}],260:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41603,7 +52706,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = setTextContent;
-},{"./escapeTextContentForBrowser":205,"./setInnerHTML":222,"fbjs/lib/ExecutionEnvironment":24}],224:[function(require,module,exports){
+},{"./escapeTextContentForBrowser":242,"./setInnerHTML":259,"fbjs/lib/ExecutionEnvironment":41}],261:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -41647,7 +52750,7 @@ function shouldUpdateReactComponent(prevElement, nextElement) {
 }
 
 module.exports = shouldUpdateReactComponent;
-},{}],225:[function(require,module,exports){
+},{}],262:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -41839,7 +52942,7 @@ function traverseAllChildren(children, callback, traverseContext) {
 
 module.exports = traverseAllChildren;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":132,"./ReactElement":150,"./ReactInstanceHandles":159,"./getIteratorFn":213,"_process":53,"fbjs/lib/invariant":38,"fbjs/lib/warning":49}],226:[function(require,module,exports){
+},{"./ReactCurrentOwner":169,"./ReactElement":187,"./ReactInstanceHandles":196,"./getIteratorFn":250,"_process":80,"fbjs/lib/invariant":55,"fbjs/lib/warning":66}],263:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -42205,12 +53308,12 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = validateDOMNesting;
 }).call(this,require('_process'))
-},{"./Object.assign":120,"_process":53,"fbjs/lib/emptyFunction":30,"fbjs/lib/warning":49}],227:[function(require,module,exports){
+},{"./Object.assign":157,"_process":80,"fbjs/lib/emptyFunction":47,"fbjs/lib/warning":66}],264:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./lib/React');
 
-},{"./lib/React":122}],228:[function(require,module,exports){
+},{"./lib/React":159}],265:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -43760,7 +54863,7 @@ module.exports = require('./lib/React');
   }
 }.call(this));
 
-},{}],229:[function(require,module,exports){
+},{}],266:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -43824,4 +54927,4 @@ if (process.env.NODE_ENV !== 'production') {
 module.exports = warning;
 
 }).call(this,require('_process'))
-},{"_process":53}]},{},[12]);
+},{"_process":80}]},{},[14]);
