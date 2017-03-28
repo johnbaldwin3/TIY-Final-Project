@@ -5,6 +5,17 @@ $icon-font-path: '../../node_modules/bootstrap-sass/assets/fonts/bootstrap/';
 // Import Bootstrap
 @import '../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
 
+//credit for some map markers: https://mapicons.mapsmarker.com
+
+//********************************
+//Color Palette
+//********************************
+$greener: #78CD00;
+$bluer: #2D7DD2;
+$yellower: #EEB902;
+$oranger: #F45D01;
+$grayer: #474647;
+
 
 *,
 *::before,
@@ -12,18 +23,40 @@ $icon-font-path: '../../node_modules/bootstrap-sass/assets/fonts/bootstrap/';
   box-sizing: border-box;
 }
 
+
+img {
+  max-width: 100%;
+}
+
+//********************************
+//Navbar Styling
+//********************************
+
+#navvy-bar {
+  background-color: $grayer;
+  box-shadow: 1px 1px 1px $grayer;
+}
+
+#navbar-brand {
+  color: $greener;
+}
+
 #map {
     height: 100%;
+    border-top: 3px solid $grayer;
+    border-bottom: 3px solid $grayer;
   }
+
   html, body {
     height: 100%;
     margin: 0;
     padding: 0;
   }
 
-img {
-  max-width: 100%;
-}
+
+//********************************
+//Market/Splash Screen Styling
+//********************************
 
 .wrapper-market {
   background-image: url('../images/AdobeStock_14513047.jpeg');
@@ -52,6 +85,28 @@ img {
 #eO {
   background-color: rgba(255, 255, 255, 0.73);
 }
+
+//********************************
+//Main screen dashboard
+//********************************
+.obs-list-dash {
+  height: 400px;
+  overflow: scroll;
+  border: 3px solid $grayer;
+}
+.obs-users-dash {
+  @extend .obs-list-dash;
+}
+
+.gal-button {
+  font-size: 12px;
+}
+
+
+
+//********************************
+//(Listing) Gallery Style
+//********************************
 .thumbnail {
   display: flex;
   flex-wrap: wrap;
@@ -64,20 +119,13 @@ img {
 
 }
 
+//********************************
+//Real Gallery Style
+//********************************
 .masonry-img {
   max-width: 200px;
 }
 
-.obs-list-dash {
-  height: 600px;
-  overflow: scroll;
-  border: 3px solid grey;
-}
-
-.obs-users-dash {
-  @extend .obs-list-dash;
-}
-
-.gal-button {
-  font-size: 12px;
+.base-wrapper {
+  background-color: lightgrey;
 }

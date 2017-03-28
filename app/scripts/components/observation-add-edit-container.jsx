@@ -6,6 +6,8 @@ var EXIF = require('exif-js');
 var $ = require('jquery');
 var Backbone = require('backbone');
 var moment = require('moment');
+
+// MONGODB_URI mongodb://heroku_t2nm5ql8:ac5a7s635l02h314bm6m4csu9d@ds119618.mlab.com:19618/heroku_t2nm5ql8
 //var Cropper = require('react-cropper').Cropper;
 
 //********************************
@@ -106,7 +108,7 @@ class ObservationForm extends React.Component{
     this.handleObservationNotes = this.handleObservationNotes.bind(this);
     this.handleObservationSubmit = this.handleObservationSubmit.bind(this);
     this.handleLocationChange = this.handleLocationChange.bind(this);
-
+    this.handleObservationTime = this.handleObservationTime.bind(this);
     this.handleBackButton = this.handleBackButton.bind(this);
 
     //extending state to mash up with observationCollection
@@ -219,7 +221,7 @@ class ObservationForm extends React.Component{
     this.setState({originalDiscoveryInfo: e.target.value});
   }
   handleObservationDate(e) {
-    console.log("*******", e.target.value);
+    //console.log("*******", e.target.value);
     var newDate = new Date(e.target.value);
 
     var dateParse = {
@@ -227,6 +229,9 @@ class ObservationForm extends React.Component{
       "iso" : newDate
     }
     this.setState({observationDate: dateParse});
+  }
+  handleObservationTime(e) {
+    console.log('time', e.target.value);
   }
   handleLocationChange(e) {
    this.setState({locationOfObservation: e.target.value});
@@ -270,7 +275,9 @@ class ObservationForm extends React.Component{
 
        // handle pic
        var pic = formData.pic;
+
        var fileUpload = new ParseFile(pic);
+       console.log("fileup", fileUpload);
        fileUpload.save({}, {
          data: pic
        }).then((response)=>{
@@ -340,7 +347,7 @@ class ObservationForm extends React.Component{
         </div>
         <div className="form-group">
           <label htmlFor="dateTime">Time of Observation</label>
-          <input type="datetime" className="form-control" id="time" placeholder="When did you observe it?" />
+          <input onChange={this.handleObservationTime} type="text" className="form-control" id="time" placeholder="What time did you observe it? (h:m:s am/pm)" value={this.state.dateAndTime ? moment(this.state.dateAndTime).format('LTS'): null} />
         </div>
         <div className="form-group">
           <label htmlFor="locationFound">Location Found</label>
@@ -406,6 +413,15 @@ class DeleteModal extends React.Component {
     //alert("Are you sure?");
     //delete instance of this model
     var modelToDelete = this.props.observation;
+    var url = modelToDelete.get("pic").url;
+    //console.log('modelToDelete', modelToDelete.get("pic").url);
+    // $.ajax({
+    //   url: url,
+    //   type: 'DELETE',
+    //   success: function(result) {
+    //     console.log('deleted');
+    //   }
+    // });
     modelToDelete.destroy();
     this.setState({observation: this.state.observation})
     //console.log(this.props.observation);

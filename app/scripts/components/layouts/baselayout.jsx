@@ -20,8 +20,8 @@ class BaseLayout extends React.Component {
 
     return(
 
-      <div className="wrapper">
-        <nav className="navbar navbar-inverse">
+      <div className="wrapper base-wrapper">
+        <nav className="navbar navbar-inverse" id="navvy-bar">
           <div className="container-fluid">
             <div className="navbar-header">
               <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -30,7 +30,7 @@ class BaseLayout extends React.Component {
                 <span className="icon-bar"></span>
                 <span className="icon-bar"></span>
               </button>
-              <a className="navbar-brand" href="#">NatureApp name <span className="glyphicon glyphicon-leaf glyphicon"></span></a>
+              <a className="navbar-brand" id="navbar-brand" href="#">NaturaList <span className="glyphicon glyphicon-leaf glyphicon"></span></a>
             </div>
             <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul className="nav navbar-nav">
@@ -52,7 +52,7 @@ class BaseLayout extends React.Component {
                     <li><a href="#">Separated link</a></li>
                   </ul>
                 </li>
-                <li><a  href="#logout/" type="button" className="btn btn-danger">Log Out</a></li>
+                <li><a  href="#logout/" type="button" className="btn logout-button">Log Out</a></li>
               </ul>
             </div>
           </div>

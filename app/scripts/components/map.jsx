@@ -7,7 +7,7 @@ var GoogleMap = require('react-google-maps').GoogleMap;
 var Marker = require('react-google-maps').Marker;
 var MarkerClusterer = require('react-google-maps/lib/addons/MarkerClusterer');
 require('react-google-maps');
-
+var InfoWindow = require('react-google-maps').InfoWindow;
 //********************************
 // Map Component
 //********************************
@@ -93,8 +93,13 @@ class GoogleMapContainer extends React.Component {
           lng: venue.location.lng
         }
       }
-      console.log('ven', venue.kingdom);
-      return <Marker key={i} animation={"bounce"} icon={this.iconChooser(venue.kingdom, venue.classOfAnimal)}{...marker} />
+      console.log('ven', venue.commonName);
+      return <Marker key={i} animation={2} icon={this.iconChooser(venue.kingdom, venue.classOfAnimal)}{...marker} >
+          <InfoWindow>
+            {'<b>'+venue.speciesObserved+'</b>' + '<br/>' + venue.observer}
+
+          </InfoWindow>
+      </Marker>
     });
 
     return (
