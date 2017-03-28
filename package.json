@@ -68,6 +68,7 @@
     ]
   },
   "dependencies": {
+    "blueimp-load-image": "^2.12.2",
     "exif-js": "^2.1.1",
     "google-map-react": "^0.23.0",
     "moment": "^2.18.0",

@@ -70,15 +70,7 @@ var User = parse.ParseModel.extend({
     console.log('cuId', currentUser.id);
 
     return currentUser.id;
-    // var url = 'https://jb3-serve.herokuapp.com/users/' + currentUser.id;
-    // parse.parse.initialize();
-    //
-    // $.save(url).then(data => {
-    //
-    //   callback();
-    // });
-    //
-    },
+  },
   //get the current user at any given time
   current: function(){
     var user = localStorage.getItem('user');
@@ -95,7 +87,11 @@ var User = parse.ParseModel.extend({
     }
 
     return currentUser;
+  },
+  addIncrement: function() {
+    
   }
+
 });
 
 var UserCollection = parse.ParseCollection.extend({

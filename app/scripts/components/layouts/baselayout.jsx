@@ -43,7 +43,7 @@ class BaseLayout extends React.Component {
               </ul>
               <ul className="nav navbar-nav navbar-right">
                 <li className="dropdown">
-                  <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{User.current().get("realOrNickName")} <span className="caret"></span></a>
+                  <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{User.current().get("realOrNickName") ? User.current().get("realOrNickName") : User.current().get("username")} <span className="caret"></span></a>
                   <ul className="dropdown-menu">
                     <li><a href={"#userinfo/" + (User.current().get("objectId")) + "/" }>Your Profile</a></li>
                     <li><a href={"#observation/gallery/" + (User.current().get("objectId")) + "/"}>My Collection</a></li>
@@ -60,11 +60,11 @@ class BaseLayout extends React.Component {
         {this.props.children}
         <div className="container-fluid">
           <div className="row ">
-            <div className="footer navbar-bottom navbar-inverse">
-              <h4>&copy; 2017 App Name Here</h4>
-              <ul className="nav navbar-nav navbar-right">
-                <li><a href="#">Back to Top</a></li>
-              </ul>
+            <div className="footer navbar-inverse navbar-bottom">
+              <h4 className="clearfix foot-title">&copy; 2017 NaturaList</h4>
+
+                <div className="pull-right top-link btn btn-default"><a href="#">Back to Top</a></div>
+
             </div>
           </div>
         </div>

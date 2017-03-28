@@ -6,16 +6,15 @@ var EXIF = require('exif-js');
 var $ = require('jquery');
 var Backbone = require('backbone');
 var moment = require('moment');
-
-// MONGODB_URI mongodb://heroku_t2nm5ql8:ac5a7s635l02h314bm6m4csu9d@ds119618.mlab.com:19618/heroku_t2nm5ql8
-//var Cropper = require('react-cropper').Cropper;
-
+var loadImage = require('blueimp-load-image');
+var cropper = require('react-cropper').cropper;
 //********************************
 //Models, Utilities, Layouts
 //********************************
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var models = require('../models/organism.js');
 var ParseFile = require('../parse.js').ParseFile;
+var parse = require('../parse.js').parse;
 var Observation = require('../models/observations.js').Observation;
 var User = require('../models/user.js').User;
 //var imageOrientationFix = require('../utilities.js').imageOrientationFix;
@@ -42,10 +41,10 @@ class ObservationsAddEditContainer extends React.Component {
       observation.fetch().then(() => {
         this.setState({pic: this.state.pic})
         this.setState({observation: observation});
-        console.log('img', observation.get('pic').url);
+        //console.log('img', observation.get('pic').url);
         var observerId = observation.get('observer').objectId
-          observerId != userId ? this.setState({ isOwner: false }) : null
-          console.log(observerId, userId);
+          observerId != userId ? this.setState({ isOwner: false }) : null;
+          //console.log(observerId, userId);
         this.forceUpdate();
       });
 
@@ -75,6 +74,26 @@ class ObservationsAddEditContainer extends React.Component {
    observation.set(data);
 
    observation.setPointer("observer", '_User', User.current().get("objectId"));
+   var urlStart = 'https://jb3-serve.herokuapp.com/users/';
+   var obId = User.current().get("objectId");
+   var urlEnd = '/{"observationCount":{"__op":"Increment","amount":1}}';
+   var urlInc = urlStart+obId+urlEnd;
+   parse.initialize();
+
+  // $.ajax({
+  //
+  //   url: urlInc,
+  //   type: 'PUT',
+  //   success: function(result) {
+  //     console.log('incremented');
+  //   }
+  //    });
+
+
+
+  //  put(urlStart+obId+urlEnd).then(() => {
+  //    console.log('done');
+  //  })
    observation.save().then(function(){
      Backbone.history.navigate('observation/', {trigger: true});
    });
@@ -148,11 +167,18 @@ class ObservationForm extends React.Component{
       pic: file,
       //name: file.name
     });
+
+
     //console.log('file', file);
     // User file reader object to display preview
     var reader = new FileReader();
     reader.onloadend = ()=>{
       var exif = EXIF.getData(file, () => {
+
+
+        //console.log(file.cropper);
+      // EXIF.getTag(file, "Orientation") = 1;
+
       var lat = EXIF.getTag(file, "GPSLatitude");
       var lon = EXIF.getTag(file, "GPSLongitude");
       //Convert coordinates to WGS84 decimal
@@ -182,7 +208,12 @@ class ObservationForm extends React.Component{
       var elevationFeet = (elevationMeters * 3.2804).toFixed(4);
       //get orientation of picture at time of photo from exif
       var orientation = EXIF.getTag(file, "Orientation");
-      //console.log('orientation', orientation);
+
+
+
+
+
+      console.log('orientation', orientation);
 
       //set state of picture exif data
       this.setState(
@@ -296,7 +327,7 @@ class ObservationForm extends React.Component{
          "__type": "Date",
          "iso": date
        }
-       formData.observationDate = dateParse
+       formData.observationDate = dateParse;
        this.props.action(formData);
      }
 

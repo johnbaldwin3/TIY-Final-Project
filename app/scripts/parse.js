@@ -73,7 +73,7 @@ var ParseModel = Backbone.Model.extend({
 });
 
 var ParseCollection = Backbone.Collection.extend({
-  whereClause: {}, includeClause: 0,
+  whereClause: {}, includeClause: '',
   parseWhere: function(field, value, objectId){
     // If an objectId is passed in then we are building a pointer where
     if(objectId){
@@ -101,13 +101,13 @@ var ParseCollection = Backbone.Collection.extend({
     if(Object.keys(this.whereClause).length > 0 && this.includeClause.length > 0) {
       url += '?where=' + JSON.stringify(this.whereClause) + '&include=' + this.includeClause;
       this.whereClause = {};
-      this.includeClause = 0;
+      this.includeClause = '';
     } else if (Object.keys(this.whereClause).length > 0) {
       url += '?where=' + JSON.stringify(this.whereClause);
       this.whereClause = {};
     } else if (this.includeClause.length > 0) {
       url += '?include=' + this.includeClause;
-      this.includeClause = null;
+      this.includeClause = '';
     }
 
     return url;

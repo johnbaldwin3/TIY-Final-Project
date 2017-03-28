@@ -66,7 +66,6 @@ var AppRouter = Backbone.Router.extend({
     'observation/lightbox/' : 'observationLightbox',
     //edit observation if
 
-
     'observation/listings/' : 'observationListing',
 
     'observation/:id/' : 'observationsAddEdit',

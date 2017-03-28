@@ -32,7 +32,9 @@ class ObservationGalleryContainer extends React.Component {
 
     if(props.id) {
       observationCollection.parseWhere('observer', '_User', props.id).parseInclude('observer').fetch().then(()=> {
+
       this.setState({ observationCollection });
+
     });
     } else {
       observationCollection.parseInclude('observer').fetch().done(() => {
@@ -51,6 +53,7 @@ class ObservationGalleryContainer extends React.Component {
     });
     } else {
       this.setState( { props: null });
+      observationCollection.whereClause = {};
       observationCollection.parseInclude('observer').fetch().done(() => {
         this.setState({ observationCollection })
       });
@@ -128,7 +131,7 @@ class UserListings extends React.Component{
     var obsGallery;
     if( this.props.observationCollection) {
       obsGallery = this.props.observationCollection.map((obsPics)=> {
-        console.log('obsPics', obsPics);
+        //console.log('obsPics');
         return (
           <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
             <div className="thumbnail">

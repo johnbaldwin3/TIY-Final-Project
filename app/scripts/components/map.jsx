@@ -21,9 +21,14 @@ class GoogleMapContainer extends React.Component {
     super(props);
 
     this.iconChooser = this.iconChooser.bind(this);
+    this.handleMarkerClick = this.handleMarkerClick.bind(this);
   }
+  componentWillReceiveProps(nextProps) {
 
-
+  }
+  handleMarkerClick(e) {
+    //console.log(e);
+  }
   iconChooser(kingdom, classOf) {
     //pics icon based on type of observed species
     if(kingdom == 'Animalia') {
@@ -74,7 +79,7 @@ class GoogleMapContainer extends React.Component {
 
     } else if (kingdom == 'Archaea' || kingdom == 'Bacteria') {
 
-      return './images/mushroom.png'
+      return './images/bacteria.png'
 
     } else {
 
@@ -84,17 +89,17 @@ class GoogleMapContainer extends React.Component {
 
   }
   render() {
-    var mapContainer = <div style={{height: '100%', widht: '100%' }}></div> ;
+    var mapContainer = <div style={{height: '100%', width: '100%' }}></div> ;
     var markers = this.props.markers.map((venue, i) => {
-
+      //console.log('venObj', venue.objectGetter);
       var marker = {
         position: {
           lat: venue.location.lat,
           lng: venue.location.lng
         }
       }
-      console.log('ven', venue.commonName);
-      return <Marker key={i} animation={2} icon={this.iconChooser(venue.kingdom, venue.classOfAnimal)}{...marker} >
+
+      return <Marker key={i} animation={2} onClick={this.handleMarkerClick} value={venue.objectGetter} icon={this.iconChooser(venue.kingdom, venue.classOfAnimal)}{...marker} >
           <InfoWindow>
             {'<b>'+venue.speciesObserved+'</b>' + '<br/>' + venue.observer}
 

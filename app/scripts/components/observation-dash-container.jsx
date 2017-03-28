@@ -4,12 +4,6 @@
 var React = require('react');
 var Moment = require('moment');
 
-
-// old MONGODB_URI mongodb://heroku_t2nm5ql8:ac5a7s635l02h314bm6m4csu9d@ds119618.mlab.com:19618/heroku_t2nm5ql8
-
-
-// MONGOLAB_GOLD_URI
-//mongodb://heroku_1n97h2f6:hahlo2ebkuhj0hkaj026hnup0d@ds143720-a0.mlab.com:43720,ds143720-a1.mlab.com:43720/heroku_1n97h2f6?replicaSet=rs-ds143720
 //********************************
 //Models, Utilities, Layouts
 //********************************
@@ -66,6 +60,8 @@ class ObservationDashContainer extends React.Component {
        var classOfAnimal = taxons[2];
        var speciesObserved = obsLocations.get('commonName');
        var observer = obsLocations.get('observer').realOrNickName;
+       var objectGetter = obsLocations.get('objectId');
+       //console.log('objId', objectGetter);
        return (
          {
            location: {
@@ -76,6 +72,7 @@ class ObservationDashContainer extends React.Component {
             classOfAnimal: classOfAnimal,
             speciesObserved: speciesObserved,
             observer: observer,
+            objectGetter: objectGetter
          }
        )
 
@@ -88,7 +85,7 @@ class ObservationDashContainer extends React.Component {
             <h3>Welcome Back, {User.current().get("realOrNickName")}</h3>
             <ObservationListings observationCollection={this.state.observationCollection}/>
 
-            <div className="col-sm-7" style={{height:400, background:'gray', borderTop:"3px solid grey", borderBottom:"3px solid grey"}}>
+            <div className="col-sm-7" style={{height:400, background:'gray', borderTop:"3px solid #474647", borderBottom:"3px solid #474647"}}>
             <GoogleMapContainer center={location} markers={markers} />
 
             </div>
@@ -106,18 +103,23 @@ class ObservationDashContainer extends React.Component {
 class UserListings extends React.Component {
   constructor(props) {
     super(props);
+    this.handleUserInfo = this.handleUserInfo.bind(this);
 
 
-
+  }
+  handleUserInfo(e) {
+    console.log('etaget', e.target.value);
   }
   render() {
     //console.log('tpup', this.props.userCollection);
     var users = this.props.userCollection.map((user) => {
       //console.log('here', user);
       return (
+
         <div key={user.get("objectId")} className="row">
-          <a type="button" className="btn btn-primary col-sm-12" type="button">{user.get("realOrNickName")} <span className="badge">4</span>
-          </a>
+          <button onClick={this.handleUserInfo} className="btn btn-primary col-sm-12" type="button" value={user.get("objectId")}>{user.get("realOrNickName")} <span className="badge">4</span>
+          </button>
+
         </div>
 
       );

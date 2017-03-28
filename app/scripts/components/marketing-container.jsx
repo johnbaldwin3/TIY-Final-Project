@@ -13,9 +13,9 @@ class MarketingContainer extends React.Component {
             <footer className="block-footer">Edward O. Wilson in <cite title="Source Title">The Unity of Knowledge (1998)</cite></footer>
           </blockquote>
           <div className="jumbotron marketing-jumbo">
-            <h1>Observe your world!</h1>
-            <h3>Put on your biologist hat and explore and keep track of the world around you...</h3>
-            <p>The ______ app allows you to create an account to keep track all of your species encounters in one place. Log your birding trips, record your very own herbarium here, check off lifelist species for your herpetological records, all in one place. Record data about your location, weather, experience. Upload images to each observation. Allow for optional public viewing and have friendly competitions between friends and family to see who can log the most organisms. Also learn a little bit more about your logged encounters after each event is added. Log back in or join today!</p>
+            <h1 id="observe-header">Observe your world!</h1>
+            <h3>Put on your biologist hat and explore the world around you...</h3>
+            <p>NaturaList allows you to create an account to keep track all of your species encounters in one place. Log your birding trips, record your very own herbarium here, check off lifelist species for your herpetological records, all in one place. Record data about your location, weather, experience. Upload images to each observation. Using mobile images allows the app to do a lot of work for you on observation recordings. Also you may be able to get some background information on the species you observed after each event is added. Log back in or try it out and join today!</p>
           </div>
         </div>
         <div className="container">
