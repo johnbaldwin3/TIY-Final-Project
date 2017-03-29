@@ -7,7 +7,7 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 var moment = require('moment');
 var loadImage = require('blueimp-load-image');
-var cropper = require('react-cropper').cropper;
+
 //********************************
 //Models, Utilities, Layouts
 //********************************
@@ -80,14 +80,13 @@ class ObservationsAddEditContainer extends React.Component {
    var urlInc = urlStart+obId+urlEnd;
    parse.initialize();
 
-  // $.ajax({
-  //
-  //   url: urlInc,
-  //   type: 'PUT',
-  //   success: function(result) {
-  //     console.log('incremented');
-  //   }
-  //    });
+   var user = new User(JSON.parse(localStorage.getItem('user')));
+   user.unset('createdAt');
+   user.unset('updatedAt');
+   user.unset('sessionToken');
+   user.unset('ACL');
+   user.set("observationCount", {"__op":"Increment","amount":1}); user.save();
+
 
 
 
@@ -445,14 +444,13 @@ class DeleteModal extends React.Component {
     //delete instance of this model
     var modelToDelete = this.props.observation;
     var url = modelToDelete.get("pic").url;
-    //console.log('modelToDelete', modelToDelete.get("pic").url);
-    // $.ajax({
-    //   url: url,
-    //   type: 'DELETE',
-    //   success: function(result) {
-    //     console.log('deleted');
-    //   }
-    // });
+    var user = new User(JSON.parse(localStorage.getItem('user')));
+    user.unset('createdAt');
+    user.unset('updatedAt');
+    user.unset('sessionToken');
+    user.unset('ACL');
+    user.set("observationCount", {"__op":"Increment","amount":-1});
+    user.save();
     modelToDelete.destroy();
     this.setState({observation: this.state.observation})
     //console.log(this.props.observation);

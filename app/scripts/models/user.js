@@ -66,9 +66,6 @@ var User = parse.ParseModel.extend({
       return false
     }
 
-    console.log('cuId', currentUser);
-    console.log('cuId', currentUser.id);
-
     return currentUser.id;
   },
   //get the current user at any given time
