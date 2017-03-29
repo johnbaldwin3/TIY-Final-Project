@@ -15,9 +15,8 @@ var User = require('../../models/user.js').User;
 //********************************
 
 class BaseLayout extends React.Component {
-
   render() {
-
+    //console.log('user', User.current());
     return(
 
       <div className="wrapper base-wrapper">
@@ -36,20 +35,24 @@ class BaseLayout extends React.Component {
               <ul className="nav navbar-nav">
                 <li className={utility.activeClass('observation/')}><a href="#observation/">Observation Dashboard<span className="sr-only">(current)</span></a></li>
                 <li className={utility.activeClass('observation/search/')}><a href="#observation/search/">Add New Observation</a></li>
-                <li className={utility.activeClass('observation/gallery/')}> <a href="#observation/gallery/">Photo Gallery</a></li>
-                <li className={utility.activeClass('observation/listings/')}><a href="#observation/listings/">User Listings (users collect)</a></li>
-                <li><a href="#">Rankings</a></li>
-                <li><a href="#">Observation Detail</a></li>
+                <li className={utility.activeClass('observation/gallery/')}> <a href="#observation/gallery/">Observation Gallery</a></li>
+                <li className={utility.activeClass('observation/listings/')}><a href="#observation/listings/">User List</a></li>
+                <li className={utility.activeClass('observation/lightbox/')}><a href="#observation/lightbox/">Photos</a></li>
               </ul>
               <ul className="nav navbar-nav navbar-right">
+                <li><img style={{height:40, width:40, borderRadius:50}} src={(User.current().get('pic').url != undefined) ? User.current().get('pic').url : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"} /></li>
                 <li className="dropdown">
-                  <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{User.current().get("realOrNickName") ? User.current().get("realOrNickName") : User.current().get("username")} <span className="caret"></span></a>
+                  <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {User.current().get("realOrNickName") ? User.current().get("realOrNickName") : User.current().get("username")} <span className="badge">{User.current().get("observationCount")}</span><span className="caret"></span>
+
+
+                  </a>
                   <ul className="dropdown-menu">
                     <li><a href={"#userinfo/" + (User.current().get("objectId")) + "/" }>Your Profile</a></li>
                     <li><a href={"#observation/gallery/" + (User.current().get("objectId")) + "/"}>My Collection</a></li>
-                    <li><a href="#">Something else here</a></li>
+                    <li><a href="#observation/">Back to Dashboard</a></li>
                     <li role="separator" className="divider"></li>
-                    <li><a href="#">Separated link</a></li>
+                    <li><a href="#logout/">Logout</a></li>
                   </ul>
                 </li>
                 <li><a  href="#logout/" type="button" className="btn logout-button">Log Out</a></li>

@@ -30,7 +30,8 @@ var UserProfile = parse.ParseModel.extend({
 
 var UserProfileCollection = parse.ParseCollection.extend({
   model: UserProfile,
-  url: 'https://jb3-serve.herokuapp.com/classes/user'
+  url: 'https://jb3-serve.herokuapp.com/classes/user',
+  
 });
 
 

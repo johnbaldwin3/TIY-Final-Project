@@ -97,17 +97,40 @@ class UserListings extends React.Component {
 class UserNameList extends React.Component {
   constructor(props) {
     super(props);
+    var userCollection = new UserCollection();
 
+    this.state ={
+      userCollection
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    this.setState({userCollection: nextProps.userCollection});
+  }
+  handleUserClick(e) {
+    console.log(e.target.value);
   }
   render() {
     var users = this.props.userCollection.map((user)=>{
+      //console.log(user.get('pic'));
 
+      if(user.get('pic') != undefined) {
+        var userPic = user.get('pic').url;
+
+      } else {
+        var userPic = "https://images.pexels.com/photos/112640/pexels-photo-112640.jpeg?h=350&auto=compress&cs=tinysrgb";
+
+      }
+      console.log('userPic', userPic);
       return (
-        <tr key={user.cid}>
-          <td>{user.get("realOrNickName")}</td>
-          <td>Arbitrary Number right now</td>
-          <td><button>Click To See User's List</button></td>
+
+
+        <tr onClick={this.handleUserClick} type="button" key={user.cid} value={user.get("objectId")}>
+          <td><img className="avatar" src={userPic} style={{height:40, width:40, borderRadius:50}}/></td>
+          <td>{(user.get("realOrNickName"))? user.get("realOrNickName") : user.get('username') }</td>
+          <td>{user.get("observationCount")}</td>
+          <td>Click To See User's List</td>
         </tr>
+
       )
 
 
@@ -119,6 +142,7 @@ class UserNameList extends React.Component {
           <table className="table table-hover">
             <thead>
               <tr>
+                <th>Avatar</th>
                 <th>User Name</th>
                 <th># of Observations</th>
                 <th>Check Out Collection</th>

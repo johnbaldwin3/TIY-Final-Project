@@ -117,7 +117,7 @@ class UserListings extends React.Component {
       return (
 
         <div key={user.get("objectId")} className="row">
-          <button onClick={this.handleUserInfo} className="btn btn-primary col-sm-12" type="button" value={user.get("objectId")}>{user.get("realOrNickName")} <span className="badge">4</span>
+          <button onClick={this.handleUserInfo} className="btn btn-primary col-sm-12" type="button" value={user.get("objectId")}>{user.get("realOrNickName") ? user.get("realOrNickName") : user.get("username")} <span className="badge">{user.get("observationCount")}</span>
           </button>
 
         </div>

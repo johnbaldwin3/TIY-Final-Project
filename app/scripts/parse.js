@@ -67,7 +67,7 @@ var ParseModel = Backbone.Model.extend({
     };
 
     this.set(field, pointerObject);
-
+    console.log('field', this.set(field, pointerObject));
     return this;
   }
 });

@@ -52,7 +52,6 @@ class ObservationsAddEditContainer extends React.Component {
 
       observedSpecies.fetch().then(() => {
       observation.set({
-
         commonName: observedSpecies.get("vernacularName"),
         scientificName: observedSpecies.get("canonicalName"),
         originalDiscoveryInfo: observedSpecies.get("authorship"),
@@ -340,6 +339,11 @@ class ObservationForm extends React.Component{
     /////IMAGE UPLOAD ISSUE WITH EDIT OF RECORD//////
     return (
       <form onSubmit={this.handleObservationSubmit} className="col-sm-12">
+
+        {/*
+        this.props.isOwner ? <div></div> : <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
+        */}
+
         <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
           <div className="row">
             <div className="form-group col-sm-4">
@@ -451,6 +455,8 @@ class DeleteModal extends React.Component {
     user.unset('ACL');
     user.set("observationCount", {"__op":"Increment","amount":-1});
     user.save();
+
+
     modelToDelete.destroy();
     this.setState({observation: this.state.observation})
     //console.log(this.props.observation);

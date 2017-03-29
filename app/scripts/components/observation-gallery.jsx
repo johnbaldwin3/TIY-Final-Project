@@ -1,7 +1,6 @@
 //********************************
 //Third Party Libraries
 //********************************
-
 var React = require('react');
 var $ = require('jquery');
 var Backbone = require('backbone');
@@ -9,7 +8,6 @@ var Backbone = require('backbone');
 //********************************
 //Models, Utilities, Layouts
 //********************************
-
 var BaseLayout = require('./layouts/baselayout.jsx').BaseLayout;
 var ObservationCollection = require('../models/observations.js').ObservationCollection;
 var UserProfileCollection = require('../models/userProfile.js').UserProfileCollection;
@@ -18,7 +16,6 @@ var UserCollection = require('../models/user.js').UserCollection;
 //********************************
 //Observation Gallery (Photos Gallery)
 //********************************
-
 class ObservationGalleryContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -32,7 +29,6 @@ class ObservationGalleryContainer extends React.Component {
 
     if(props.id) {
       observationCollection.parseWhere('observer', '_User', props.id).parseInclude('observer').fetch().then(()=> {
-
       this.setState({ observationCollection });
 
     });
@@ -72,7 +68,6 @@ class ObservationGalleryContainer extends React.Component {
 //********************************
 //Observation Gallery Listing (Photos Gallery)
 //********************************
-
 class GalleryListings extends React.Component {
   constructor(props) {
     super(props);
@@ -93,7 +88,7 @@ class GalleryListings extends React.Component {
               <div className="caption">
                 <h4>{obsPics.get("commonName")}</h4>
                 <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
-                <p><button onClick={this.renderUserList} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button">Observation Details</a></p>
+                <p><button onClick={this.renderUserList} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button"> Observation Details</a></p>
               </div>
             </div>
           </div>
@@ -113,7 +108,6 @@ class GalleryListings extends React.Component {
 //********************************
 //User Gallery Listing (Photos Gallery)
 //********************************
-
 class UserListings extends React.Component{
   constructor(props){
     super(props);
@@ -131,7 +125,7 @@ class UserListings extends React.Component{
     var obsGallery;
     if( this.props.observationCollection) {
       obsGallery = this.props.observationCollection.map((obsPics)=> {
-        //console.log('obsPics');
+        console.log('obsPics');
         return (
           <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
             <div className="thumbnail">

@@ -12,8 +12,8 @@ class MarketAuthLayout extends React.Component {
           <div className="row">
             <div className="container-fluid">
               <div className="navbar">
-                <div className="titler"><a href="#"><span id="app-title">NaturaList <span className="glyphicon glyphicon-leaf glyphicon"></span></span>
-                </a>
+                <div className="titler"><span id="app-title">NaturaList <span className="glyphicon glyphicon-leaf glyphicon"></span></span>
+                
                 </div>
               </div>
             </div>
