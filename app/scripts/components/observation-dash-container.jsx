@@ -3,6 +3,7 @@
 //********************************
 var React = require('react');
 var Moment = require('moment');
+var Backbone = require('backbone');
 
 //********************************
 //Models, Utilities, Layouts
@@ -109,6 +110,8 @@ class UserListings extends React.Component {
   }
   handleUserInfo(e) {
     console.log('etaget', e.target.value);
+    var url = "/observation/gallery/" + e.target.value + "/";
+    Backbone.history.navigate(url, {trigger: true});
   }
   render() {
     //console.log('tpup', this.props.userCollection);
@@ -117,7 +120,7 @@ class UserListings extends React.Component {
       return (
 
         <div key={user.get("objectId")} className="row">
-          <button onClick={this.handleUserInfo} className="btn btn-primary col-sm-12" type="button" value={user.get("objectId")}>{user.get("realOrNickName") ? user.get("realOrNickName") : user.get("username")} <span className="badge">{user.get("observationCount")}</span>
+          <button style={{width: "100%"}}onClick={this.handleUserInfo} className="btn btn-primary col-sm-12" type="button" value={user.get('objectId')}>{user.get("realOrNickName") ? user.get("realOrNickName") : user.get("username")} <span className="badge">{user.get("observationCount")}</span>
           </button>
 
         </div>

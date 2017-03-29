@@ -66,7 +66,7 @@ class BaseLayout extends React.Component {
             <div className="footer navbar-inverse navbar-bottom">
               <h4 className="clearfix foot-title">&copy; 2017 NaturaList</h4>
 
-                <div className="pull-right top-link btn btn-default"><a href="#">Back to Top</a></div>
+                <div id="top-link" className=""><a  href="#">Back to Top</a></div>
 
             </div>
           </div>

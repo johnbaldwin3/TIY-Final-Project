@@ -8,6 +8,7 @@ var Marker = require('react-google-maps').Marker;
 var MarkerClusterer = require('react-google-maps/lib/addons/MarkerClusterer');
 require('react-google-maps');
 var InfoWindow = require('react-google-maps').InfoWindow;
+var Backbone = require('backbone');
 //********************************
 // Map Component
 //********************************
@@ -27,7 +28,8 @@ class GoogleMapContainer extends React.Component {
 
   }
   handleMarkerClick(e) {
-    //console.log(e);
+    // var url = "/observation/gallery/" + e.target.value + "/";
+    // Backbone.history.navigate(url, {trigger: true});
   }
   iconChooser(kingdom, classOf) {
     //pics icon based on type of observed species
@@ -99,7 +101,8 @@ class GoogleMapContainer extends React.Component {
         }
       }
 
-      return <Marker key={i} animation={2} onClick={this.handleMarkerClick} value={venue.objectGetter} icon={this.iconChooser(venue.kingdom, venue.classOfAnimal)}{...marker} >
+      return <Marker key={i} animation={2} onClick={this.handleMarkerClick}
+        value={venue.objectGetter} icon={this.iconChooser(venue.kingdom, venue.classOfAnimal)}{...marker} >
           <InfoWindow>
             {'<b>'+venue.speciesObserved+'</b>' + '<br/>' + venue.observer}
 

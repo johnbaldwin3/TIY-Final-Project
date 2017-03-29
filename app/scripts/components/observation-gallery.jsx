@@ -75,16 +75,18 @@ class GalleryListings extends React.Component {
   }
 
   renderUserList(e) {
+    console.log('e', e.target.value);
     var url = "/observation/gallery/" + e.target.value + "/";
     Backbone.history.navigate(url, {trigger: true});
   }
 
   render() {
     var obsGallery = this.props.observationCollection.map((obsPics)=> {
+      var imageURL = obsPics.get("pic").url;
       return (
           <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
             <div className="thumbnail">
-              <img src={obsPics.get("pic").url} alt="..."/>
+              {<img src={obsPics.get("pic").url} alt="..."/>}
               <div className="caption">
                 <h4>{obsPics.get("commonName")}</h4>
                 <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>

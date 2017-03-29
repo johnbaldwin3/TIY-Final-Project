@@ -27,10 +27,14 @@ $purpler: #8B0DFF;
   box-sizing: border-box;
 }
 
+body {
+  height: 100%
+}
 
 img {
   max-width: 100%;
 }
+
 
 //********************************
 //Navbar Styling
@@ -75,7 +79,12 @@ img {
   color: $greener;
   #app-title {
     color: $lightgreener;
+    //padding-left: 10px;
   }
+}
+.navbar-brand {
+  padding-left: 15px;
+  padding-right: 15px;
 }
 .wrapper-market {
   background-image: url('../images/AdobeStock_14513047.jpeg');
@@ -120,8 +129,20 @@ img {
 //Main screen dashboard
 //********************************
 
-.navbar-nav > .active > a:focus {
-  background-color: $oranger;
+.navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:hover, .navbar-inverse .navbar-nav > .active > a:focus {
+    color: $oranger;
+    background-color: #686768;
+    text-shadow: 0px 6px 8px black;
+    box-shadow: 0px 1px 13px 5px black;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-nav > li > a:focus {
+    color: #E2F8D8;
+    background-color: transparent;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: $lightgreener;
 }
 
 .obs-list-dash {
@@ -140,11 +161,15 @@ img {
 .navbar-bottom {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 8px;
   background-color: $grayer;
   box-shadow: 0px -2px 2px black;
-  .top-link {
-    align-self: flex-end;
+  #top-link {
+    a {
+      color: $lightgreener;
+    }
+
 
   }
 }
