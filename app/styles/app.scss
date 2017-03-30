@@ -111,10 +111,10 @@ body {
 }
 
 .scrollToTop {
-  background-color: rgba(255, 0, 0, 0.5);
-  color: white;
+  font-family: $sansSerifFont;
+  background-color: $lightgreener;
+  color: $grayer;
   border-radius: 15px;
-
 }
 
 //********************************
@@ -216,17 +216,18 @@ body {
 //Main screen dashboard
 //********************************
 .obs-list-dash {
-  height: 400px;
+  height: 500px;
   overflow: scroll;
   border: 3px solid $grayer;
+  background-color: white;
 }
 .obs-users-dash {
   @extend .obs-list-dash;
 }
 
-.gal-button {
-  font-size: 12px;
-}
+// .gal-button {
+//   font-size: 12px;
+// }
 .lister {
   background-color: $greenbluer;
 }
@@ -269,39 +270,33 @@ body {
 //********************************
 .thumbnail {
   display: flex;
+  font-family: $sansSerifFont;
   flex-wrap: wrap;
   height: 460px;
   flex-wrap: wrap;
+  margin-left: 5px;
+  margin-right: 5px;
+  box-shadow: 0px 1px 3px black;
   img{
     max-height: 300px;
     overflow: hidden;
+    width: 100%;
   }
 
 }
 
-// .image-container {
-//   position: relative;
-//   border-radius: 5px;
-//   margin: 5px;
-//   height: 500px;
-//
-//     img {
-//
-//       border-radius: 5px;
-//       max-height: 400px;
-//     }
-//     .caption{
-//
-//       position: absolute;
-//       bottom: 5px;
-//       left: 5px;
-//     }
-//     .caption:hover {
-//
-//     }
-// }
+.caption {
+  h4 {
+    font-family: $sansSerifFont;
+    color: $purpler;
+    font-weight: bold;
+  }
+  .obs-button {
+    background-color: $purpler;
+    color: white;
+  }
 
-
+}
 
 
 //********************************
@@ -394,3 +389,25 @@ body {
   background-color: $redder;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.59);
 }
+
+//********************************
+//User Info Profile page
+//********************************
+
+.profile-header {
+  @extend .photo-header;
+  font-size: 30px;
+}
+
+.profile-helper-p {
+  font-family: $sansFont;
+  font-size: 16px;
+}
+
+.profile-input-form {
+  @extend .species-input-form;
+}
+
+//********************************
+//User Listing Page
+//********************************

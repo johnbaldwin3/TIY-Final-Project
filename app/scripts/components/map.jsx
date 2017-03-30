@@ -9,6 +9,7 @@ var MarkerClusterer = require('react-google-maps/lib/addons/MarkerClusterer');
 require('react-google-maps');
 var InfoWindow = require('react-google-maps').InfoWindow;
 var Backbone = require('backbone');
+
 //********************************
 // Map Component
 //********************************
@@ -119,7 +120,7 @@ class GoogleMapContainer extends React.Component {
             defaultZoom={4}
             defaultCenter={this.props.center}
 
-            options={{streetViewControl: false, mapTypeControl: true}}>
+            options={{streetViewControl: true, mapTypeControl: true, scrollwheel: false}}>
             <MarkerClusterer>
               {markers}
             </MarkerClusterer>

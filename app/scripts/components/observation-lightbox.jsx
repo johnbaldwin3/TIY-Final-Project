@@ -4,6 +4,7 @@
 var React = require('react');
 var Masonry = require('react-masonry-component');
 var LazyLoad = require('react-lazyload');
+var Lightbox = require('react-lightbox-component').Lightbox;
 
 //********************************
 //Models, Utilities, Layouts
@@ -30,7 +31,7 @@ class ObservationLightboxContainer extends React.Component {
 
     enhancedObservationCollection.urlSetter('observer');
     enhancedObservationCollection.fetch().then(() => {
-      //console.log('response', enhancedObservationCollection);
+
 
       this.setState({observationCollection: enhancedObservationCollection });
     });
@@ -44,9 +45,13 @@ class ObservationLightboxContainer extends React.Component {
     var observationImagesArray = [];
     var childElements = this.state.observationCollection.map((image) => {
 
+      observationImagesArray.push({src: image.get("pic").url, title: image.get("commonName"), description: image.get("observer").realOrNickName ? image.get("observer").realOrNickName : image.get("observer").username });
+
+      //console.log('obsArray', observationImagesArray);
       return (
         //console.log('image', image.get("pic").url)
-        //observationImagesArray.push({src: image.get("pic").url})
+
+
         <div key={image.get("objectId")} className="image-element-class">
 
           <img className="masonry-img" src={image.get("pic").url} />
@@ -68,6 +73,7 @@ class ObservationLightboxContainer extends React.Component {
             updateOnEachImageLoad={false} >
                 {childElements}
           </Masonry>
+
         </div>
       </BaseLayout>
     )

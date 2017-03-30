@@ -92,11 +92,11 @@ class GalleryListings extends React.Component {
       return (
         <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4 image-container">
           <div className="thumbnail">
-            <img role="button" src={obsPics.get("pic").url} value={obsPics.get("pic").url}alt="..."/>
+            <a href={obsPics.get("pic").url}><img src={obsPics.get("pic").url} value={obsPics.get("pic").url}alt="..."/></a>
             <div className="caption">
               <h4>{obsPics.get("commonName")}</h4>
               <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
-              <p><button onClick={this.renderUserList} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button"> Observation Details</a></p>
+              <p><button onClick={this.renderUserList} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default obs-button" role="button"> Observation Details</a></p>
             </div>
           </div>
         </div>
@@ -153,12 +153,12 @@ class UserListings extends React.Component{
         console.log('obsPics');
         return (
           <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4 image-container">
-            <div className="">
+            <div className="thumbnail">
               <img src={obsPics.get("pic").url} alt="..."/>
               <div className="caption">
-                <h4>{obsPics.get("commonName")}</h4>
+                <h4 className="caption-title">{obsPics.get("commonName")}</h4>
                 <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
-                <p><button onClick={this.handleBackToGallery} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">Back to Gallery</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button">Observation Details</a></p>
+                <p><button onClick={this.handleBackToGallery} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">Back to Gallery</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default obs-button" role="button">Observation Details</a></p>
               </div>
             </div>
           </div>

@@ -66,14 +66,14 @@ function imageOrientationFix(file) {
 function scrollToTop() {
   //snippet taken from -->
   //https://paulund.co.uk/playground/demo/jquery_scroll_to_top/
-  $(window).scroll(function(){
-		if ($(this).scrollTop() > 100) {
-			$('.scrollToTop').fadeIn();
-		} else {
-			$('.scrollToTop').fadeOut();
-		}
-	});
-  console.log("ran");
+  // $(window).scroll(function(){
+	// 	if ($(this).scrollTop() > 100) {
+	// 		$('.scrollToTop').fadeIn();
+	// 	} else {
+	// 		$('.scrollToTop').fadeOut();
+	// 	}
+	// });
+  // console.log("ran");
 	//Click event to scroll to top
 	$('.scrollToTop').click(function(){
 		$('html, body').animate({scrollTop : 0},800);

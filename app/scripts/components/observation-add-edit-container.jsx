@@ -348,7 +348,7 @@ class ObservationForm extends React.Component{
           <div className="row">
             <div className="form-group col-sm-4">
               <label htmlFor="image">Picture Upload</label>
-              <input onChange={this.handlePicChange} name="image" type="file" id="image" filename={this.state.image} value={this.state.image}/>
+              <input onChange={this.handlePicChange} name="image" accept=".jpeg, .jpg, .gif, .PNG" type="file" id="image" filename={this.state.image} value={this.state.image}/>
               <p className="help-block">Upload your species image here.</p>
             </div>
             <div className="media col-sm-5">

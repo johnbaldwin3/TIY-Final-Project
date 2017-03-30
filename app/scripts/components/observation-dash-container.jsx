@@ -87,7 +87,7 @@ class ObservationDashContainer extends React.Component {
             <h3 className="welcomer">Welcome Back, {User.current().get("realOrNickName")}</h3>
             <ObservationListings observationCollection={this.state.observationCollection}/>
 
-            <div className="col-sm-7" style={{height:400, background:'gray', borderTop:"3px solid #474647", borderBottom:"3px solid #474647"}}>
+            <div className="col-sm-7" style={{height:500, background:'gray', borderTop:"3px solid #474647", borderBottom:"3px solid #474647"}}>
             <GoogleMapContainer center={location} markers={markers} />
 
             </div>

@@ -25,7 +25,7 @@ class ObservationListContainer extends React.Component {
     userCollection.arrangeUsers();
     userCollection.fetch().then((response)=> {
       this.setState({userCollection: userCollection});
-    })
+    });
 
 
     this.state = {
@@ -75,10 +75,10 @@ class UserNameList extends React.Component {
 
 
         <tr onClick={this.handleUserClick} type="button" key={user.cid} value={user.get("objectId")}>
-          <td><img className="avatar" src={userPic} style={{height:40, width:40, borderRadius:50}}/></td>
-          <td>{(user.get("realOrNickName"))? user.get("realOrNickName") : user.get('username') }</td>
-          <td>{user.get("observationCount")}</td>
-          <td>Click To See User's List</td>
+          <td className="table-data"><img className="avatar" src={userPic} style={{height:40, width:40, borderRadius:50}}/></td>
+          <td className="table-data">{(user.get("realOrNickName"))? user.get("realOrNickName") : user.get('username') }</td>
+          <td className="table-data">{user.get("observationCount")}</td>
+          <td className="table-data">See User's Observations</td>
         </tr>
 
       )
@@ -92,10 +92,10 @@ class UserNameList extends React.Component {
           <table className="table table-hover">
             <thead>
               <tr>
-                <th>Avatar</th>
-                <th>User Name</th>
-                <th># of Observations</th>
-                <th>Check Out Collection</th>
+                <th className="table-headers">Avatar</th>
+                <th className="table-headers">User Name</th>
+                <th className="table-headers"># of Observations</th>
+                <th className="table-headers">Check Out Collection</th>
               </tr>
             </thead>
             <tbody>

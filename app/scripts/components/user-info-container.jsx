@@ -62,8 +62,8 @@ class UserInfoContainer extends React.Component {
         <div className="row">
           <div className="col-sm-8 col-sm-offset-2 well">
 
-            <h2>Thanks for signing up,  {this.state.currentUser.get("username")} !</h2>
-            <p>Feel free to add to your profile below, or click "No Thanks" to come back later and do it.</p>
+            <h2 className="profile-header">  {this.state.currentUser.get('realOrNickName') ? "Edit your profile, " + this.state.currentUser.get('realOrNickName')+"?" : "Thanks for signing up, " + this.state.currentUser.get("username") + "!"} </h2>
+            <p className="profile-helper-p">Feel free to add to your profile below, or click "No Thanks" to come back later and do it.</p>
           </div>
         </div>
           <div className="row">
@@ -121,18 +121,6 @@ class UserProfileForm extends React.Component {
       birthday: nextProps.userProfile.birthday,
       preview: null
     });
-
-    // this.setState({ userProfile: nextProps.userProfile })
-    // console.log('here', this.state.userProfile);
-
-
-
-    // var userProfile = new UserProfile();
-    // var newState = $.extend({}, this.state, nextProps.userProfile);
-    // this.setState(newState);
-
-    //
-    // this.props.userProfile.set({userProfile: nextProps.userProfile})
   }
   handlePicChange(e) {
     var file = e.target.files[0];
@@ -219,7 +207,7 @@ class UserProfileForm extends React.Component {
 
     return(
       <form onSubmit={this.handleSubmit}>
-        <div className="form-group col-sm-4 col-sm-offset-4">
+        <div className="form-group col-sm-4 col-sm-offset-4 profile-input-form">
           <div className="media-right">
             <div className="sizer">
               <img className="media-object" src={this.state.preview ? this.state.preview : this.state.pic.url } />
@@ -230,14 +218,14 @@ class UserProfileForm extends React.Component {
             <input onChange={this.handlePicChange} name="image" type="file" id="image" filename={this.state.pic} value={this.state.name}/>
         </div>
         <div className="row">
-          <div className="form-group col-sm-6">
+          <div className="form-group col-sm-6 profile-input-form">
             <label htmlFor="userName">Your Nickname or Real Name</label>
             <input  onChange={this.handleUserNameChange} type="text" className="form-control" id="userName" placeholder="Your Name Here"
               value={this.state.realOrNickName}/>
           </div>
           <div className="row">
 
-            <div className="form-group col-sm-6">
+            <div className="form-group col-sm-6 profile-input-form">
               <label htmlFor="birthday">Your Birthday (optional)</label>
               <input onChange={this.handleBirthdayChange} type="date" className="form-control" id="birthday" value={moment(this.state.birthday).format('YYYY-MM-DD')}/>
             </div>
@@ -246,18 +234,18 @@ class UserProfileForm extends React.Component {
         </div>
 
 
-          <div className="form-group col-sm-12">
+          <div className="form-group col-sm-12 profile-input-form">
             <label htmlFor="personalBio">Your Bio Information (optional)</label>
             <textarea onChange={this.handleUserBioInfo} id="personalBio" className="form-control" placeholder="Your Personal Bio" rows="3" value={this.state.bioInfo}></textarea>
           </div>
 
-        <div className="form-group col-sm-12">
+        <div className="form-group col-sm-12 profile-input-form">
           <label htmlFor="personalInterests">What kind of organisms do you like to find?</label>
           <textarea onChange={this.handleUserSpeciesInterests} id="personalInterests" className="form-control" placeholder="Your Interests" rows="3" value={this.state.speciesInterests}></textarea>
           <p className="help-block">(Example: "Mammals, Reptiles, and Fish"... or something more specific such as "I like to observe hummingbird migrations")</p>
         </div>
-        <button type="submit" className="btn btn-success">Submit User Info</button>
-        <a type="button" href="#observation/" className="btn btn-danger"> No Thanks!</a>
+        <button type="submit" className="btn btn-success submitter-button">Submit User Info</button>
+        <a type="button" href="#observation/" className="btn btn-danger deleter-button"> No Thanks!</a>
       </form>
     )
   }
