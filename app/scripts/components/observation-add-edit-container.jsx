@@ -425,7 +425,7 @@ class ObservationForm extends React.Component{
         }
         <div className="pull-right">
           {
-          this.props.isOwner ? <input type="button" data-toggle="modal" data-target="#deleteModal"  className="btn btn-danger deleter-button" value="Delete Observation" /> : null
+          this.props.isOwner ? <button type="button" data-toggle="modal" data-target="#deleteModal"  className="btn btn-danger deleter-button" value="Delete Observation"><span className="glyphicon glyphicon-trash"></span></button> : null
           }
         </div>
       </form>
@@ -475,10 +475,10 @@ class DeleteModal extends React.Component {
               <h4 className="modal-title">Delete Your Observation?</h4>
             </div>
             <div className="modal-body">
-              <p>This change will be permanent and can not be undone, are you sure?</p>
+              <p className="delete-p">This change will be permanent and can not be undone, are you sure?</p>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-warning" data-dismiss="modal">Cancel</button>
+              <button type="button" className="btn btn-warning button-cancel" data-dismiss="modal">Cancel</button>
               <button onClick={this.handleDeleteObservationButton}  type="button" data-dismiss="modal" className="btn btn-danger">Delete</button>
             </div>
           </div>

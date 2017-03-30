@@ -347,14 +347,25 @@ body {
 }
 
 .species-button {
-  background-color: $grayer;
-  color: $oranger;
+  background-color: white;
+  color: $grayer;
 }
 
 //********************************
 //Observation Add Edit Container
 //********************************
-
+.modal-title {
+  color: $purpler;
+  font-size: 28px;
+  font-family: $sansSerifFont;
+}
+.delete-p {
+  font-family: $sansFont;
+  font-size: 18px;
+}
+.button-cancel {
+  background-color: $oranger;
+}
 .photo-header {
   font-family: $sansSerifFont;
   color: $purpler;
@@ -411,3 +422,7 @@ body {
 //********************************
 //User Listing Page
 //********************************
+
+.table-hover > tbody > tr:hover {
+    background-color: $greenbluer;
+}
