@@ -47,10 +47,10 @@ class ObservationLightboxContainer extends React.Component {
       return (
         //console.log('image', image.get("pic").url)
         //observationImagesArray.push({src: image.get("pic").url})
-        <div className="image-element-class">
+        <div key={image.get("objectId")} className="image-element-class">
 
           <img className="masonry-img" src={image.get("pic").url} />
-        
+
         </div>
       )
     });

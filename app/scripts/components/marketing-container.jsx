@@ -14,8 +14,8 @@ class MarketingContainer extends React.Component {
           </blockquote>
           <div className="jumbotron marketing-jumbo">
             <h1 id="observe-header">Observe your world!</h1>
-            <h3>Put on your biologist hat and explore the world around you...</h3>
-            <p>NaturaList allows you to create an account to keep track all of your species encounters in one place. Log your birding trips, record your very own herbarium here, check off lifelist species for your herpetological records, all in one place. Record data about your location, weather, experience. Upload images to each observation. Using mobile images allows the app to do a lot of work for you on observation recordings. Also you may be able to get some background information on the species you observed after each event is added. Log back in or try it out and join today!</p>
+            <h3 className="observer-sub-header">Put on your biologist hat and explore the world around you...</h3>
+            <p id="body-of-jumbo">NaturaList allows you to create an account that helps manage all of your species encounters in one place. Log your recent birding trips, record your very own herbarium, or check off lifelist species for your herpetological records, all in one place. Record data about your location, weather, and experience. Upload images to each observation. Using mobile images allows the app to do a lot of work for you with each documented observation. Also you may be able to get some background information on the species you observed after each event is added. Log back in or try it out and join today!</p>
           </div>
         </div>
         <div className="container">

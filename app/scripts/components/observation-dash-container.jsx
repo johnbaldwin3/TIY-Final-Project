@@ -83,7 +83,7 @@ class ObservationDashContainer extends React.Component {
       <BaseLayout>
         <div className="container">
           <div className="row">
-            <h3>Welcome Back, {User.current().get("realOrNickName")}</h3>
+            <h3 className="welcomer">Welcome Back, {User.current().get("realOrNickName")}</h3>
             <ObservationListings observationCollection={this.state.observationCollection}/>
 
             <div className="col-sm-7" style={{height:400, background:'gray', borderTop:"3px solid #474647", borderBottom:"3px solid #474647"}}>
@@ -145,10 +145,10 @@ class ObservationListings extends React.Component {
       // obsListItem.getUserProfile(obsListItem.get('objectId'))
       return (
         <a key={obsListItem.get("objectId")} href={"#observation/" + obsListItem.get('objectId') + '/' } className="list-group-item">
-          <h4 className="list-group-item-heading">{obsListItem.get("commonName")}</h4>
-          <h5 className="list-group-item-text">{obsListItem.get("observer").realOrNickName}</h5>
-          <p className="list-group-item-text">{Moment(obsListItem.get("observationDate").iso).format('LL')}</p>
-          <p className="list-group-item-text">{Moment(obsListItem.get("dateAndTime")).format('LTS')}</p>
+          <h4 className="list-group-item-heading obs-titler">{obsListItem.get("commonName")}</h4>
+          <h5 className="list-group-item-text obs-text">{obsListItem.get("observer").realOrNickName}</h5>
+          <p className="list-group-item-text obs-text">{Moment(obsListItem.get("observationDate").iso).format('LL')}</p>
+          <p className="list-group-item-text obs-text">{Moment(obsListItem.get("dateAndTime")).format('LTS')}</p>
         </a>
       )
     });

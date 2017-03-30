@@ -1,4 +1,5 @@
 var React = require('react');
+//<img src="./images/quill.png" />
 
 //marketing and authorization screen layouts
 
@@ -7,18 +8,10 @@ class MarketAuthLayout extends React.Component {
 
     return (
 
-      <div className="wrapper-market">
-        <nav className="navbar navbar-inverse market-nav">
-          <div className="row">
-            <div className="container-fluid">
-              <div className="navbar">
-                <div className="titler"><span id="app-title">NaturaList <span className="glyphicon glyphicon-leaf glyphicon"></span></span>
-                
-                </div>
-              </div>
-            </div>
-          </div>
-        </nav>
+      <div className="wrapper wrapper-market">
+        <div className="titler market-nav">
+          <span id="app-title">NaturaList <span className="glyphicon glyphicon-leaf glyphicon"></span></span>
+        </div>
 
         {this.props.children}
 

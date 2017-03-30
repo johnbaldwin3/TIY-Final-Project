@@ -19,7 +19,8 @@ $greenbluer: #5FE8CF;
 $redder: #FF0000;
 $lightgreener: #97E873;
 $purpler: #8B0DFF;
-
+$sansSerifFont: 'Muli', sans-serif;
+$sansFont: 'Playfair Display', serif;
 
 *,
 *::before,
@@ -27,14 +28,26 @@ $purpler: #8B0DFF;
   box-sizing: border-box;
 }
 
-body {
-  height: 100%
-}
 
 img {
   max-width: 100%;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  min-height: 100%;
+  position: relative;
+}
+
+#quill-logo {
+  height: 100px;
+  width: 100px;
+}
 
 //********************************
 //Navbar Styling
@@ -42,92 +55,25 @@ img {
 
 #navvy-bar {
   background-color: $grayer;
+  //font-family: $sansSerifFont;
   box-shadow: 1px 1px 1px $grayer;
 }
 
 #navbar-brand {
+  font-family: $sansSerifFont;
   color: $lightgreener;
+  font-size: 18px;
 }
 
 #map {
     height: 100%;
     border-top: 3px solid $grayer;
     border-bottom: 3px solid $grayer;
-  }
-
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    background: lightgrey;
-  }
-
-
-//********************************
-//Market/Splash Screen Styling
-//********************************
-.market-nav {
-  background-color: black;
 }
 
-.titler {
-  font-size: 48px;
-  text-align: center;
-  color: $greener;
-  #app-title {
-    color: $lightgreener;
-    //padding-left: 10px;
-  }
+body {
+  background: lightgrey;
 }
-.navbar-brand {
-  padding-left: 15px;
-  padding-right: 15px;
-}
-.wrapper-market {
-  background-image: url('../images/AdobeStock_14513047.jpeg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  //filter: blur(5px);
-}
-
-.footer {
-  margin-top: 100px;
-}
-
-.block-footer {
-  color: #005b80;
-}
-
-.quote {
-  color: black;
-
-}
-
-.marketing-jumbo {
-  background-color: rgba(255, 255, 255, 0.73);
-}
-
-#eO {
-  background-color: rgba(255, 255, 255, 0.73);
-  border-top-right-radius: 7px;
-  border-bottom-right-radius: 7px;
-}
-
-#nav-foot-title {
-  background-color: rgba(45, 125, 210, 0.67);
-  color: white;
-  padding: 8px;
-}
-
-#observe-header {
-  color: $purpler;
-}
-//********************************
-//Main screen dashboard
-//********************************
 
 .navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:hover, .navbar-inverse .navbar-nav > .active > a:focus {
     color: $oranger;
@@ -135,30 +81,24 @@ img {
     text-shadow: 0px 6px 8px black;
     box-shadow: 0px 1px 13px 5px black;
 }
-
+.base-wrapper {
+  //position: relative;
+}
 .navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-nav > li > a:focus {
     color: #E2F8D8;
     background-color: transparent;
 }
 
 .navbar-inverse .navbar-nav > li > a {
-    color: $lightgreener;
+  color: $lightgreener;
+  font-size: 15px;
+  font-family: $sansSerifFont;
 }
-
-.obs-list-dash {
-  height: 400px;
-  overflow: scroll;
-  border: 3px solid $grayer;
-}
-.obs-users-dash {
-  @extend .obs-list-dash;
-}
-
-.gal-button {
-  font-size: 12px;
-}
-
 .navbar-bottom {
+  //position: absolute;
+  //bottom: 0;
+  //left: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -169,8 +109,6 @@ img {
     a {
       color: $lightgreener;
     }
-
-
   }
 }
 
@@ -184,6 +122,124 @@ img {
 
 }
 
+//********************************
+//Market/Splash Screen Styling
+//********************************
+.market-nav {
+  background-color: transparent;
+  padding-bottom: 50px;
+}
+
+.titler {
+  font-size: 48px;
+  text-align: center;
+  color: $greener;
+  #app-title {
+    font-family: $sansSerifFont;
+    font-size: 80px;
+    color: $lightgreener;
+    //padding-left: 10px;
+  }
+}
+.navbar-brand {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.wrapper-market {
+  background-image: url('../images/AdobeStock_14513047.jpeg');
+  background-repeat: no-repeat;
+  //background-size: cover;
+  //position: relative;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.block-footer {
+  color: #005b80;
+}
+
+.quote {
+  color: black;
+
+}
+
+.marketing-jumbo {
+  background-color: rgba(255, 255, 255, 0.83);
+}
+
+#eO {
+  background-color: rgba(255, 255, 255, 0.83);
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+  font-family: $sansFont;
+  letter-spacing: 1px;
+  font-size: 20px;
+}
+
+#body-of-jumbo {
+  font-family: $sansFont;
+}
+
+#nav-foot-title {
+  background-color: rgba(45, 125, 210, 0.67);
+  color: white;
+  padding: 8px;
+}
+
+#observe-header {
+  font-family: $sansSerifFont;
+  font-size: 72px;
+  color: $purpler;
+  letter-spacing: 1px;
+  word-spacing: 2px;
+
+}
+
+.observer-sub-header {
+  font-family: $sansSerifFont;
+  font-weight: bold;
+
+}
+
+
+
+//********************************
+//Main screen dashboard
+//********************************
+.obs-list-dash {
+  height: 400px;
+  overflow: scroll;
+  border: 3px solid $grayer;
+}
+.obs-users-dash {
+  @extend .obs-list-dash;
+}
+
+.gal-button {
+  font-size: 12px;
+}
+
+.welcomer {
+  font-family: $sansSerifFont;
+}
+
+
+//********************************
+//(Dash) Observation List
+//********************************
+.obs-titler {
+  font-family: $sansSerifFont;
+  font-size: 18px;
+
+}
+.obs-text {
+  font-family: $sansFont;
+  font-size: 18px;
+}
 //********************************
 //(Listing) Gallery Style
 //********************************
@@ -204,6 +260,7 @@ img {
 //********************************
 .masonry-img {
   max-width: 200px;
+  //image-orientation: 90deg;
 }
 
 .base-wrapper {
