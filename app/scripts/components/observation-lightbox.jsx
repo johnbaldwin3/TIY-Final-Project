@@ -59,6 +59,7 @@ class ObservationLightboxContainer extends React.Component {
 
       <BaseLayout>
         <div className="container">
+
           <Masonry
             className={'my-gallery-class'}
             elementType={'div'}

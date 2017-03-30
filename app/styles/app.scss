@@ -95,9 +95,6 @@ body {
   font-family: $sansSerifFont;
 }
 .navbar-bottom {
-  //position: absolute;
-  //bottom: 0;
-  //left: 0;
   width: 100%;
   display: flex;
   align-items: center;
@@ -114,11 +111,14 @@ body {
 
 .foot-title {
   background-color: $grayer;
-  //display: inline-block;
+  font-family: $sansSerifFont;
   color: $oranger;
 }
-.navbar-fixed-bottom {
-  background-color: $grayer;
+
+.scrollToTop {
+  background-color: rgba(255, 0, 0, 0.5);
+  color: white;
+  border-radius: 15px;
 
 }
 
@@ -148,6 +148,7 @@ body {
 .wrapper-market {
   background-image: url('../images/AdobeStock_14513047.jpeg');
   background-repeat: no-repeat;
+  height: 900px;
   //background-size: cover;
   //position: relative;
 }
@@ -222,12 +223,31 @@ body {
 .gal-button {
   font-size: 12px;
 }
+.lister {
+  background-color: $greenbluer;
+}
 
 .welcomer {
   font-family: $sansSerifFont;
+  color: $purpler;
+  font-size: 28px;
 }
 
+.user-lister {
+  background-color: $greenbluer;
+  .user-link {
+  color: $grayer;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-family: $sansFont;
 
+  }
+  .badge {
+    background-color: $purpler;
+  }
+
+}
 //********************************
 //(Dash) Observation List
 //********************************

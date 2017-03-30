@@ -43,7 +43,8 @@ var EnhancedObservationCollection = parse.ParseCollection.extend({
     //allows for dynamic search of pointer fields
     //field gets passed in on Component
     this.baseUrl = 'https://jb3-serve.herokuapp.com/classes/Observations/?include=' + field;
-  }
+  },
+  
 });
 
 //********************************

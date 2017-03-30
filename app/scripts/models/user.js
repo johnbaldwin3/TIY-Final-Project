@@ -67,7 +67,8 @@ var User = parse.ParseModel.extend({
     }
 
     return currentUser.id;
-  },
+
+    },
   //get the current user at any given time
   current: function(){
     var user = localStorage.getItem('user');
@@ -85,9 +86,6 @@ var User = parse.ParseModel.extend({
 
     return currentUser;
   },
-  addIncrement: function() {
-    
-  }
 
 });
 
@@ -96,7 +94,11 @@ var UserCollection = parse.ParseCollection.extend({
   baseUrl: 'https://jb3-serve.herokuapp.com/users',
   parse: function(data) {
     return data.results;
+  },
+  arrangeUsers: function() {
+    this.baseUrl = 'https://jb3-serve.herokuapp.com/users/?order=-observationCount'
   }
+
 });
 
 //********************************

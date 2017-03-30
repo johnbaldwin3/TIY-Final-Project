@@ -20,34 +20,15 @@ var UserCollection = require('../models/user.js').UserCollection;
 class ObservationListContainer extends React.Component {
   constructor(props) {
     super(props);
-    var observationCollection = new ObservationCollection();
-    var userProfileCollection = new UserProfileCollection();
-    var enhancedObservationCollection = new EnhancedObservationCollection();
     var userCollection = new UserCollection();
 
+    userCollection.arrangeUsers();
     userCollection.fetch().then((response)=> {
-      console.log('resp ', response);
       this.setState({userCollection: userCollection});
     })
 
-    if(this.props.id) {
-      //if true, set objectId
-      console.log('tpid', this.props.id);
-      userProfileCollection.set('objectId', this.props.id);
-
-    } else {
-
-      enhancedObservationCollection.urlSetter('observer');
-      enhancedObservationCollection.fetch().then(() => {
-        console.log('response', enhancedObservationCollection);
-
-        this.setState({observationCollection: enhancedObservationCollection});
-      });
-
-    }
 
     this.state = {
-      observationCollection,
       userCollection
     }
   }
@@ -62,37 +43,6 @@ class ObservationListContainer extends React.Component {
   }
 }
 
-// <UserListings observationCollection={this.state.observationCollection}/>
-class UserListings extends React.Component {
-  constructor(props) {
-    super(props);
-
-  }
-
-  render() {
-
-    var obsList = this.props.observationCollection.map((obsPics)=> {
-
-      return (
-        <a href="#" className="list-group-item">
-          <img className="media-object" src={obsPics.get("pic").url} alt="..."/>
-        </a>
-
-      )
-
-    });
-
-    return(
-      <div className="container">
-        <div className="list-group">
-          {obsList}
-          <div>hello, i work</div>
-        </div>
-      </div>
-    )
-  }
-
-}
 
 class UserNameList extends React.Component {
   constructor(props) {
@@ -120,7 +70,7 @@ class UserNameList extends React.Component {
         var userPic = "https://images.pexels.com/photos/112640/pexels-photo-112640.jpeg?h=350&auto=compress&cs=tinysrgb";
 
       }
-      console.log('userPic', userPic);
+
       return (
 
 

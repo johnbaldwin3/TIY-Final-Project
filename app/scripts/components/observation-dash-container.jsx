@@ -29,6 +29,7 @@ class ObservationDashContainer extends React.Component {
 
 
     console.log("here is NAME", User.current().get("realOrNickName"));
+    userCollection.arrangeUsers();
     userCollection.fetch().then(() => {
       console.log('upc', userCollection);
       this.setState({userCollection: userCollection});
@@ -119,18 +120,18 @@ class UserListings extends React.Component {
       //console.log('here', user);
       return (
 
-        <div key={user.get("objectId")} className="row">
-          <button style={{width: "100%"}}onClick={this.handleUserInfo} className="btn btn-primary col-sm-12" type="button" value={user.get('objectId')}>{user.get("realOrNickName") ? user.get("realOrNickName") : user.get("username")} <span className="badge">{user.get("observationCount")}</span>
-          </button>
+        <li key={user.get("objectId")} className="row list-group-item user-lister">
+          <a className="user-link" style={{width: "100%"}}onClick={this.handleUserInfo}  type="button" value={user.get('objectId')}>{user.get("realOrNickName") ? user.get("realOrNickName") : user.get("username")} <span className="badge">{user.get("observationCount")}</span>
+          </a>
 
-        </div>
+        </li>
 
       );
     });
     return(
-      <div className="col-sm-2 obs-users-dash">
+      <ul className="col-sm-2 obs-users-dash list-group">
          {users}
-      </div>
+      </ul>
     )
   }
 }
@@ -144,7 +145,7 @@ class ObservationListings extends React.Component {
     var obsListing = this.props.observationCollection.map((obsListItem)=> {
       // obsListItem.getUserProfile(obsListItem.get('objectId'))
       return (
-        <a key={obsListItem.get("objectId")} href={"#observation/" + obsListItem.get('objectId') + '/' } className="list-group-item">
+        <a key={obsListItem.get("objectId")} href={"#observation/" + obsListItem.get('objectId') + '/' } className="list-group-item ">
           <h4 className="list-group-item-heading obs-titler">{obsListItem.get("commonName")}</h4>
           <h5 className="list-group-item-text obs-text">{obsListItem.get("observer").realOrNickName}</h5>
           <p className="list-group-item-text obs-text">{Moment(obsListItem.get("observationDate").iso).format('LL')}</p>
@@ -154,7 +155,7 @@ class ObservationListings extends React.Component {
     });
     return (
       <div className="col-sm-3 obs-list-dash">
-        <div className="list-group">
+        <div className="list-group lister">
           {obsListing}
         </div>
       </div>

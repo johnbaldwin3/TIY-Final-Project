@@ -59,6 +59,7 @@ class ObservationGalleryContainer extends React.Component {
   render() {
     return (
       <BaseLayout>
+
         { this.state.props ? <UserListings observationCollection={this.state.observationCollection} /> : <GalleryListings observationCollection={this.state.observationCollection} /> }
       </BaseLayout>
     )
@@ -79,14 +80,17 @@ class GalleryListings extends React.Component {
     var url = "/observation/gallery/" + e.target.value + "/";
     Backbone.history.navigate(url, {trigger: true});
   }
-
+  picClick(e) {
+    //data-toggle="modal" data-toggle="#myModal"
+    console.log(e.target.value);
+  }
   render() {
     var obsGallery = this.props.observationCollection.map((obsPics)=> {
       var imageURL = obsPics.get("pic").url;
       return (
           <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
             <div className="thumbnail">
-              {<img src={obsPics.get("pic").url} alt="..."/>}
+              <img role="button" src={obsPics.get("pic").url} value={obsPics.get("pic").url}alt="..."/>
               <div className="caption">
                 <h4>{obsPics.get("commonName")}</h4>
                 <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
@@ -99,6 +103,22 @@ class GalleryListings extends React.Component {
 
     return(
       <div className="container">
+        <div className="modal fade" id="myModal" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 className="modal-title" id="myModalLabel">Modal title</h4>
+              </div>
+              <div className="modal-body">
+
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="row">
           {obsGallery}
         </div>

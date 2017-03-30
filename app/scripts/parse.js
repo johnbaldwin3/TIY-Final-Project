@@ -94,7 +94,6 @@ var ParseCollection = Backbone.Collection.extend({
     this.includeClause = string;
     return this;
   },
-
   url: function(){
     var url = this.baseUrl;
 
