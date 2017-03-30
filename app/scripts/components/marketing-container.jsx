@@ -21,10 +21,10 @@ class MarketingContainer extends React.Component {
         <div className="container">
           <div className="row">
             <div className="col-sm-6">
-              <a href="#login/" type="button" className="btn btn-primary">Log In</a>
+              <a href="#login/" type="button" className="btn btn-primary login-button">Log In</a>
             </div>
             <div className="col-sm-6">
-              <a href="#signup/" type="button" className="btn btn-primary">Sign Up</a>
+              <a href="#signup/" type="button" className="btn btn-primary signup-button">Sign Up</a>
             </div>
           </div>
         </div>

@@ -45,10 +45,10 @@ class ObservationSpeciesSearchContainer extends React.Component {
         <div className="container search-page">
           <div className="row">
             <div className="getstarted col-sm-10 col-sm-offset-1 well">
-              <h3>Hey, lets get started... search below for the name of what you observed. When you see the right one, click on the <u>This is the one!</u> button and you can start to fill out the details of your observation.</h3>
-              <h4>If you can't find what you're looking for, it's okay! Just click the <u>Unable to Find Match</u> button to manually fill out your species form.</h4>
+              <h3 className="search-guidelines">Hey, lets get started... search below for the name of what you observed. When you see the right one, click on the <u className="underlined-caption">This is the one!</u> button and you can start to fill out the details of your observation.</h3>
+              <h4 className="search-sub-header">If you can't find what you're looking for, it's okay! Just click the <u className="underlined-caption">Unable to Find Match</u> button to manually fill out your species form.</h4>
 
-              <a href="#observation/add/" type="button" className="btn btn-primary pull-right">Unable to Find Match</a>
+              <a href="#observation/add/" id="unable-button" type="button" className="btn btn-primary pull-right">Unable to Find Match</a>
             </div>
             <div className="input-group col-sm-12 input-group-lg">
 
@@ -80,7 +80,7 @@ class SpeciesInputForm extends React.Component {
 
   render() {
     return (
-        <input onChange={this.handleInputChange} type="text" className="form-control" placeholder="Species you observed..."/>
+        <input onChange={this.handleInputChange} type="text" className="form-control searcher" placeholder="Species you observed..."/>
     )
   }
 }
@@ -103,7 +103,7 @@ class PossibleSpeciesList extends React.Component {
       //console.log('species', species);
       return (
         <tr key={species.cid} >
-          <td>
+          <td className="table-data">
             {species.get('species')}
           </td>
           <td>
@@ -111,7 +111,7 @@ class PossibleSpeciesList extends React.Component {
           </td>
           <td>
             <a onClick={this.handleSpeciesClick} href={"#observation/add/"+ species.get('speciesKey')+"/"}
-           type="button" className="btn">This is the one!</a>
+           type="button" className="btn btn-default species-button">This is the one!</a>
           </td>
         </tr>
       )
@@ -121,9 +121,9 @@ class PossibleSpeciesList extends React.Component {
         <table className="table table-hover col-sm-8">
           <thead className="species-table">
             <tr href="">
-              <th>Scientific Name</th>
-              <th>Common Name (Vernacular Name)</th>
-              <th>Found a Match?</th>
+              <th className="table-headers">Scientific Name</th>
+              <th className="table-headers">Common Name (Vernacular Name)</th>
+              <th className="table-headers">Found a Match?</th>
             </tr>
           </thead>
           <tbody>

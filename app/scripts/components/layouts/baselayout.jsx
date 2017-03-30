@@ -3,6 +3,7 @@
 //********************************
 var React = require('react');
 var Backbone = require('backbone');
+var moment = require('moment');
 
 //********************************
 //Models, Utilities
@@ -64,7 +65,7 @@ class BaseLayout extends React.Component {
         <div className="container-fluid">
           <div className="row ">
             <div className="footer navbar-inverse navbar-bottom">
-              <h4 className="clearfix foot-title">&copy; 2017 NaturaList</h4>
+              <h4 className="clearfix foot-title">&copy; {moment().format('YYYY')} NaturaList</h4>
 
                 <div id="top-link"><button className="scrollToTop" onClick={utility.scrollToTop}>Back to Top</button></div>
 

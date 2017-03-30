@@ -1,5 +1,8 @@
+//********************************
+//Third Party Libraries
+//********************************
 var React = require('react');
-//<img src="./images/quill.png" />
+var moment = require('moment');
 
 //marketing and authorization screen layouts
 
@@ -18,7 +21,7 @@ class MarketAuthLayout extends React.Component {
         <div className="container-fluid">
           <div className="row">
             <div id="nav-foot-title" className="footer navbar-bottom nav-foot-title">
-              <h5>&copy; 2017 NaturaList</h5>
+              <h5>&copy; {moment().format('YYYY')} NaturaList</h5>
             </div>
           </div>
         </div>

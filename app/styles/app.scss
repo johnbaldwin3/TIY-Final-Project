@@ -44,11 +44,6 @@ html, body {
   position: relative;
 }
 
-#quill-logo {
-  height: 100px;
-  width: 100px;
-}
-
 //********************************
 //Navbar Styling
 //********************************
@@ -78,15 +73,15 @@ body {
 .navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:hover, .navbar-inverse .navbar-nav > .active > a:focus {
     color: $oranger;
     background-color: #686768;
-    text-shadow: 0px 6px 8px black;
-    box-shadow: 0px 1px 13px 5px black;
+    text-shadow: -1px 2px 1px black;
+    box-shadow: 0px 1px 4px 0px black;
 }
 .base-wrapper {
   //position: relative;
 }
 .navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-nav > li > a:focus {
-    color: #E2F8D8;
-    background-color: transparent;
+  color: #E2F8D8;
+  background-color: transparent;
 }
 
 .navbar-inverse .navbar-nav > li > a {
@@ -131,10 +126,12 @@ body {
 }
 
 .titler {
+  padding-top: 30px;
   font-size: 48px;
   text-align: center;
   color: $greener;
   #app-title {
+
     font-family: $sansSerifFont;
     font-size: 80px;
     color: $lightgreener;
@@ -148,9 +145,16 @@ body {
 .wrapper-market {
   background-image: url('../images/AdobeStock_14513047.jpeg');
   background-repeat: no-repeat;
-  height: 900px;
-  //background-size: cover;
-  //position: relative;
+  height: 1000px;
+  padding-bottom: 50px;
+
+}
+.login-button {
+  background-color: $purpler;
+}
+
+.signup-button {
+  background-color: $purpler;
 }
 
 .footer {
@@ -275,8 +279,33 @@ body {
 
 }
 
+// .image-container {
+//   position: relative;
+//   border-radius: 5px;
+//   margin: 5px;
+//   height: 500px;
+//
+//     img {
+//
+//       border-radius: 5px;
+//       max-height: 400px;
+//     }
+//     .caption{
+//
+//       position: absolute;
+//       bottom: 5px;
+//       left: 5px;
+//     }
+//     .caption:hover {
+//
+//     }
+// }
+
+
+
+
 //********************************
-//Real Gallery Style
+//Real Gallery Style (lightbox)
 //********************************
 .masonry-img {
   max-width: 200px;
@@ -285,4 +314,83 @@ body {
 
 .base-wrapper {
   background-color: lightgrey;
+  padding-bottom: 100px;
+}
+
+//********************************
+//Species Search Container
+//********************************
+.search-guidelines {
+  font-family: $sansSerifFont;
+  color: $purpler;
+
+}
+.searcher {
+  font-family: $sansSerifFont;
+}
+.underlined-caption {
+  color: $bluer;
+}
+.search-sub-header {
+  font-family: $sansFont;
+}
+#unable-button {
+  font-family: $sansSerifFont;
+  background-color: $greenbluer;
+  color: $grayer;
+  box-shadow: 1px 1px 1px $bluer;
+}
+
+.table-data {
+  font-family: $sansFont;
+  font-size: 16px;
+}
+.table-headers {
+  font-family: $sansSerifFont;
+  font-size: 16px;
+  color: $bluer;
+}
+
+.species-button {
+  background-color: $grayer;
+  color: $oranger;
+}
+
+//********************************
+//Observation Add Edit Container
+//********************************
+
+.photo-header {
+  font-family: $sansSerifFont;
+  color: $purpler;
+  font-size: 20px;
+
+}
+
+.help-pack {
+  font-family: $sansSerifFont;
+
+}
+
+.form-header {
+  @extend .photo-header;
+}
+
+.species-input-form {
+  font-family: $sansSerifFont;
+  color: $bluer;
+
+}
+.submitter-button {
+  background-color: $greener;
+  margin-right: 10px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.59);
+}
+.back-to-gal-button {
+  background-color: $oranger;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.59);
+}
+.deleter-button {
+  background-color: $redder;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.59);
 }

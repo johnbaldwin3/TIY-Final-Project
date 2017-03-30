@@ -344,7 +344,7 @@ class ObservationForm extends React.Component{
         this.props.isOwner ? <div></div> : <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
         */}
 
-        <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
+        <div className="well"><h4 className="photo-header">First Step: Upload Your Photo!</h4></div>
           <div className="row">
             <div className="form-group col-sm-4">
               <label htmlFor="image">Picture Upload</label>
@@ -360,47 +360,47 @@ class ObservationForm extends React.Component{
               </div>
             </div>
           </div>
-        <div className="well"><h4>Step Two: Fill in the remaining info!</h4></div>
-        <div className="form-group">
+        <div className="well"><h4 className="form-header">Step Two: Fill in the remaining info!</h4></div>
+        <div className="form-group species-input-form">
           <label htmlFor="speciesCommonName">Common Name</label>
           <input onChange={this.handleCommonName} type="text" className="form-control" id="speciesCommonName" placeholder="Species Common Name" value={this.state.commonName}/>
         </div>
-        <div className="form-group">
+        <div className="form-group species-input-form">
           <label htmlFor="speciesSciName">Scientific Name</label>
           <input onChange={this.handleScientificName} type="text" className="form-control" id="speciesSciName" placeholder="Species Scientific Name"
           value={this.state.scientificName}/>
         </div>
-        <div className="form-group">
+        <div className="form-group species-input-form">
           <label htmlFor="discovery">Originally Described By and First Description Date (example: Darwin, 1859)</label>
           <input onChange={this.handleDiscovery} type="text" className="form-control" id="discovery" placeholder="Discovering Naturalist and Date of First Description"
           value={this.state.originalDiscoveryInfo}/>
         </div>
-        <div className="form-group">
+        <div className="form-group species-input-form">
           <label htmlFor="date">Date of Observation</label>
           <input onChange={this.handleObservationDate} type="date" className="form-control" id="date" placeholder="When did you observe it?" value={this.state.observationDate}/>
         </div>
-        <div className="form-group">
+        <div className="form-group species-input-form">
           <label htmlFor="dateTime">Time of Observation</label>
           <input onChange={this.handleObservationTime} type="text" className="form-control" id="time" placeholder="What time did you observe it? (h:m:s am/pm)" value={this.state.dateAndTime ? moment(this.state.dateAndTime).format('LTS'): null} />
         </div>
-        <div className="form-group">
+        <div className="form-group species-input-form">
           <label htmlFor="locationFound">Location Found</label>
           <input onChange={this.handleLocationChange} type="text" className="form-control" id="locationFound" placeholder="Where did you find it?" value={(this.state.lat + " " + this.state.latRef ) +", "+(this.state.lon + " " + this.state.lonRef)}/>
         </div>
-        <div className="form-group col-sm-6">
+        <div className="form-group col-sm-6 species-input-form">
           <label htmlFor="elevationFeetFound">Elevation of Observation (Feet) </label>
           <input onChange={this.handleElevationFeetChange} type="text" className="form-control" id="elevationFeetFound" placeholder="Elevation of your find (ft)..." value={this.state.elevationFoundFeet + " feet"}/>
         </div>
-        <div className="form-group col-sm-6">
+        <div className="form-group col-sm-6 species-input-form">
           <label htmlFor="elevationMetersFound">Elevation of Observation (Meters)</label>
           <input onChange={this.handleElevationMetersChange} type="text" className="form-control" id="elevationMetersFound" placeholder="Elevation of your find (m)..." value={this.state.elevationFoundMeters + " meters"}/>
         </div>
-        <div className="form-group">
+        <div className="form-group species-input-form">
           <label htmlFor="familyTree">Taxonimical Heirarchy (example: Kingdom - Phylum - Class - Order - Genus - Species) </label>
           <input onChange={this.handleSpeciesTree} type="text" className="form-control" id="familyTree" placeholder="Species family tree... "
             value={ this.state.taxonTree }/>
         </div>
-        <div className="form-group">
+        <div className="form-group species-input-form">
           <label htmlFor="observationNotes">Observation Notes</label>
           <textarea onChange={this.handleObservationNotes} className="form-control" id="observationNotes" placeholder="Some details of your find..." rows="3" value={this.state.observationNotes} />
         </div>
@@ -418,14 +418,14 @@ class ObservationForm extends React.Component{
           if user wants to delete, display modal will confirm delete, then take user to gallery
           ***********************/}
         {
-         this.props.isOwner ? <input type="submit" className="btn btn-success" value={ this.props.observation.isNew() ? 'Submit Your Find' : 'Edit Your Observation'}/> : <input type="button" onClick={this.handleBackButton} className="btn btn-default" value="Back"/>
+         this.props.isOwner ? <input type="submit" className="btn btn-success submitter-button" value={ this.props.observation.isNew() ? 'Submit Your Find' : 'Edit Your Observation'}/> : <input type="button" onClick={this.handleBackButton} className="btn btn-default back-button" value="Back"/>
         }
         {
-        this.props.isOwner ? <input type="button" onClick={this.handleBackButton} className="btn btn-warning" value="Back to Gallery"/> : null
+        this.props.isOwner ? <input type="button" onClick={this.handleBackButton} className="btn btn-warning back-to-gal-button" value="Back to Gallery"/> : null
         }
         <div className="pull-right">
           {
-          this.props.isOwner ? <input type="button" data-toggle="modal" data-target="#deleteModal"  className="btn btn-danger" value="Delete Observation" /> : null
+          this.props.isOwner ? <input type="button" data-toggle="modal" data-target="#deleteModal"  className="btn btn-danger deleter-button" value="Delete Observation" /> : null
           }
         </div>
       </form>

@@ -16,6 +16,8 @@ var UserCollection = require('../models/user.js').UserCollection;
 //********************************
 //Observation Gallery (Photos Gallery)
 //********************************
+$('.caption').hide();
+
 class ObservationGalleryContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -88,16 +90,17 @@ class GalleryListings extends React.Component {
     var obsGallery = this.props.observationCollection.map((obsPics)=> {
       var imageURL = obsPics.get("pic").url;
       return (
-          <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
-            <div className="thumbnail">
-              <img role="button" src={obsPics.get("pic").url} value={obsPics.get("pic").url}alt="..."/>
-              <div className="caption">
-                <h4>{obsPics.get("commonName")}</h4>
-                <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
-                <p><button onClick={this.renderUserList} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button"> Observation Details</a></p>
-              </div>
+        <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4 image-container">
+          <div className="thumbnail">
+            <img role="button" src={obsPics.get("pic").url} value={obsPics.get("pic").url}alt="..."/>
+            <div className="caption">
+              <h4>{obsPics.get("commonName")}</h4>
+              <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
+              <p><button onClick={this.renderUserList} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button"> Observation Details</a></p>
             </div>
           </div>
+        </div>
+
       )
     });
 
@@ -149,8 +152,8 @@ class UserListings extends React.Component{
       obsGallery = this.props.observationCollection.map((obsPics)=> {
         console.log('obsPics');
         return (
-          <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4">
-            <div className="thumbnail">
+          <div key={obsPics.get("objectId")} className="col-sm-6 col-md-4 image-container">
+            <div className="">
               <img src={obsPics.get("pic").url} alt="..."/>
               <div className="caption">
                 <h4>{obsPics.get("commonName")}</h4>
@@ -172,6 +175,21 @@ class UserListings extends React.Component{
     )
   }
 }
+
+
+
+
+
+// <div key={obsPics.get("objectId")} className="image-container col-sm-6 col-md-4 ">
+//   <div className="">
+//     <img role="button" src={obsPics.get("pic").url} value={obsPics.get("pic").url}alt="..."/>
+//     <div className="caption">
+//       <h4>{obsPics.get("commonName")}</h4>
+//       <p><b>Observation &amp; Photo by:</b> {obsPics.get("observer").realOrNickName}</p>
+//       <p><button onClick={this.renderUserList} value={ obsPics.get("observer").objectId} className="btn btn-primary gal-button" role="button">{(obsPics.get("observer").realOrNickName) + "'s Other Lists"}</button> <a href={"#observation/" + obsPics.get('objectId') + '/' } className="btn btn-default gal-button" role="button"> Observation Details</a></p>
+//     </div>
+//   </div>
+// </div>
 //********************************
 //Exports
 //********************************
