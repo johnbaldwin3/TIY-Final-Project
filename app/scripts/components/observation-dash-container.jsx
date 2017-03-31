@@ -82,7 +82,7 @@ class ObservationDashContainer extends React.Component {
 
     return (
       <BaseLayout>
-        <div className="container">
+        <div className="container dash-container">
           <div className="row">
             <h3 className="welcomer">Welcome Back, {User.current().get("realOrNickName")}</h3>
             <ObservationListings observationCollection={this.state.observationCollection}/>
