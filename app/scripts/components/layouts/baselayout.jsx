@@ -41,7 +41,7 @@ class BaseLayout extends React.Component {
                 <li className={utility.activeClass('observation/lightbox/')}><a href="#observation/lightbox/">Photos</a></li>
               </ul>
               <ul className="nav navbar-nav navbar-right">
-                <li><img style={{height:40, width:40, borderRadius:50}} src={(User.current().get('pic').url != undefined) ? User.current().get('pic').url : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"} /></li>
+                {User.current().get('pic') != undefined ? <li><img style={{height:40, width:40, borderRadius:50}} src={User.current().get('pic').url ? User.current().get('pic').url :  "./images/80-jpg-avatar.jpg"} /></li> : null }
                 <li className="dropdown">
                   <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     {User.current().get("realOrNickName") ? User.current().get("realOrNickName") : User.current().get("username")} <span className="badge">{User.current().get("observationCount")}</span><span className="caret"></span>
