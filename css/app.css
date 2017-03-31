@@ -5830,8 +5830,9 @@ body {
   color: #FFA538; }
 
 .scrollToTop {
-  background-color: rgba(255, 0, 0, 0.5);
-  color: white;
+  font-family: "Muli", sans-serif;
+  background-color: #97E873;
+  color: #474647;
   border-radius: 15px; }
 
 .market-nav {
@@ -5839,6 +5840,7 @@ body {
   padding-bottom: 50px; }
 
 .titler {
+  padding-top: 30px;
   font-size: 48px;
   text-align: center;
   color: #78CD00; }
@@ -5854,7 +5856,14 @@ body {
 .wrapper-market {
   background-image: url("../images/AdobeStock_14513047.jpeg");
   background-repeat: no-repeat;
-  height: 900px; }
+  height: 1000px;
+  padding-bottom: 50px; }
+
+.login-button {
+  background-color: #8B0DFF; }
+
+.signup-button {
+  background-color: #8B0DFF; }
 
 .footer {
   position: absolute;
@@ -5898,12 +5907,10 @@ body {
   font-weight: bold; }
 
 .obs-list-dash, .obs-users-dash {
-  height: 400px;
+  height: 500px;
   overflow: scroll;
-  border: 3px solid #474647; }
-
-.gal-button {
-  font-size: 12px; }
+  border: 3px solid #474647;
+  background-color: white; }
 
 .lister {
   background-color: #5FE8CF; }
@@ -5940,19 +5947,33 @@ body {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  font-family: "Muli", sans-serif;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
   height: 460px;
-  flex-wrap: wrap; }
+  flex-wrap: wrap;
+  margin-left: 5px;
+  margin-right: 5px;
+  box-shadow: 0px 1px 3px black; }
   .thumbnail img {
     max-height: 300px;
-    overflow: hidden; }
+    overflow: hidden;
+    width: 100%; }
+
+.caption h4 {
+  font-family: "Muli", sans-serif;
+  color: #8B0DFF;
+  font-weight: bold; }
+.caption .obs-button {
+  background-color: #8B0DFF;
+  color: white; }
 
 .masonry-img {
   max-width: 200px; }
 
 .base-wrapper {
-  background-color: lightgrey; }
+  background-color: lightgrey;
+  padding-bottom: 100px; }
 
 .search-guidelines {
   font-family: "Muli", sans-serif;
@@ -5983,7 +6004,54 @@ body {
   color: #2D7DD2; }
 
 .species-button {
-  background-color: #474647;
-  color: #FFA538; }
+  background-color: white;
+  color: #474647; }
+
+.modal-title {
+  color: #8B0DFF;
+  font-size: 28px;
+  font-family: "Muli", sans-serif; }
+
+.delete-p {
+  font-family: "Playfair Display", serif;
+  font-size: 18px; }
+
+.button-cancel {
+  background-color: #FFA538; }
+
+.photo-header, .form-header, .profile-header {
+  font-family: "Muli", sans-serif;
+  color: #8B0DFF;
+  font-size: 20px; }
+
+.help-pack {
+  font-family: "Muli", sans-serif; }
+
+.species-input-form, .profile-input-form {
+  font-family: "Muli", sans-serif;
+  color: #2D7DD2; }
+
+.submitter-button {
+  background-color: #78CD00;
+  margin-right: 10px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.59); }
+
+.back-to-gal-button {
+  background-color: #FFA538;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.59); }
+
+.deleter-button {
+  background-color: #FF0000;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.59); }
+
+.profile-header {
+  font-size: 30px; }
+
+.profile-helper-p {
+  font-family: "Playfair Display", serif;
+  font-size: 16px; }
+
+.table-hover > tbody > tr:hover {
+  background-color: #5FE8CF; }
 
 /*# sourceMappingURL=app.css.map */
