@@ -396,7 +396,7 @@ class ObservationForm extends React.Component{
           <input onChange={this.handleElevationMetersChange} type="text" className="form-control" id="elevationMetersFound" placeholder="Elevation of your find (m)..." value={this.state.elevationFoundMeters + " meters"}/>
         </div>
         <div className="form-group species-input-form">
-          <label htmlFor="familyTree">Taxonimical Heirarchy (example: Kingdom - Phylum - Class - Order - Genus - Species) </label>
+          <label htmlFor="familyTree">Taxonimical Heirarchy (example: Kingdom - Phylum - Class - Order - Family - Genus - Species) </label>
           <input onChange={this.handleSpeciesTree} type="text" className="form-control" id="familyTree" placeholder="Species family tree... "
             value={ this.state.taxonTree }/>
         </div>

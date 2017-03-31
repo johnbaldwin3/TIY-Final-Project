@@ -23,7 +23,7 @@ var Organism = Backbone.Model.extend({
     var family = this.get('family');
     var genus = this.get('genus');
     var speciesNameToSplit = this.get('species');
-    return (kingdom+' --> '+ phylum + ' --> '+ classOf + ' --> '+ order + ' --> '+ genus + ' --> '+ speciesNameToSplit);
+    return (kingdom+' --> '+ phylum + ' --> '+ classOf + ' --> '+ order + ' --> '+ family + ' --> '+ genus + ' --> '+ speciesNameToSplit);
   }
 
 
