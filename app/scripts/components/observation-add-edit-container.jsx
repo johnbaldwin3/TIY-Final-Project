@@ -337,13 +337,16 @@ class ObservationForm extends React.Component{
 
   render() {
     /////IMAGE UPLOAD ISSUE WITH EDIT OF RECORD//////
+    console.log('taxonTree', this.state.taxonTree.indexOf(0));
+    console.log('taxonTreeType', typeof this.state.taxonTree)
     return (
       <form onSubmit={this.handleObservationSubmit} className="col-sm-12">
 
         {/*
         this.props.isOwner ? <div></div> : <div className="well"><h4>First Step: Upload Your Photo!</h4></div>
         */}
-
+        {console.log('taxonTreeTypeHere', typeof this.state.taxonTree)}
+        {console.log('taxonTreeHere', this.state.taxonTree.indexOf('u'))}
         <div className="well"><h4 className="photo-header">First Step: Upload Your Photo!</h4></div>
           <div className="row">
             <div className="form-group col-sm-4">
@@ -395,11 +398,11 @@ class ObservationForm extends React.Component{
           <label htmlFor="elevationMetersFound">Elevation of Observation (Meters)</label>
           <input onChange={this.handleElevationMetersChange} type="text" className="form-control" id="elevationMetersFound" placeholder="Elevation of your find (m)..." value={this.state.elevationFoundMeters + " meters"}/>
         </div>
+        {(this.state.taxonTree.indexOf('u') != 0) ?
         <div className="form-group species-input-form">
-          <label htmlFor="familyTree">Taxonimical Heirarchy (example: Kingdom - Phylum - Class - Order - Family - Genus - Species) </label>
-          <input onChange={this.handleSpeciesTree} type="text" className="form-control" id="familyTree" placeholder="Species family tree... "
+          <label htmlFor="familyTree">Taxonimical Heirarchy (example: Kingdom - Phylum - Class - Order - Family - Genus - Species) </label> <input onChange={this.handleSpeciesTree} type="text" className="form-control" id="familyTree" placeholder="Species family tree... "
             value={ this.state.taxonTree }/>
-        </div>
+        </div> : <div></div>}
         <div className="form-group species-input-form">
           <label htmlFor="observationNotes">Observation Notes</label>
           <textarea onChange={this.handleObservationNotes} className="form-control" id="observationNotes" placeholder="Some details of your find..." rows="3" value={this.state.observationNotes} />
