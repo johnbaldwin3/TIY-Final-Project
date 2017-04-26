@@ -39,4 +39,4 @@ Charles may edit his own personal profile at any given time as well, or view oth
 
 *  When Charles is done and feels like a taking trip on the HMS Beagle to foreign lands, he can log out of his account if he wishes, and sign back in as an existing user when he returns.
 
-![alt tag](https://github.com/johnbaldwin3/FinalProject/blob/master/app/images/naturalist.png)
+![alt tag](https://github.com/johnbaldwin3/TIY-Final-Project/blob/master/app/images/naturalist.png)
