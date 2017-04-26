@@ -1,10 +1,15 @@
 ## FinalProject
-
+Week 9-12
+------
+Website: https://johnbaldwin3.github.io/TIY-Final-Project/
+------
 Adobe Experience Design CC Wireframing: https://xd.adobe.com/view/f8df1d07-c10c-4f1c-9ab6-3e1bd2fb0195/
-
 ----------------------------------------------------------
-3/13/2017
-Nature APP (to be Named)
+
+
+NaturaList App
+(A full stack application using React.js and Backbone for an MVC framework, ParseServer for backend data storage, and the GBIF API for data.)
+----------------------  
 
 1.	WHAT THIS APP WILL DO:
 
@@ -33,3 +38,5 @@ The website will then reach out to the GBIF API and then backfill species inform
 Charles may edit his own personal profile at any given time as well, or view other user profiles.
 
 *  When Charles is done and feels like a taking trip on the HMS Beagle to foreign lands, he can log out of his account if he wishes, and sign back in as an existing user when he returns.
+
+![alt tag](https://github.com/johnbaldwin3/FinalProject/blob/master/app/images/naturalist.png)
