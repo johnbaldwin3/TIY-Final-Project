@@ -2,13 +2,20 @@
 Week 9-12
 ------
 Website: https://johnbaldwin3.github.io/TIY-Final-Project/
+
+* To login:
+**Username: test1@example.com**
+**Password: 123456**
 ------
 Adobe Experience Design CC Wireframing: https://xd.adobe.com/view/f8df1d07-c10c-4f1c-9ab6-3e1bd2fb0195/
 ----------------------------------------------------------
 
 
+
 NaturaList App
 (A full stack application using React.js and Backbone for an MVC framework, ParseServer for backend data storage, and the GBIF API for data.)
+
+The app will display different icons for each finding depending on the kingdom or species of the find. 
 ----------------------  
 
 1.	WHAT THIS APP WILL DO:
