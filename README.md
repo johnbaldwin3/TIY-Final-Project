@@ -13,9 +13,9 @@ Adobe Experience Design CC Wireframing: https://xd.adobe.com/view/f8df1d07-c10c-
 
 
 NaturaList App
-(A full stack application using React.js and Backbone for an MVC framework, ParseServer for backend data storage, and the GBIF API for data.)
+(A full stack application using React.js and Backbone for an MVC framework, ParseServer, Parse Dashboard and MongoDB for backend data storage, and the GBIF API for data.)
 
-The app will display different icons for each finding depending on the kingdom or species of the find. 
+The app will display different icons for each finding depending on the kingdom or species of the find.
 ----------------------  
 
 1.	WHAT THIS APP WILL DO:
