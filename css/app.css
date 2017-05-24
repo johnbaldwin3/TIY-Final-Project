@@ -5773,7 +5773,8 @@ html, body {
 
 #app {
   min-height: 100%;
-  position: relative; }
+  position: relative;
+  background-image: url("../images/AdobeStock_14513047.jpeg"); }
 
 #navvy-bar {
   background-color: #474647;
@@ -5797,6 +5798,9 @@ body {
   background-color: #686768;
   text-shadow: -1px 2px 1px black;
   box-shadow: 0px 1px 4px 0px black; }
+
+.base-wrapper {
+  min-height: 100vh; }
 
 .navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-nav > li > a:focus {
   color: #E2F8D8;
@@ -5854,9 +5858,7 @@ body {
   padding-right: 15px; }
 
 .wrapper-market {
-  background-image: url("../images/AdobeStock_14513047.jpeg");
   background-repeat: no-repeat;
-  height: 1000px;
   padding-bottom: 50px; }
 
 .login-button {

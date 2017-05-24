@@ -43,7 +43,7 @@ class BaseLayout extends React.Component {
                 React.createElement("li", {className: utility.activeClass('observation/lightbox/')}, React.createElement("a", {href: "#observation/lightbox/"}, "Photos"))
               ), 
               React.createElement("ul", {className: "nav navbar-nav navbar-right"}, 
-                React.createElement("li", null, React.createElement("img", {style: {height:40, width:40, borderRadius:50}, src: (User.current().get('pic').url != undefined) ? User.current().get('pic').url : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"})), 
+                User.current().get('pic') != undefined ? React.createElement("li", null, React.createElement("img", {style: {height:40, width:40, borderRadius:50}, src: User.current().get('pic').url ? User.current().get('pic').url :  "./images/80-jpg-avatar.jpg"})) : null, 
                 React.createElement("li", {className: "dropdown"}, 
                   React.createElement("a", {href: "#", className: "dropdown-toggle", "data-toggle": "dropdown", role: "button", "aria-haspopup": "true", "aria-expanded": "false"}, 
                     User.current().get("realOrNickName") ? User.current().get("realOrNickName") : User.current().get("username"), " ", React.createElement("span", {className: "badge"}, User.current().get("observationCount")), React.createElement("span", {className: "caret"})
@@ -1027,7 +1027,7 @@ class ObservationDashContainer extends React.Component {
 
     return (
       React.createElement(BaseLayout, null, 
-        React.createElement("div", {className: "container"}, 
+        React.createElement("div", {className: "container dash-container"}, 
           React.createElement("div", {className: "row"}, 
             React.createElement("h3", {className: "welcomer"}, "Welcome Back, ", User.current().get("realOrNickName")), 
             React.createElement(ObservationListings, {observationCollection: this.state.observationCollection}), 
