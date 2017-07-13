@@ -1,7 +1,7 @@
 {
   "private": true,
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">5.10.0"
   },
   "devDependencies": {
     "git-directory-deploy": "^1.4.0",
